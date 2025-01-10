@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Lister",
-    "slug": "Lister",
+    "slug": "lister",
     "scheme": "myapp",
     "version": "0.0.0",
     "newArchEnabled": true,
@@ -32,6 +32,11 @@
         "READ_CONTACTS",
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
+        "NOTIFICATIONS",
+        "CAMERA",
+        "READ_CONTACTS",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
         "NOTIFICATIONS"
       ]
     },
@@ -49,14 +54,15 @@
     },
     "extra": {
       "eas": {
-        "projectId": "1246d4be-f569-47e8-8dc8-ab4928332204"
+        "projectId": "9b8dd498-2526-4695-ab62-6f176fe19190"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/1246d4be-f569-47e8-8dc8-ab4928332204"
-    }
+      "url": "https://u.expo.dev/9b8dd498-2526-4695-ab62-6f176fe19190"
+    },
+    "owner": "strawhat19"
   }
 }

@@ -12,7 +12,7 @@ export default function CustomImage({
     useReactLazyLoadOnMobile = false,
     className = `customImageClassName`,
     alt = Platform.OS == `web` ? `Image` : `Mobile Image`,
-}: CustomImageType) {
+}: CustomImageType | any) {
     let src = source?.uri ? source.uri : source;
     return (
         (useReactLazyLoadOnMobile || Platform.OS == `web`) ? (

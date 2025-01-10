@@ -9,20 +9,9 @@ import { gridSpacing, paginationHeightMargin } from '../board';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 
-export default function Column({
-    id,
-    name,
-    item,
-    items,
-    category,
-    openItem,
-    fadeAnim,
-    swipeCarousel,
-    closeBottomSheet,
-}: ColumnType | any) {
-    let { isDragging, setDragging, setCarouselData } = useContext<any>(SharedContext);
-
+export default function Column({ item, openItem, fadeAnim, swipeCarousel, closeBottomSheet }: ColumnType | any) {
     const { height } = useWindowDimensions();
+    let { isDragging, setDragging, setCarouselData } = useContext<any>(SharedContext);
 
     const handleGesture = (event: any) => {
         'worklet';

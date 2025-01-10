@@ -1,19 +1,15 @@
-import Item from './item/item';
+import Column from './column/column';
 import { BlurView } from 'expo-blur';
 import { boardStyles } from './styles';
-import * as Haptics from 'expo-haptics';
-import ItemView from './item/item-view';
 import { web } from '@/shared/variables';
+import SlideUp from '../slide-up/slide-up';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { SharedContext } from '@/shared/shared';
-import { runOnJS } from 'react-native-reanimated';
+import { SheetComponents } from '@/shared/types/types';
 import { useSharedValue } from 'react-native-reanimated';
 import { defaultVertImageCards } from '@/shared/database';
 import React, { useContext, useRef, useState } from 'react';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { colors, Text, View, borderRadius } from '@/components/theme/Themed';
-import { ColumnType, SheetComponents, ItemType } from '@/shared/types/types';
-import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Animated, TouchableOpacity, Vibration, useWindowDimensions } from 'react-native';
 import Carousel, { Pagination, ICarouselInstance } from 'react-native-reanimated-carousel';
 
@@ -44,11 +40,10 @@ export const defaultBoardColumns = [
 ]
 
 export default function Board() {
-    let { selected, setSelected, isDragging, setDragging, carouselData, setCarouselData } = useContext<any>(SharedContext);
+    let { setSelected, carouselData } = useContext<any>(SharedContext);
     
     const progress = useSharedValue<number>(0);
     const { width, height } = useWindowDimensions();
-    const bottomSheetRef = useRef<BottomSheet>(null);
     const scrollOffsetValue = useSharedValue<number>(0);
     const carouselRef = useRef<ICarouselInstance>(null);
     const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -56,8 +51,7 @@ export default function Board() {
 
     const [blur,] = useState<any>(100);
     const [indx, setIndx] = useState(0);
-    const [snapPoints] = useState([`1%`, `85%`]);
-    const [sheetComponent, setSheetComponent] = useState<SheetComponents>(SheetComponents.ItemForm);
+    const [, setSheetComponent] = useState<SheetComponents>(SheetComponents.ItemForm);
 
     const onSheetChange = (index?: any) => {
         if (index === 0) closeBottomSheet();
@@ -95,14 +89,6 @@ export default function Board() {
         Vibration.vibrate(1);
     }
 
-    const handleGesture = (event: any) => {
-        'worklet';
-        const { translationX, velocityX } = event.nativeEvent;
-        const horizontalMovement = Math.abs(translationX) > 15 && Math.abs(velocityX) > 15;
-        if (!horizontalMovement) return;
-        runOnJS(swipeCarousel)(translationX);
-    }
-
     const enterFadeBlur = () => {
         Animated.timing(fadeAnim, {
             toValue: 0.25,
@@ -131,19 +117,6 @@ export default function Board() {
         }).start();
     }
 
-    const ItemDraggable = ({ item, drag, isActive }: RenderItemParams<ItemType>) => {
-        return (
-            <Item
-                item={item}
-                drag={drag}
-                isActive={isActive}
-                fadeAnim={fadeAnim}
-                openItem={openItem}
-                closeBottomSheet={closeBottomSheet}
-            />
-        )
-    }
-
     return <>
         <Carousel
             loop={true}
@@ -158,37 +131,14 @@ export default function Board() {
             renderItem={({ index, item }: any) => (
                 <>
                     {item?.items?.length > 0 ? (
-                        <PanGestureHandler enabled={!isDragging} onGestureEvent={handleGesture}>
-                            <DraggableFlatList
-                                data={item?.items}
-                                renderItem={ItemDraggable}
-                                keyExtractor={(item) => item?.key}
-                                style={{ height: height - paginationHeightMargin }}
-                                onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                                onDragBegin={() => {
-                                    setDragging(true);
-                                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                                }}
-                                contentContainerStyle={{ 
-                                    width: `100%`,
-                                    gap: gridSpacing - 2, 
-                                    padding: gridSpacing,  
-                                    marginHorizontal: `auto`, 
-                                }}
-                                onDragEnd={({ data }) => {
-                                    setDragging(false);
-                                    setCarouselData((prevCarouselData: ColumnType[]) => prevCarouselData.map((list: ColumnType) => {
-                                        if (list.id == data[0].listID) {
-                                            return {
-                                                ...list,
-                                                items: data,
-                                            }
-                                        }
-                                        return list;
-                                    }))
-                                }}
-                            />
-                        </PanGestureHandler>
+                        <Column
+                            key={index}
+                            item={item}
+                            openItem={openItem}
+                            fadeAnim={fadeAnim}
+                            swipeCarousel={swipeCarousel}
+                            closeBottomSheet={closeBottomSheet}
+                        />
                     ) : (
                         <View style={{ width: `100%`, height: height - paginationHeightMargin, paddingTop: 35 }}>
                             <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
@@ -239,25 +189,10 @@ export default function Board() {
             {web() ? <></> : <BlurView id={`blurBG`} intensity={blur} tint={`dark`} style={boardStyles.absolute} />}
         </Animated.View>
 
-        <BottomSheet
-            index={indx}
-            ref={bottomSheetRef}
-            snapPoints={snapPoints}
-            onChange={onSheetChange}
-            onClose={closeBottomSheet}
-            enableHandlePanningGesture={!web()}
-            enableContentPanningGesture={!web()}
-            handleIndicatorStyle={boardStyles.handleStyle} // Hide handle on web
-            enablePanDownToClose={true} // Only enable drag to close on mobile
-            backgroundStyle={{ ...boardStyles.bottomSheetBackground, ...(selected != null && {backgroundColor: selected.backgroundColor}) }}
-        >
-            <BottomSheetView style={boardStyles.contentContainer}>
-                <>
-                    {selected != null ? <>
-                        <ItemView isForm={true} selected={selected} />
-                    </> : <></>}
-                </>
-            </BottomSheetView>
-        </BottomSheet>
+        <SlideUp 
+            indx={indx} 
+            onSheetChange={onSheetChange} 
+            closeBottomSheet={closeBottomSheet} 
+        />
     </>
 }

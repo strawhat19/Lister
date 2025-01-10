@@ -1,0 +1,62 @@
+{
+  "expo": {
+    "name": "Lister",
+    "slug": "Lister",
+    "scheme": "myapp",
+    "version": "0.0.0",
+    "newArchEnabled": true,
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/images/icon.png",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff",
+      "image": "./assets/images/splash.png"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to allow users to take photos.",
+        "NSContactsUsageDescription": "This app needs access to your contacts to display contact information.",
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to show nearby places.",
+        "NSUserNotificationUsageDescription": "This app uses notifications to notify you about important updates."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "CAMERA",
+        "READ_CONTACTS",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "NOTIFICATIONS"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1246d4be-f569-47e8-8dc8-ab4928332204"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1246d4be-f569-47e8-8dc8-ab4928332204"
+    }
+  }
+}

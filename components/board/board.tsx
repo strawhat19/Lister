@@ -1,10 +1,9 @@
-import Item from './item';
-import ItemForm from './item-form';
+import Item from './item/item';
 import { BlurView } from 'expo-blur';
 import { boardStyles } from './styles';
 import * as Haptics from 'expo-haptics';
+import ItemView from './item/item-view';
 import { web } from '@/shared/variables';
-import ItemDetailView from './item-detail-view';
 import { SharedContext } from '@/shared/shared';
 import { runOnJS } from 'react-native-reanimated';
 import { useSharedValue } from 'react-native-reanimated';
@@ -12,8 +11,8 @@ import { defaultVertImageCards } from '@/shared/database';
 import React, { useContext, useRef, useState } from 'react';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { appleBlue, Text, View, borderRadius } from '@/components/theme/Themed';
-import { ListColumn, SheetComponents, VertImageCard } from '@/shared/types/types';
+import { colors, Text, View, borderRadius } from '@/components/theme/Themed';
+import { ListColumn, SheetComponents, ItemType } from '@/shared/types/types';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Animated, TouchableOpacity, Vibration, useWindowDimensions } from 'react-native';
 import Carousel, { Pagination, ICarouselInstance } from 'react-native-reanimated-carousel';
@@ -134,7 +133,7 @@ export default function Board() {
         }).start();
     }
 
-    const boardColumnItem = ({ item, drag, isActive }: RenderItemParams<VertImageCard>) => {
+    const ItemDraggable = ({ item, drag, isActive }: RenderItemParams<ItemType>) => {
         return (
             <Item
                 item={item}
@@ -164,7 +163,7 @@ export default function Board() {
                         <PanGestureHandler enabled={!isDragging} onGestureEvent={handleGesture}>
                             <DraggableFlatList
                                 data={item?.items}
-                                renderItem={boardColumnItem}
+                                renderItem={ItemDraggable}
                                 keyExtractor={(item) => item?.key}
                                 style={{ height: height - paginationHeightMargin }}
                                 onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
@@ -205,7 +204,7 @@ export default function Board() {
                         </Text>
                         <TouchableOpacity 
                             onPress={() => openItem(item, SheetComponents.ItemForm)}
-                            style={{ backgroundColor: appleBlue, width: `92%`, padding: 1, borderRadius: borderRadius - 3 }}
+                            style={{ backgroundColor: colors.appleBlue, width: `92%`, padding: 1, borderRadius: borderRadius - 3 }}
                         >
                             <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
                                 + Add Item
@@ -257,8 +256,7 @@ export default function Board() {
             <BottomSheetView style={boardStyles.contentContainer}>
                 <>
                     {selected != null ? <>
-                        {sheetComponent == SheetComponents.ItemForm && <ItemForm />}
-                        {sheetComponent == SheetComponents.Item && <ItemDetailView selected={selected} />}
+                        <ItemView isForm={true} selected={selected} />
                     </> : <></>}
                 </>
             </BottomSheetView>

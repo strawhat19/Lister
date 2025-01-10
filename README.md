@@ -25,6 +25,8 @@ npx expo
 
 TO UPDATE
 eas update
+OR
+enable auto update on every commit in https://expo.dev/
 ```
 
 ## Table of Contents  

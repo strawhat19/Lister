@@ -1,13 +1,13 @@
-import { boardStyles } from './styles';
+import { boardStyles } from '../styles';
 import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
-import { VertImageCard } from '@/shared/types/types';
+import { ItemType } from '@/shared/types/types';
 import { Animated, TouchableOpacity } from 'react-native';
 import CustomImage from '@/components/custom-image/custom-image';
-import { appleBlue, Text, View, borderRadius } from '@/components/theme/Themed';
+import { Text, View, borderRadius } from '@/components/theme/Themed';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 
-export default function Item({ item, drag, isActive, fadeAnim, openItem, closeBottomSheet }: any | RenderItemParams<VertImageCard>) {
+export default function Item({ item, drag, isActive, fadeAnim, openItem, closeBottomSheet }: any | RenderItemParams<ItemType>) {
     let { selected } = useContext<any>(SharedContext);
 
     return (
@@ -20,7 +20,7 @@ export default function Item({ item, drag, isActive, fadeAnim, openItem, closeBo
             >
                 <Animated.View
                     id={`card-${item?.id}`}
-                    style={{ flex: 1, width: `100%`, backgroundColor: appleBlue, borderRadius, opacity: fadeAnim }}
+                    style={{ flex: 1, width: `100%`, backgroundColor: item?.backgroundColor, borderRadius, opacity: fadeAnim }}
                 >
                     <View style={{ ...boardStyles.card, backgroundColor: item?.backgroundColor }}>
                         <View style={boardStyles.cardImageContainer}>

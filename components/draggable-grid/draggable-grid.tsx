@@ -1,17 +1,17 @@
 import React from 'react';
 import * as Haptics from 'expo-haptics';
 import DraggableItem from './draggable-item';
+import { colors, Text } from '../theme/Themed';
 import { MARGIN, SIZE } from '@/shared/variables';
 import { useSharedValue } from 'react-native-reanimated';
 import { generateUniqueItems, mobile } from '@/shared/variables';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { appleBlue, appleGreen, appleRed, Text } from '@/components/theme/Themed';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-const colors = [appleBlue, appleRed, appleGreen];
 const items = generateUniqueItems(35, { label: `Drag` });
-const getBGPatternColor = (idx: number) => colors[idx % colors.length];
+const colorsToUse = [colors.appleBlue, colors.appleRed, colors.appleGreen];
+const getBGPatternColor = (idx: number) => colorsToUse[idx % colorsToUse.length];
 
 export default function DraggableGrid() {
     const positions = useSharedValue(

@@ -1,20 +1,16 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { web } from '@/shared/variables';
-import { Pressable } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { useColorScheme } from '@/components/theme/useColorScheme';
-import { appleBlue, Colors, View } from '@/components/theme/Themed';
+import { colors, View } from '@/components/theme/Themed';
 import { useClientOnlyValue } from '@/components/theme/useClientOnlyValue';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
         tabBarInactiveTintColor: `white`,
-        tabBarActiveTintColor: appleBlue,
+        tabBarActiveTintColor: colors.appleBlue,
         headerShown: useClientOnlyValue(false, true),
         headerStyle: {
           elevation: 0, // Remove shadow on Android
@@ -51,7 +47,7 @@ export default function TabLayout() {
                       <FontAwesome
                         size={18}
                         name={`chevron-left`}
-                        color={Colors[colorScheme ?? `dark`].text}
+                        color={ThemedColors[colorScheme ?? `dark`].text}
                         style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                       />
                     )}
@@ -61,7 +57,7 @@ export default function TabLayout() {
                       <FontAwesome
                         size={18}
                         name={`chevron-right`}
-                        color={Colors[colorScheme ?? `dark`].text}
+                        color={ThemedColors[colorScheme ?? `dark`].text}
                         style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                       />
                     )}

@@ -16,6 +16,7 @@ export const localDevelopment = process.env.NODE_ENV == `development`;
 export const urlHostIncludes = (string) => window.location.host.includes(string);
 export const devEnv = (web() ? (urlHostIncludes(`local`) || urlHostIncludes(`:80`)) : localDevelopment) ? showDevFeatures : false;
 
+export const capWords = (str: string) => str.replace(/\b\w/g, (match) => match.toUpperCase());
 export const getNumberFromString = (string: string) => parseInt((string.match(/\d+/) as any)[0]);
 export const capitalizeAllWords = (string: string) => string.replace(/(?:^|\s)\w/g, (match) => match.toUpperCase());
 

@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 
 import { createContext, useState } from 'react';
 import { View } from '@/components/theme/Themed';
-import { VertImageCard } from '@/shared/types/types';
+import { ItemType } from '@/shared/types/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export const SharedContext = createContext({});
@@ -14,7 +14,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
 
   let [indx, setIndx] = useState(0);
   let [blur, setBlur] = useState<any>(100);
-  let [selected, setSelected] = useState<VertImageCard | null>(null);
+  let [selected, setSelected] = useState<ItemType | null>(null);
 
   return (
     <SharedContext.Provider 

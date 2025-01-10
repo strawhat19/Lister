@@ -1,6 +1,6 @@
 import { web } from '@/shared/variables';
 import { StyleSheet } from 'react-native';
-import { appleBlue, borderRadius } from '@/components/theme/Themed';
+import { borderRadius, colors } from '@/components/theme/Themed';
 
 export const cardImageWidth = web() ? `25%` : `33%`;
 
@@ -34,8 +34,8 @@ export const boardStyles = StyleSheet.create({
         overflow: `hidden`,
         flexDirection: `row`,
         alignItems: 'center',
-        backgroundColor: appleBlue,
         justifyContent: 'flex-start',
+        backgroundColor: colors.appleBlue,
     },
     absolute: {
         position: 'absolute',

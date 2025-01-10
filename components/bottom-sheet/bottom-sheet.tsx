@@ -1,4 +1,4 @@
-import { appleGreen } from '@/components/theme/Themed';
+import { colors } from '@/components/theme/Themed';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { forwardRef, useCallback, useImperativeHandle } from 'react';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   line: {
     width: 75,
     height: 4,
-    backgroundColor: appleGreen,
+    backgroundColor: colors.appleGreen,
     alignSelf: 'center',
     marginVertical: 15,
     borderRadius: 3,

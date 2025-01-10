@@ -11,13 +11,15 @@ import { Text as DefaultText, View as DefaultView } from 'react-native';
 export const borderRadius = 10;
 
 // Colors
-export const appleBlue = `#007AFF`;
-export const appleGreen = `#34C759`;
-export const applePurple = `#5856D6`;
-export const appleYellow = `#FFCC00`;
-export const appleGreenMint = `#AAF0D1`;
-export const appleGreenShade = `rgba(0, 125, 27, 1)`;
-export const appleRed = web() ? `rgb(212 67 59)` : `#FF3B30`;
+export const colors = {
+  appleBlue: `#007AFF`,
+  appleGreen: `#34C759`,
+  applePurple: `#5856D6`,
+  appleYellow: `#FFCC00`,
+  appleGreenMint: `#AAF0D1`,
+  appleGreenShade: `rgba(0, 125, 27, 1)`,
+  appleRed: web() ? `rgb(212 67 59)` : `#FF3B30`,
+}
 
 export const paperColor = `#f0f0f0`;
 export const tintColorDark = `#fff`;
@@ -58,7 +60,7 @@ export const defaultTabStyles = {
   },
 }
 
-export const Colors = {
+export const ThemedColors = {
   light: {
     text: '#000',
     background: '#fff',
@@ -85,7 +87,7 @@ export type ViewProps = ThemeProps & DefaultView['props'];
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  colorName: keyof typeof ThemedColors.light & keyof typeof ThemedColors.dark
 ) {
   const theme = useColorScheme() ?? 'dark';
   const colorFromProps = props[theme];
@@ -93,7 +95,7 @@ export function useThemeColor(
   if (colorFromProps) {
     return colorFromProps;
   } else {
-    return Colors[theme][colorName];
+    return ThemedColors[theme][colorName];
   }
 }
 

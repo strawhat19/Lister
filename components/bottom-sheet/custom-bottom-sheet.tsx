@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useRef, useState } from 'react';
 import CustomImage from '@/components/custom-image/custom-image';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { appleGreen, Text, vertImages } from '@/components/theme/Themed';
+import { colors, Text, vertImages } from '@/components/theme/Themed';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetRefProps, MAX_TRANSLATE_Y } from './bottom-sheet';
 
@@ -53,7 +53,7 @@ export default function CustomBottomSheet() {
           <BlurView intensity={blurIntensity} style={[blurStyles.blurContainer, {opacity: 1}]} />
         </View>
         <BottomSheet ref={ref} onDragPercentageChange={handleDragPercentageChange}>
-          <View style={{ flex: 1, width: `100%`, backgroundColor: appleGreen, justifyContent: `center`, alignItems: `center` }}>
+          <View style={{ flex: 1, width: `100%`, backgroundColor: colors.appleGreen, justifyContent: `center`, alignItems: `center` }}>
             <Text style={{ fontWeight: `bold`, fontSize: 20 }}>
               Profile
             </Text>
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     minWidth: `100%`,
     alignItems: `center`,
     justifyContent: `center`,
-    backgroundColor: appleGreen,
+    backgroundColor: colors.appleGreen,
   },
   buttonText: {
     fontSize: 16,

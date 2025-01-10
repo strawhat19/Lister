@@ -1,3 +1,5 @@
+import { colors } from '@/components/theme/Themed';
+
 export type Type = {
     type: Types; 
 }
@@ -31,20 +33,26 @@ export class ListColumn {
     id: any;
     name: string;
     category: string;
-    items: VertImageCard[];
+    items: ItemType[];
 }
 
-export class VertImageCard {
+export class ItemViewType {
+    isForm: boolean = true; 
+    selected: ItemType | null;
+    backgroundColor?: keyof typeof colors | string = `appleBlue`;
+}
+
+export class ItemType {
     id: any;
     key: any;
     image: any;
     listID: any;
     name: string = ``;
     fontColor?: string;
-    backgroundColor: any;
     summary: string = ``;
     description: string = ``;
-    constructor(data: Partial<VertImageCard>) {
+    backgroundColor?: keyof typeof colors | string = `appleBlue`;
+    constructor(data: Partial<ItemType>) {
         Object.assign(this, data);
     }
 }

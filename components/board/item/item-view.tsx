@@ -1,20 +1,32 @@
 
 import React from 'react';
-import { web } from '@/shared/variables';
 import { Animated } from 'react-native';
+import { web } from '@/shared/variables';
+import { ItemViewType } from '@/shared/types/types';
 import { Text, View } from '@/components/theme/Themed';
-import { boardStyles, cardedBorderRight } from './styles';
 import { ScrollView } from 'react-native-gesture-handler';
+import { boardStyles, cardedBorderRight } from '../styles';
 import CustomImage from '@/components/custom-image/custom-image';
 
-export default function ItemDetailView({ selected }: any) {
+export default function ItemView({ 
+    isForm, 
+    selected, 
+    backgroundColor, 
+}: ItemViewType) {
+    const itemFontStyles = { ...selected.fontColor && ({color: selected.fontColor}) };
     return (
         <>
             <Animated.View 
                 id={`sheetCard`} 
-                style={{ ...boardStyles.card, height: web() ? 500 : 280, width: `100%`, backgroundColor: selected.backgroundColor }}
+                style={{ 
+                    ...boardStyles.card, 
+                    width: `100%`, 
+                    height: web() ? 500 : 280, 
+                    backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
+                }}
             >
                 <View 
+                    id={`itemImage_${selected.id}`}
                     style={{ 
                         ...boardStyles.cardImageContainer, 
                         ...(web() ? {width: `50%`, alignItems: `center`} : {width: `50%`}) 
@@ -30,17 +42,17 @@ export default function ItemDetailView({ selected }: any) {
                         }} 
                     />
                 </View>
-                <View style={{ ...boardStyles.cardRight }}>
-                    <Text style={{ ...boardStyles.cardTitle, ...selected.fontColor && ({color: selected.fontColor}) }}>
+                <View id={`itemTitle_${selected.id}`} style={{ ...boardStyles.cardRight }}>
+                    <Text id={`itemName_${selected.id}`} style={{ ...boardStyles.cardTitle, ...itemFontStyles }}>
                         {selected.name}
                     </Text>
-                    <Text style={{ ...boardStyles.cardDescription, ...selected.fontColor && ({color: selected.fontColor}) }}>
+                    <Text id={`itemSummary_${selected.id}`} style={{ ...boardStyles.cardDescription, ...itemFontStyles }}>
                         {selected.summary}
                     </Text>
                 </View>
             </Animated.View>
-            <ScrollView style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: 15 }}>
-                <Text style={{ ...boardStyles.cardDescription, ...selected.fontColor && ({color: selected.fontColor}) }}>
+            <ScrollView id={`itemDetails_${selected.id}`} style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: 15 }}>
+                <Text id={`itemDescription_${selected.id}`} style={{ ...boardStyles.cardDescription, ...itemFontStyles }}>
                     {selected.description}
                 </Text>
             </ScrollView>

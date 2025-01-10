@@ -1,4 +1,4 @@
-import { styles } from './board';
+import { boardStyles } from './styles';
 import { state } from '@/shared/state';
 import React, { useContext } from 'react';
 import { VertImageCard } from '@/common/types';
@@ -15,22 +15,22 @@ export default function Item({ item, drag, isActive, fadeAnim, openItem, closeBo
             <TouchableOpacity
                 onLongPress={drag}
                 disabled={isActive}
-                style={styles.rowItem}
+                style={boardStyles.rowItem}
                 onPress={() => selected != null ? closeBottomSheet() : openItem(item)}
             >
                 <Animated.View
                     id={`card-${item?.id}`}
                     style={{ flex: 1, width: `100%`, backgroundColor: appleBlue, borderRadius, opacity: fadeAnim }}
                 >
-                    <View style={{ ...styles.card, backgroundColor: item?.backgroundColor }}>
-                        <View style={styles.cardImageContainer}>
-                            <CustomImage alt={item?.name} source={{ uri: item?.image }} style={styles.cardImage} />
+                    <View style={{ ...boardStyles.card, backgroundColor: item?.backgroundColor }}>
+                        <View style={boardStyles.cardImageContainer}>
+                            <CustomImage alt={item?.name} source={{ uri: item?.image }} style={boardStyles.cardImage} />
                         </View>
-                        <View style={styles.cardRight}>
-                            <Text style={{ ...styles.cardTitle, ...item?.fontColor && ({ color: item?.fontColor }) }}>
+                        <View style={boardStyles.cardRight}>
+                            <Text style={{ ...boardStyles.cardTitle, ...item?.fontColor && ({ color: item?.fontColor }) }}>
                                 {item?.name}
                             </Text>
-                            <Text style={{ ...styles.cardDescription, ...item?.fontColor && ({ color: item?.fontColor }) }}>
+                            <Text style={{ ...boardStyles.cardDescription, ...item?.fontColor && ({ color: item?.fontColor }) }}>
                                 {item?.summary}
                             </Text>
                         </View>

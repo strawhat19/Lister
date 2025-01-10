@@ -2,6 +2,7 @@ import Item from './item';
 import ItemForm from './item-form';
 import { BlurView } from 'expo-blur';
 import { web } from '@/shared/shared';
+import { boardStyles } from './styles';
 import { state } from '@/shared/state';
 import * as Haptics from 'expo-haptics';
 import ItemDetailView from './item-detail-view';
@@ -14,8 +15,8 @@ import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { appleBlue, Text, View, borderRadius } from '@/components/Themed';
 import { ListColumn, SheetComponents, VertImageCard } from '@/common/types';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
+import { Animated, TouchableOpacity, Vibration, useWindowDimensions } from 'react-native';
 import Carousel, { Pagination, ICarouselInstance } from 'react-native-reanimated-carousel';
-import { Animated, TouchableOpacity, Vibration, StyleSheet, useWindowDimensions } from 'react-native';
 
 export const gridSpacing = 15;
 export const animationDuration = 300;
@@ -193,20 +194,20 @@ export default function Board() {
                         </PanGestureHandler>
                     ) : (
                         <View style={{ width: `100%`, height: height - paginationHeightMargin, paddingTop: 35 }}>
-                            <Text style={[styles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
+                            <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
                                 No Items Yet
                             </Text>
                         </View>
                     )}
                     <View id={`${item.id}-footer`} style={{ paddingTop: 10, marginTop: -35, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
-                        <Text style={[styles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
+                        <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
                             {item?.name}    
                         </Text>
                         <TouchableOpacity 
                             onPress={() => openItem(item, SheetComponents.ItemForm)}
                             style={{ backgroundColor: appleBlue, width: `92%`, padding: 1, borderRadius: borderRadius - 3 }}
                         >
-                            <Text style={[styles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
+                            <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
                                 + Add Item
                             </Text>
                         </TouchableOpacity>
@@ -230,7 +231,7 @@ export default function Board() {
         <Animated.View 
             id={`blurBGContainer`} 
             style={[
-                styles.absolute, 
+                boardStyles.absolute, 
                 { 
                     pointerEvents: `none`, 
                     opacity: blurBGContainerOpacity, 
@@ -238,7 +239,7 @@ export default function Board() {
                 },
             ]}
         >
-            {web() ? <></> : <BlurView id={`blurBG`} intensity={blur} tint={`dark`} style={styles.absolute} />}
+            {web() ? <></> : <BlurView id={`blurBG`} intensity={blur} tint={`dark`} style={boardStyles.absolute} />}
         </Animated.View>
 
         <BottomSheet
@@ -249,11 +250,11 @@ export default function Board() {
             onClose={closeBottomSheet}
             enableHandlePanningGesture={!web()}
             enableContentPanningGesture={!web()}
-            handleIndicatorStyle={styles.handleStyle} // Hide handle on web
+            handleIndicatorStyle={boardStyles.handleStyle} // Hide handle on web
             enablePanDownToClose={true} // Only enable drag to close on mobile
-            backgroundStyle={{ ...styles.bottomSheetBackground, ...(selected != null && {backgroundColor: selected.backgroundColor}) }}
+            backgroundStyle={{ ...boardStyles.bottomSheetBackground, ...(selected != null && {backgroundColor: selected.backgroundColor}) }}
         >
-            <BottomSheetView style={styles.contentContainer}>
+            <BottomSheetView style={boardStyles.contentContainer}>
                 <>
                     {selected != null ? <>
                         {sheetComponent == SheetComponents.ItemForm && <ItemForm />}
@@ -264,99 +265,3 @@ export default function Board() {
         </BottomSheet>
     </>
 }
-
-export const cardedBorder = {
-    borderTopLeftRadius: borderRadius,
-    borderBottomLeftRadius: borderRadius,
-}
-
-export const cardedBorderRight = {
-    borderTopRightRadius: borderRadius,
-    borderBottomRightRadius: borderRadius,
-}
-
-export const styles = StyleSheet.create({
-    rowItem: {
-        width: `100%`,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    text: {
-        color: "white",
-        fontSize: 24,
-        fontWeight: "bold",
-        textAlign: "center",
-    },
-    card: {
-        gap: 15,
-        padding: 0,
-        borderRadius,
-        display: 'flex',
-        overflow: `hidden`,
-        flexDirection: `row`,
-        alignItems: 'center',
-        backgroundColor: appleBlue,
-        justifyContent: 'flex-start',
-    },
-    absolute: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        flex: 1,
-    },
-    handleStyle: {
-        width: 75,
-        height: 4,
-        borderRadius: 3,
-        backgroundColor: 'black',
-    },
-    bottomSheetBackground: {
-        backgroundColor: 'black',
-    },
-    contentContainer: {
-        flex: 1,
-        paddingTop: 15,
-        paddingLeft: 15,
-        paddingRight: 15,
-        alignItems: 'center',
-    },
-    wrapper: {
-        gap: 15,
-        padding: 16,
-    },
-    cardImageContainer: {
-        margin: 0,
-        width: cardImageWidth,
-        backgroundColor: `transparent`,
-    },
-    cardRight: {
-        gap: 15,
-        flex: 1,
-        paddingTop: 30,
-        display: `flex`,
-        paddingBottom: 30,
-        flexDirection: `column`,
-        backgroundColor: `transparent`,
-    },
-    cardTitle: {
-        fontSize: 20,
-        color: 'white',
-        fontWeight: 'bold',
-    },
-    cardDescription: {
-        fontSize: 16,
-        color: 'white',
-        display: `flex`,
-        maxWidth: `95%`,
-        flexWrap: `wrap`,
-    },
-    cardImage: {
-        flex: 1,
-        margin: 0,
-        ...cardedBorder,
-        ...(web() && {
-            maxHeight: 500,
-            maxWidth: `auto`,
-        })
-    },
-})

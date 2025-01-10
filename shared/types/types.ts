@@ -42,6 +42,18 @@ export class ItemViewType {
     backgroundColor?: keyof typeof colors | string = `appleBlue`;
 }
 
+export class CustomImageType {
+    alt: string;
+    style?: any;
+    source: any;
+    effect: any = `blur`; 
+    id?: any = `customImageID`;
+    width: number | string = 750; 
+    height: number | string = 1260;
+    className: string = `customImageClass`;
+    useReactLazyLoadOnMobile: boolean = false;
+}
+
 export class ItemType {
     id: any;
     key: any;

@@ -12,7 +12,7 @@ import React, { useContext, useRef, useState } from 'react';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { colors, Text, View, borderRadius } from '@/components/theme/Themed';
-import { ListColumn, SheetComponents, ItemType } from '@/shared/types/types';
+import { ColumnType, SheetComponents, ItemType } from '@/shared/types/types';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Animated, TouchableOpacity, Vibration, useWindowDimensions } from 'react-native';
 import Carousel, { Pagination, ICarouselInstance } from 'react-native-reanimated-carousel';
@@ -44,7 +44,7 @@ export const defaultBoardColumns = [
 ]
 
 export default function Board() {
-    let { selected, setSelected } = useContext<any>(SharedContext);
+    let { selected, setSelected, isDragging, setDragging, carouselData, setCarouselData } = useContext<any>(SharedContext);
     
     const progress = useSharedValue<number>(0);
     const { width, height } = useWindowDimensions();
@@ -57,8 +57,6 @@ export default function Board() {
     const [blur,] = useState<any>(100);
     const [indx, setIndx] = useState(0);
     const [snapPoints] = useState([`1%`, `85%`]);
-    const [isDragging, setDragging] = useState(false);
-    const [carouselData, setCarouselData] = useState<ListColumn[]>(defaultBoardColumns);
     const [sheetComponent, setSheetComponent] = useState<SheetComponents>(SheetComponents.ItemForm);
 
     const onSheetChange = (index?: any) => {
@@ -179,7 +177,7 @@ export default function Board() {
                                 }}
                                 onDragEnd={({ data }) => {
                                     setDragging(false);
-                                    setCarouselData((prevCarouselData: ListColumn[]) => prevCarouselData.map((list: ListColumn) => {
+                                    setCarouselData((prevCarouselData: ColumnType[]) => prevCarouselData.map((list: ColumnType) => {
                                         if (list.id == data[0].listID) {
                                             return {
                                                 ...list,

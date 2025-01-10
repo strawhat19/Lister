@@ -29,7 +29,7 @@ export enum SheetComponents {
     ItemForm = `ItemForm`,
 }
 
-export class ListColumn {
+export class ColumnType {
     id: any;
     name: string;
     category: string;

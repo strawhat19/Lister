@@ -1,12 +1,12 @@
 import React from 'react';
 import * as Haptics from 'expo-haptics';
 import DraggableItem from './draggable-item';
-import { MARGIN, SIZE } from '@/shared/shared';
+import { MARGIN, SIZE } from '@/shared/variables';
 import { useSharedValue } from 'react-native-reanimated';
-import { generateUniqueItems, mobile } from '@/shared/shared';
+import { generateUniqueItems, mobile } from '@/shared/variables';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { appleBlue, appleGreen, appleRed, Text } from '@/components/Themed';
+import { appleBlue, appleGreen, appleRed, Text } from '@/components/theme/Themed';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const colors = [appleBlue, appleRed, appleGreen];

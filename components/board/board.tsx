@@ -1,19 +1,19 @@
 import Item from './item';
 import ItemForm from './item-form';
 import { BlurView } from 'expo-blur';
-import { web } from '@/shared/shared';
 import { boardStyles } from './styles';
-import { state } from '@/shared/state';
 import * as Haptics from 'expo-haptics';
+import { web } from '@/shared/variables';
 import ItemDetailView from './item-detail-view';
+import { SharedContext } from '@/shared/shared';
 import { runOnJS } from 'react-native-reanimated';
 import { useSharedValue } from 'react-native-reanimated';
+import { defaultVertImageCards } from '@/shared/database';
 import React, { useContext, useRef, useState } from 'react';
-import { defaultVertImageCards } from '@/common/sample-data';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { appleBlue, Text, View, borderRadius } from '@/components/Themed';
-import { ListColumn, SheetComponents, VertImageCard } from '@/common/types';
+import { appleBlue, Text, View, borderRadius } from '@/components/theme/Themed';
+import { ListColumn, SheetComponents, VertImageCard } from '@/shared/types/types';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Animated, TouchableOpacity, Vibration, useWindowDimensions } from 'react-native';
 import Carousel, { Pagination, ICarouselInstance } from 'react-native-reanimated-carousel';
@@ -45,7 +45,7 @@ export const defaultBoardColumns = [
 ]
 
 export default function Board() {
-    let { selected, setSelected } = useContext<any>(state);
+    let { selected, setSelected } = useContext<any>(SharedContext);
     
     const progress = useSharedValue<number>(0);
     const { width, height } = useWindowDimensions();

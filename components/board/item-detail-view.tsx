@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { web } from '@/shared/shared';
+import { web } from '@/shared/variables';
 import { Animated } from 'react-native';
-import { Text, View } from '@/components/Themed';
+import { Text, View } from '@/components/theme/Themed';
 import { boardStyles, cardedBorderRight } from './styles';
 import { ScrollView } from 'react-native-gesture-handler';
 import CustomImage from '@/components/custom-image/custom-image';

@@ -1,4 +1,4 @@
-import { Text, View } from '@/components/Themed';
+import { Text, View } from '@/components/theme/Themed';
 
 export default function Experiments() {
   return (

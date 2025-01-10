@@ -1,6 +1,6 @@
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import { DataNoID, Types } from '@/common/types';
+import { DataNoID, Types } from '@/shared/types/types';
 import { Dimensions, Alert, Platform } from 'react-native';
 
 export const COL = 5;
@@ -10,6 +10,11 @@ export const SIZE = Dimensions.get(`window`).width / COL - MARGIN;
 export const web = () => Platform.OS == `web`;
 export const mobile = () => Platform.OS != `web`;
 export const log = (string: string, data?: any) => Platform.OS == `web` ? console.log(string, data) : Alert.alert(string);
+
+export const showDevFeatures = true;
+export const localDevelopment = process.env.NODE_ENV == `development`;
+export const urlHostIncludes = (string) => window.location.host.includes(string);
+export const devEnv = (web() ? (urlHostIncludes(`local`) || urlHostIncludes(`:80`)) : localDevelopment) ? showDevFeatures : false;
 
 export const getNumberFromString = (string: string) => parseInt((string.match(/\d+/) as any)[0]);
 export const capitalizeAllWords = (string: string) => string.replace(/(?:^|\s)\w/g, (match) => match.toUpperCase());

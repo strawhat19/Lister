@@ -1,11 +1,11 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { web } from '@/shared/shared';
+import { web } from '@/shared/variables';
 import { Pressable } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { useColorScheme } from '@/components/useColorScheme';
-import { appleBlue, Colors, View } from '@/components/Themed';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { useColorScheme } from '@/components/theme/useColorScheme';
+import { appleBlue, Colors, View } from '@/components/theme/Themed';
+import { useClientOnlyValue } from '@/components/theme/useClientOnlyValue';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();

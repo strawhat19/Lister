@@ -1,6 +1,6 @@
-import { web } from '@/shared/shared';
+import { web } from '@/shared/variables';
 import { StyleSheet } from 'react-native';
-import { appleBlue, borderRadius } from '@/components/Themed';
+import { appleBlue, borderRadius } from '@/components/theme/Themed';
 
 export const cardImageWidth = web() ? `25%` : `33%`;
 

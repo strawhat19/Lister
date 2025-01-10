@@ -1,11 +1,11 @@
 import { BlurView } from 'expo-blur';
-import { web } from '@/shared/shared';
+import { web } from '@/shared/variables';
 import * as Haptics from 'expo-haptics';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useRef, useState } from 'react';
 import CustomImage from '@/components/custom-image/custom-image';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { appleGreen, Text, vertImages } from '@/components/Themed';
+import { appleGreen, Text, vertImages } from '@/components/theme/Themed';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetRefProps, MAX_TRANSLATE_Y } from './bottom-sheet';
 

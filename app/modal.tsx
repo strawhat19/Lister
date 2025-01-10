@@ -1,11 +1,11 @@
-import { state } from '@/shared/state';
+import { SharedContext } from '@/shared/shared';
 import { StatusBar } from 'expo-status-bar';
 import { useContext, useEffect } from 'react';
-import { Text, View } from '@/components/Themed';
+import { Text, View } from '@/components/theme/Themed';
 import { Platform, StyleSheet } from 'react-native';
 
 export default function ModalScreen({ children }: { children: React.ReactNode; }) {
-  let { setModalOpen } = useContext<any>(state);
+  let { setModalOpen } = useContext<any>(SharedContext);
 
   useEffect(() => {
     setModalOpen(true);

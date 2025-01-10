@@ -1,13 +1,13 @@
 import 'react-native-gesture-handler';
 
-import { View } from '@/components/Themed';
-import { VertImageCard } from '@/common/types';
 import { createContext, useState } from 'react';
+import { View } from '@/components/theme/Themed';
+import { VertImageCard } from '@/shared/types/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-export const state = createContext({});
+export const SharedContext = createContext({});
 
-export default function State({ children }: { children: React.ReactNode; }) {
+export default function Shared({ children }: { children: React.ReactNode; }) {
   let [user, setUser] = useState(null);
   let [beta, setBeta] = useState(false);
   let [modalOpen, setModalOpen] = useState(false);
@@ -17,7 +17,7 @@ export default function State({ children }: { children: React.ReactNode; }) {
   let [selected, setSelected] = useState<VertImageCard | null>(null);
 
   return (
-    <state.Provider 
+    <SharedContext.Provider 
       value={{ // Globally Shared State Data
         user, setUser, 
         beta, setBeta, 
@@ -32,6 +32,6 @@ export default function State({ children }: { children: React.ReactNode; }) {
           {children}
         </View>
       </GestureHandlerRootView>
-    </state.Provider>
+    </SharedContext.Provider>
   )
 }

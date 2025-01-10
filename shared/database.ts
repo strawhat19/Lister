@@ -1,4 +1,4 @@
-import { VertImageCard } from './types';
+import { VertImageCard } from './types/types';
 import { 
     appleRed, 
     appleBlue, 
@@ -9,7 +9,7 @@ import {
     appleGreenMint, 
     appleGreenShade, 
     defaultDarkTabBorderColor, 
-} from '@/components/Themed';
+} from '@/components/theme/Themed';
 
 export const defaultVertImageCards: VertImageCard[] = [
     new VertImageCard({

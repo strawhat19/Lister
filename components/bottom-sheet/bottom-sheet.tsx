@@ -1,4 +1,4 @@
-import { appleGreen } from '@/components/Themed';
+import { appleGreen } from '@/components/theme/Themed';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { forwardRef, useCallback, useImperativeHandle } from 'react';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';

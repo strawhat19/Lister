@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Text } from '@/components/Themed';
+import { Text } from '@/components/theme/Themed';
 
 export default function ItemForm({ }: any) {
     return (

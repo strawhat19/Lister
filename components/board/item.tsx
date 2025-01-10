@@ -1,14 +1,14 @@
 import { boardStyles } from './styles';
-import { state } from '@/shared/state';
 import React, { useContext } from 'react';
-import { VertImageCard } from '@/common/types';
+import { SharedContext } from '@/shared/shared';
+import { VertImageCard } from '@/shared/types/types';
 import { Animated, TouchableOpacity } from 'react-native';
 import CustomImage from '@/components/custom-image/custom-image';
-import { appleBlue, Text, View, borderRadius } from '@/components/Themed';
+import { appleBlue, Text, View, borderRadius } from '@/components/theme/Themed';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 
 export default function Item({ item, drag, isActive, fadeAnim, openItem, closeBottomSheet }: any | RenderItemParams<VertImageCard>) {
-    let { selected } = useContext<any>(state);
+    let { selected } = useContext<any>(SharedContext);
 
     return (
         <ScaleDecorator>

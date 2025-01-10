@@ -1,13 +1,13 @@
 import 'react-native-reanimated';
 
 import { useEffect } from 'react';
-import State from '@/shared/state';
+import Shared from '@/shared/shared';
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
-import { Themes } from '@/common/types';
+import { Themes } from '@/shared/types/types';
 import * as SplashScreen from 'expo-splash-screen';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { useColorScheme } from '@/components/useColorScheme';
+import { useColorScheme } from '@/components/theme/useColorScheme';
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 
 export {
@@ -50,13 +50,13 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   return (
-    <State>
+    <Shared>
       <ThemeProvider value={colorScheme === Themes.Dark ? DarkTheme : DarkTheme}>
         <Stack>
           <Stack.Screen name={`(tabs)`} options={{ headerShown: false }} />
           <Stack.Screen name={`modal`} options={{ presentation: `modal` }} />
         </Stack>
       </ThemeProvider>
-    </State>
+    </Shared>
   )
 }

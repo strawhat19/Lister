@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
-import { View } from '@/components/theme/Themed';
+import { colors, View } from '@/components/theme/Themed';
 import { paginationHeightMargin } from '@/shared/variables';
 import { Pagination } from 'react-native-reanimated-carousel';
 
-export default function SliderPagination({ progress, carouselRef }: any) {
-    let { carouselData } = useContext<any>(SharedContext);
+export default function SliderPagination({ carouselRef, backgroundColor = colors.columnBG }: any) {
+    let { progress, carouselData } = useContext<any>(SharedContext);
 
     const onPressPagination = (index: number) => {
         carouselRef.current?.scrollTo({
@@ -15,7 +15,7 @@ export default function SliderPagination({ progress, carouselRef }: any) {
     }
 
     return (
-        <View style={{ flex: 1, width: `100%`, marginTop: -1 * (paginationHeightMargin - 55), pointerEvents: `none` }}>
+        <View style={{ flex: 1, backgroundColor, width: `100%`, marginTop: -1 * (paginationHeightMargin - 55), pointerEvents: `none` }}>
             <Pagination.Basic
                 size={8}
                 data={carouselData}

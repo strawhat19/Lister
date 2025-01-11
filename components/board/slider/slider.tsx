@@ -1,22 +1,22 @@
 import Column from '../column/column';
-import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
+import React, { useContext, useRef } from 'react';
+import { colors } from '@/components/theme/Themed';
 import SliderPagination from './pagination/pagination';
-import Carousel from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
+import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
-export default function Slider({
-    width,
-    height,
-    progress,
-    openItem,
-    fadeAnim,
-    carouselRef,
-    swipeCarousel,
-    closeBottomSheet, 
-}: any) {
+export default function Slider({ backgroundColor = colors.columnBG }: any) {
     const scrollOffsetValue = useSharedValue<number>(0);
-    let { carouselData } = useContext<any>(SharedContext);
+    let { width, height, progress, fadeAnim, carouselData, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
+
+    const carouselRef = useRef<ICarouselInstance>(null);
+    const swipeCarousel = (translationX: number) => {
+        carouselRef.current?.scrollTo({
+            count: translationX > 0 ? -1 : 1,
+            animated: true,
+        })
+    }
 
     return (
         <>
@@ -28,22 +28,22 @@ export default function Slider({
                 data={carouselData}
                 pagingEnabled={true}
                 onProgressChange={progress}
-                style={{ backgroundColor: `black` }}
+                style={{ backgroundColor }}
                 defaultScrollOffsetValue={scrollOffsetValue}
                 renderItem={({ index, item }: any) => (
                     <Column
                         key={index}
                         item={item}
                         height={height}
-                        openItem={openItem}
                         fadeAnim={fadeAnim}
                         swipeCarousel={swipeCarousel}
+                        openBottomSheet={openBottomSheet}
                         closeBottomSheet={closeBottomSheet}
                     />
                 )}
             />
 
-            <SliderPagination progress={progress} carouselRef={carouselRef} />
+            <SliderPagination carouselRef={carouselRef} />
         </>
     )
 }

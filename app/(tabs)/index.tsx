@@ -1,7 +1,7 @@
-import Board from '@/components/board/board';
+import Slider from '@/components/board/slider/slider';
 
 export default function Home() {
   return (
-    <Board />
+    <Slider />
   )
 }

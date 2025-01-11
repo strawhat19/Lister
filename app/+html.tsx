@@ -1,4 +1,16 @@
+import { colors } from '@/components/theme/Themed';
 import { ScrollViewStyleReset } from 'expo-router/html';
+
+const responsiveBackground = `
+  body {
+    background: ${colors.columnBG};
+  }
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: ${colors.columnBG};
+    }
+  }
+`;
 
 // This file is web-only and used to configure the root HTML for every
 // web page during static rendering.
@@ -20,18 +32,9 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
         {/* Add any additional <head> elements that you want globally available on web... */}
       </head>
-      <body>{children}</body>
+      <body style={{ backgroundColor: colors.columnBG }}>
+        {children}
+      </body>
     </html>
   );
 }
-
-const responsiveBackground = `
-  body {
-    background: #000;
-  }
-  @media (prefers-color-scheme: dark) {
-    body {
-      background: #000;
-    }
-  }
-`;

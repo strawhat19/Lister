@@ -12,14 +12,12 @@ export default function ItemView({
     selected, 
     backgroundColor, 
 }: ItemViewType) {
-    const [isEditingName, setIsEditingName] = useState(false);
-    const [isEditingSummary, setIsEditingSummary] = useState(false);
-    const [isEditingDescription, setIsEditingDescription] = useState(false);
-
     const [name, setName] = useState(selected.name);
     const [summary, setSummary] = useState(selected.summary);
+    const [isEditingName, setIsEditingName] = useState(false);
+    const [isEditingSummary, setIsEditingSummary] = useState(false);
     const [description, setDescription] = useState(selected.description);
-
+    const [isEditingDescription, setIsEditingDescription] = useState(false);
     const itemFontStyles = { ...(selected.fontColor && { color: selected.fontColor }) };
 
     const handleToggleEdit = (field: string) => {

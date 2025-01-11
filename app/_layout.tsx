@@ -1,9 +1,9 @@
 import 'react-native-reanimated';
 
 import { useEffect } from 'react';
-import Shared from '@/shared/shared';
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
+import Shared from '@/shared/shared';
 import { Themes } from '@/shared/types/types';
 import * as SplashScreen from 'expo-splash-screen';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -24,6 +24,7 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -44,11 +45,6 @@ export default function RootLayout() {
     return null;
   }
   
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
   return (
     <Shared>
       <ThemeProvider value={colorScheme === Themes.Dark ? DarkTheme : DarkTheme}>

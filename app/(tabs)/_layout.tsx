@@ -1,36 +1,36 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { web } from '@/shared/variables';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { colors, View } from '@/components/theme/Themed';
 import { useClientOnlyValue } from '@/components/theme/useClientOnlyValue';
 
-export default function TabLayout() {
+export default function TabLayout({ backgroundColor = colors.columnBG }) {
   return (
     <Tabs
       screenOptions={{
         tabBarInactiveTintColor: `white`,
         tabBarActiveTintColor: colors.appleBlue,
         headerShown: useClientOnlyValue(false, true),
+        tabBarLabelStyle: {
+          fontWeight: 700,
+        },
         headerStyle: {
           elevation: 0, // Remove shadow on Android
           shadowOpacity: 0, // Remove shadow on iOS
-          backgroundColor: 'rgba(0, 0, 0, 1)', // Fully transparent background
+          backgroundColor, // Fully transparent background
         },
         tabBarStyle: {
           paddingTop: 5,
           minHeight: 60,
+          backgroundColor,
           paddingBottom: 10,
-          backgroundColor: web() ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 1)',
+          borderColor: `transparent`,
         },
-        tabBarLabelStyle: {
-          fontWeight: 700
-        }
       }}>
       <Tabs.Screen
         name={`index`}
         options={{
-          title: `Boards`,
+          title: `Columns`,
           headerTitleStyle: {
             fontSize: 20,
             color: 'white',

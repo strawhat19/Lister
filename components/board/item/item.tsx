@@ -7,8 +7,8 @@ import CustomImage from '@/components/custom-image/custom-image';
 import { Text, View, borderRadius } from '@/components/theme/Themed';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 
-export default function Item({ item, drag, isActive, fadeAnim, openItem, closeBottomSheet }: any | RenderItemParams<ItemType>) {
-    let { selected } = useContext<any>(SharedContext);
+export default function Item({ item, drag, isActive }: any | RenderItemParams<ItemType>) {
+    let { selected, fadeAnim, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
 
     return (
         <ScaleDecorator>
@@ -16,7 +16,7 @@ export default function Item({ item, drag, isActive, fadeAnim, openItem, closeBo
                 onLongPress={drag}
                 disabled={isActive}
                 style={boardStyles.rowItem}
-                onPress={() => selected != null ? closeBottomSheet() : openItem(item)}
+                onPress={() => selected != null ? closeBottomSheet() : openBottomSheet(item)}
             >
                 <Animated.View
                     id={`card-${item?.id}`}

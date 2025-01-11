@@ -5,14 +5,22 @@ import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
 import { TouchableOpacity } from 'react-native';
 import { runOnJS } from 'react-native-reanimated';
+import { ColumnType, ItemType } from '@/shared/types/types';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { gridSpacing, paginationHeightMargin } from '@/shared/variables';
 import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
-import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 
-export default function Column({ item, openItem, fadeAnim, swipeCarousel, closeBottomSheet, height }: ColumnType | any) {
-    let { isDragging, setDragging, setCarouselData } = useContext<any>(SharedContext);
+export default function Column({ item, backgroundColor = colors.columnBG, swipeCarousel }: ColumnType | any) {
+    let { 
+        height, 
+        fadeAnim, 
+        isDragging, 
+        setDragging, 
+        setCarouselData, 
+        openBottomSheet, 
+        closeBottomSheet, 
+    } = useContext<any>(SharedContext);
 
     const handleGesture = (event: any) => {
         'worklet';
@@ -23,7 +31,7 @@ export default function Column({ item, openItem, fadeAnim, swipeCarousel, closeB
     }
 
     return (
-        <>
+        <View id={`column_${item?.id}`} style={{ backgroundColor }}>
             {item?.items?.length > 0 ? (
                 <PanGestureHandler enabled={!isDragging} onGestureEvent={handleGesture}>
                     <DraggableFlatList
@@ -60,7 +68,7 @@ export default function Column({ item, openItem, fadeAnim, swipeCarousel, closeB
                                     drag={drag}
                                     isActive={isActive}
                                     fadeAnim={fadeAnim}
-                                    openItem={openItem}
+                                    openBottomSheet={openBottomSheet}
                                     closeBottomSheet={closeBottomSheet}
                                 />
                             )
@@ -74,12 +82,12 @@ export default function Column({ item, openItem, fadeAnim, swipeCarousel, closeB
                     </Text>
                 </View>
             )}
-            <View id={`${item.id}-footer`} style={{ paddingTop: 10, marginTop: -35, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
+            <View id={`${item.id}-footer`} style={{ backgroundColor, paddingTop: 10, marginTop: -35, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
                 <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
                     {item?.name}    
                 </Text>
                 <TouchableOpacity 
-                    onPress={() => openItem(item, SheetComponents.ItemForm)}
+                    onPress={() => openBottomSheet(item)}
                     style={{ backgroundColor: colors.appleBlue, width: `92%`, padding: 1, borderRadius: borderRadius - 3 }}
                 >
                     <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
@@ -87,6 +95,6 @@ export default function Column({ item, openItem, fadeAnim, swipeCarousel, closeB
                     </Text>
                 </TouchableOpacity>
             </View>
-        </>
+        </View>
     )
 }

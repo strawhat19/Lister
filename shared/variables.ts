@@ -1,5 +1,6 @@
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
+import { defaultVertImageCards } from './database';
 import { DataNoID, Types } from '@/shared/types/types';
 import { Dimensions, Alert, Platform } from 'react-native';
 
@@ -9,6 +10,12 @@ export const SIZE = Dimensions.get(`window`).width / COL - MARGIN;
 
 export const web = () => Platform.OS == `web`;
 export const mobile = () => Platform.OS != `web`;
+
+export const gridSpacing = 15;
+export const animationDuration = 300;
+export const paginationHeightMargin = 200;
+export const cardImageWidth = web() ? `25%` : `33%`;
+
 export const log = (string: string, data?: any) => Platform.OS == `web` ? console.log(string, data) : Alert.alert(string);
 
 export const showDevFeatures = true;
@@ -19,6 +26,32 @@ export const devEnv = (web() ? (urlHostIncludes(`local`) || urlHostIncludes(`:80
 export const capWords = (str: string) => str.replace(/\b\w/g, (match) => match.toUpperCase());
 export const getNumberFromString = (string: string) => parseInt((string.match(/\d+/) as any)[0]);
 export const capitalizeAllWords = (string: string) => string.replace(/(?:^|\s)\w/g, (match) => match.toUpperCase());
+
+export const animationOptions = {
+  useNativeDriver: true,
+  duration: animationDuration,
+}
+
+export const defaultBoardColumns = [
+  { 
+    name: `Items`, 
+    category: `Items`,
+    id: `1-listColumn-items`,
+    items: [defaultVertImageCards[0], defaultVertImageCards[1]],
+  }, 
+  { 
+    name: `Active`, 
+    category: `Active`,
+    id: `2-listColumn-active`,
+    items: [defaultVertImageCards[2], defaultVertImageCards[3]],
+  },
+  { 
+    name: `Complete`, 
+    category: `Complete`,
+    id: `3-listColumn-complete`,
+    items: [defaultVertImageCards[4], defaultVertImageCards[5], defaultVertImageCards[6]],
+  },
+]
 
 export const createXML = (xmlString: string) => { 
   let div = document.createElement(`div`); 

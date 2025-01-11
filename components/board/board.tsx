@@ -1,55 +1,22 @@
-import Column from './column/column';
-import { BlurView } from 'expo-blur';
-import { boardStyles } from './styles';
-import { web } from '@/shared/variables';
+import Slider from './slider/slider';
 import SlideUp from '../slide-up/slide-up';
 import { SharedContext } from '@/shared/shared';
-import { View } from '@/components/theme/Themed';
+import { animationOptions } from '@/shared/variables';
 import { SheetComponents } from '@/shared/types/types';
 import { useSharedValue } from 'react-native-reanimated';
-import { defaultVertImageCards } from '@/shared/database';
 import React, { useContext, useRef, useState } from 'react';
+import { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { Animated, Vibration, useWindowDimensions } from 'react-native';
-import Carousel, { Pagination, ICarouselInstance } from 'react-native-reanimated-carousel';
-
-export const gridSpacing = 15;
-export const animationDuration = 300;
-export const paginationHeightMargin = 200;
-export const cardImageWidth = web() ? `25%` : `33%`;
-
-export const defaultBoardColumns = [
-    { 
-        name: `Items`, 
-        category: `Items`,
-        id: `1-listColumn-items`,
-        items: [defaultVertImageCards[0], defaultVertImageCards[1]],
-    }, 
-    { 
-        name: `Active`, 
-        category: `Active`,
-        id: `2-listColumn-active`,
-        items: [defaultVertImageCards[2], defaultVertImageCards[3]],
-    },
-    { 
-        name: `Complete`, 
-        category: `Complete`,
-        id: `3-listColumn-complete`,
-        items: [defaultVertImageCards[4], defaultVertImageCards[5], defaultVertImageCards[6]],
-    },
-]
 
 export default function Board({  }: any) {
-    let { setSelected, carouselData } = useContext<any>(SharedContext);
+    let { setSelected } = useContext<any>(SharedContext);
     
+    const [indx, setIndx] = useState(0);
     const progress = useSharedValue<number>(0);
     const { width, height } = useWindowDimensions();
-    const scrollOffsetValue = useSharedValue<number>(0);
     const carouselRef = useRef<ICarouselInstance>(null);
     const fadeAnim = useRef(new Animated.Value(1)).current;
     const blurBGContainerOpacity = useRef(new Animated.Value(0)).current;
-
-    const [blur,] = useState<any>(100);
-    const [indx, setIndx] = useState(0);
     const [, setSheetComponent] = useState<SheetComponents>(SheetComponents.ItemForm);
 
     const onSheetChange = (index?: any) => {
@@ -65,13 +32,6 @@ export default function Board({  }: any) {
         setIndx(0);
         exitFadeBlur();
         setSelected(null);
-    }
-
-    const onPressPagination = (index: number) => {
-        carouselRef.current?.scrollTo({
-          count: index - progress.value,
-          animated: true,
-        });
     }
 
     const swipeCarousel = (translationX: number) => {
@@ -90,86 +50,45 @@ export default function Board({  }: any) {
 
     const enterFadeBlur = () => {
         Animated.timing(fadeAnim, {
-            toValue: 0.25,
-            duration: animationDuration,
-            useNativeDriver: true,
+            toValue: 0,
+            ...animationOptions,
         }).start();
         
         Animated.timing(blurBGContainerOpacity, {
             toValue: 1,
-            duration: animationDuration,
-            useNativeDriver: true,
+            ...animationOptions,
         }).start();
     }
 
     const exitFadeBlur = () => {
         Animated.timing(fadeAnim, {
             toValue: 1,
-            duration: animationDuration,
-            useNativeDriver: true,
+            ...animationOptions,
         }).start();
 
         Animated.timing(blurBGContainerOpacity, {
             toValue: 0,
-            duration: animationDuration,
-            useNativeDriver: true,
+            ...animationOptions,
         }).start();
     }
 
     return <>
-        <Carousel
-            loop={true}
+        <Slider
             width={width}
             height={height}
-            ref={carouselRef}
-            data={carouselData}
-            pagingEnabled={true}
-            onProgressChange={progress}
-            style={{ backgroundColor: `black` }}
-            defaultScrollOffsetValue={scrollOffsetValue}
-            renderItem={({ index, item }: any) => (
-                <Column
-                    key={index}
-                    item={item}
-                    height={height}
-                    openItem={openItem}
-                    fadeAnim={fadeAnim}
-                    swipeCarousel={swipeCarousel}
-                    closeBottomSheet={closeBottomSheet}
-                />
-            )}
+            progress={progress}
+            openItem={openItem}
+            fadeAnim={fadeAnim}
+            carouselRef={carouselRef}
+            swipeCarousel={swipeCarousel}
+            closeBottomSheet={closeBottomSheet} 
         />
-
-        <View style={{ flex: 1, width: `100%`, marginTop: -1 * (paginationHeightMargin - 55), pointerEvents: `none` }}>
-            <Pagination.Basic
-                size={8}
-                data={carouselData}
-                progress={progress}
-                onPress={onPressPagination}
-                containerStyle={{ gap: 10, }}
-                activeDotStyle={{ backgroundColor: `#fff` }}
-                dotStyle={{ backgroundColor: `rgba(255, 255, 255, 0.5)`, borderRadius: 40 }}
-            />
-        </View>
-
-        <Animated.View 
-            id={`blurBGContainer`} 
-            style={[
-                boardStyles.absolute, 
-                { 
-                    pointerEvents: `none`, 
-                    opacity: blurBGContainerOpacity, 
-                    ...(web() && { backgroundColor: `rgba(0, 0, 0, 0.4)` }), 
-                },
-            ]}
-        >
-            {web() ? <></> : <BlurView id={`blurBG`} intensity={blur} tint={`dark`} style={boardStyles.absolute} />}
-        </Animated.View>
 
         <SlideUp 
             indx={indx} 
             onSheetChange={onSheetChange} 
             closeBottomSheet={closeBottomSheet} 
+            blurBGContainerOpacity={blurBGContainerOpacity}
         />
     </>
 }

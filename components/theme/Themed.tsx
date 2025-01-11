@@ -3,7 +3,7 @@
  * https://docs.expo.io/guides/color-schemes/
 */
 
-import { web } from '@/shared/variables';
+import { Platform } from 'react-native';
 import { useColorScheme } from './useColorScheme';
 import { Text as DefaultText, View as DefaultView } from 'react-native';
 
@@ -18,7 +18,7 @@ export const colors = {
   appleYellow: `#FFCC00`,
   appleGreenMint: `#AAF0D1`,
   appleGreenShade: `rgba(0, 125, 27, 1)`,
-  appleRed: web() ? `rgb(212 67 59)` : `#FF3B30`,
+  appleRed: Platform.OS == `web` ? `rgb(212 67 59)` : `#FF3B30`,
 }
 
 export const paperColor = `#f0f0f0`;

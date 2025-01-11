@@ -5,8 +5,8 @@ import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
 import { TouchableOpacity } from 'react-native';
 import { runOnJS } from 'react-native-reanimated';
-import { gridSpacing, paginationHeightMargin } from '../board';
 import { PanGestureHandler } from 'react-native-gesture-handler';
+import { gridSpacing, paginationHeightMargin } from '@/shared/variables';
 import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
 import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
@@ -22,26 +22,12 @@ export default function Column({ item, openItem, fadeAnim, swipeCarousel, closeB
         runOnJS(swipeCarousel)(translationX);
     }
 
-    const ItemDraggable = ({ item, drag, isActive }: RenderItemParams<ItemType>) => {
-        return (
-            <Item
-                item={item}
-                drag={drag}
-                isActive={isActive}
-                fadeAnim={fadeAnim}
-                openItem={openItem}
-                closeBottomSheet={closeBottomSheet}
-            />
-        )
-    }
-
     return (
         <>
             {item?.items?.length > 0 ? (
                 <PanGestureHandler enabled={!isDragging} onGestureEvent={handleGesture}>
                     <DraggableFlatList
                         data={item?.items}
-                        renderItem={ItemDraggable}
                         keyExtractor={(item) => item?.key}
                         style={{ height: height - paginationHeightMargin }}
                         onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
@@ -66,6 +52,18 @@ export default function Column({ item, openItem, fadeAnim, swipeCarousel, closeB
                                 }
                                 return list;
                             }))
+                        }}
+                        renderItem={({ item, drag, isActive }: RenderItemParams<ItemType>) => {
+                            return (
+                                <Item
+                                    item={item}
+                                    drag={drag}
+                                    isActive={isActive}
+                                    fadeAnim={fadeAnim}
+                                    openItem={openItem}
+                                    closeBottomSheet={closeBottomSheet}
+                                />
+                            )
                         }}
                     />
                 </PanGestureHandler>

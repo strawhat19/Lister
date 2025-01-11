@@ -2,8 +2,8 @@ import 'react-native-gesture-handler';
 
 import { createContext, useState } from 'react';
 import { View } from '@/components/theme/Themed';
+import { defaultBoardColumns } from './variables';
 import { ColumnType, ItemType } from '@/shared/types/types';
-import { defaultBoardColumns } from '@/components/board/board';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export const SharedContext = createContext({});

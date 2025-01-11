@@ -3,7 +3,7 @@ import { boardStyles } from '../styles';
 import * as Haptics from 'expo-haptics';
 import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
-import { TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { runOnJS } from 'react-native-reanimated';
 import { ColumnType, ItemType } from '@/shared/types/types';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -14,9 +14,11 @@ import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flat
 export default function Column({ item, backgroundColor = colors.columnBG, swipeCarousel }: ColumnType | any) {
     let { 
         height, 
+        selected,
         fadeAnim, 
         isDragging, 
         setDragging, 
+        activeTopName,
         setCarouselData, 
         openBottomSheet, 
         closeBottomSheet, 
@@ -32,6 +34,21 @@ export default function Column({ item, backgroundColor = colors.columnBG, swipeC
 
     return (
         <View id={`column_${item?.id}`} style={{ backgroundColor }}>
+            <View style={titleRowStyles.titleRow}>
+                {selected == null && item?.items && item?.items.length > 0 ? (
+                    <Text style={titleRowStyles.subtitle}>
+                        {item?.category}
+                    </Text>
+                ) : <></>}
+                <Text style={[titleRowStyles.title, { flexBasis: selected != null ? `100%` : `50%` }]}>
+                    {selected == null ? item?.name : activeTopName}
+                </Text>
+                {selected == null && item?.items && item?.items.length > 0 ? (
+                    <Text style={titleRowStyles.subtitle}>
+                        {item?.items?.length + ` Item(s)`}
+                    </Text>
+                ) : <></>}
+            </View>
             {item?.items?.length > 0 ? (
                 <PanGestureHandler enabled={!isDragging} onGestureEvent={handleGesture}>
                     <DraggableFlatList
@@ -46,8 +63,8 @@ export default function Column({ item, backgroundColor = colors.columnBG, swipeC
                         contentContainerStyle={{ 
                             width: `100%`,
                             gap: gridSpacing - 2, 
-                            padding: gridSpacing,  
                             marginHorizontal: `auto`, 
+                            paddingHorizontal: gridSpacing,  
                         }}
                         onDragEnd={({ data }) => {
                             setDragging(false);
@@ -82,12 +99,9 @@ export default function Column({ item, backgroundColor = colors.columnBG, swipeC
                     </Text>
                 </View>
             )}
-            <View id={`${item.id}-footer`} style={{ backgroundColor, paddingTop: 10, marginTop: -35, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
-                <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
-                    {item?.name}    
-                </Text>
+            <View id={`${item.id}-footer`} style={{ backgroundColor, paddingTop: 10, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
                 <TouchableOpacity 
-                    onPress={() => openBottomSheet(item)}
+                    onPress={() => openBottomSheet(item, colors.appleBlue)}
                     style={{ backgroundColor: colors.appleBlue, width: `92%`, padding: 1, borderRadius: borderRadius - 3 }}
                 >
                     <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
@@ -98,3 +112,34 @@ export default function Column({ item, backgroundColor = colors.columnBG, swipeC
         </View>
     )
 }
+
+export const titleRowStyles = StyleSheet.create({
+    titleRow: {
+        width: `90%`, 
+        display: `flex`, 
+        flexWrap: `wrap`, 
+        flexDirection: `row`, 
+        alignItems: `center`,
+        marginHorizontal: `auto`, 
+        justifyContent: `space-between`,
+    },
+    title: { 
+        fontSize: 20, 
+        width: `auto`, 
+        paddingTop: 25, 
+        color: `white`, 
+        flexBasis: `50%`, 
+        paddingBottom: 15, 
+        fontWeight: `bold`, 
+        textAlign: `center`, 
+    },
+    subtitle: { 
+        fontSize: 16, 
+        width: `auto`, 
+        paddingTop: 25, 
+        color: `white`, 
+        flexBasis: `25%`, 
+        paddingBottom: 15, 
+        textAlign: `center`, 
+    },
+})

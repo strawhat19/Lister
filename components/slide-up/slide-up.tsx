@@ -2,17 +2,18 @@
 import { BlurView } from 'expo-blur';
 import { Animated } from 'react-native';
 import { web } from '@/shared/variables';
+import { colors } from '../theme/Themed';
 import { boardStyles } from '../board/styles';
 import ItemView from '../board/item/item-view';
 import { SharedContext } from '@/shared/shared';
 import React, { useContext, useRef, useState } from 'react';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
-export default function SlideUp({  }: any) {
+export default function SlideUp({ backgroundColor = colors.columnBG }: any) {
     let { indx, selected, onSheetChange, closeBottomSheet, blurBGContainerOpacity } = useContext<any>(SharedContext);
 
     const [blur,] = useState<any>(0);
-    const [snapPoints] = useState([`1%`, `85%`]);
+    const [snapPoints] = useState([`1%`, `90%`]);
     const bottomSheetRef = useRef<BottomSheet>(null);
 
     return (
@@ -24,7 +25,7 @@ export default function SlideUp({  }: any) {
                     { 
                         pointerEvents: `none`, 
                         opacity: blurBGContainerOpacity, 
-                        ...(web() && { backgroundColor: `rgba(0, 0, 0, 0.4)` }), 
+                        ...(web() && { backgroundColor: colors.columnBG }), 
                     },
                 ]}
             >
@@ -42,7 +43,7 @@ export default function SlideUp({  }: any) {
                 enablePanDownToClose={true} // Only enable drag to close on mobile
                 backgroundStyle={{ 
                     ...boardStyles.bottomSheetBackground, 
-                    ...(selected != null && {backgroundColor: selected.backgroundColor}) 
+                    ...(selected != null && {backgroundColor: selected.backgroundColor ? selected.backgroundColor : backgroundColor }) 
                 }}
             >
                 <BottomSheetView style={boardStyles.contentContainer}>

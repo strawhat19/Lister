@@ -7,10 +7,18 @@ import { useSharedValue } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 export default function Slider({ backgroundColor = colors.columnBG }: any) {
-    const scrollOffsetValue = useSharedValue<number>(0);
-    let { width, height, progress, fadeAnim, carouselData, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
-
     const carouselRef = useRef<ICarouselInstance>(null);
+    const scrollOffsetValue = useSharedValue<number>(0);
+    let { 
+        width, 
+        height, 
+        progress, 
+        fadeAnim, 
+        carouselData, 
+        openBottomSheet, 
+        closeBottomSheet, 
+    } = useContext<any>(SharedContext);
+
     const swipeCarousel = (translationX: number) => {
         carouselRef.current?.scrollTo({
             count: translationX > 0 ? -1 : 1,
@@ -27,8 +35,8 @@ export default function Slider({ backgroundColor = colors.columnBG }: any) {
                 ref={carouselRef}
                 data={carouselData}
                 pagingEnabled={true}
-                onProgressChange={progress}
                 style={{ backgroundColor }}
+                onProgressChange={progress}
                 defaultScrollOffsetValue={scrollOffsetValue}
                 renderItem={({ index, item }: any) => (
                     <Column

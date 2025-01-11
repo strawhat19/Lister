@@ -16,10 +16,12 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [user, setUser] = useState(null);
   let [beta, setBeta] = useState(false);
   let [blur, setBlur] = useState<any>(100);
+  let [slideIndex, setSlideIndex] = useState(0);
   let [modalOpen, setModalOpen] = useState(false);
   let [isDragging, setDragging] = useState(false);
   let [selected, setSelected] = useState<ItemType | null>(null);
   let [carouselData, setCarouselData] = useState<ColumnType[]>(defaultBoardColumns);
+  let [activeTopName, setActiveTopName] = useState(carouselData[slideIndex]?.name);
 
   const progress = useSharedValue<number>(0);
   const { width, height } = useWindowDimensions();
@@ -28,14 +30,24 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
 
   const onSheetChange = (index?: any) => {
     if (index === 0) {
+      setActiveTopName(carouselData[slideIndex]?.name);
       closeBottomSheet();
     }
   }
 
-  const openBottomSheet = (item?: any) => {
+  const openBottomSheet = (item?: any, backgroundColor?: any) => {
     enterFadeBlur();
     setIndx(1);
-    if (item) setSelected(item);
+    if (item) {
+      if (item.name) setActiveTopName(item.name);
+      if (backgroundColor) {
+        item = {
+          ...item,
+          backgroundColor,
+        }
+      }
+      setSelected(item);
+    }
     Vibration.vibrate(1);
   }
 
@@ -88,7 +100,9 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         selected, setSelected,
         isDragging, setDragging,
         modalOpen, setModalOpen,
+        slideIndex, setSlideIndex,
         carouselData, setCarouselData,
+        activeTopName, setActiveTopName,
       }}
     >
       <GestureHandlerRootView>

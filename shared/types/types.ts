@@ -32,6 +32,7 @@ export enum SheetComponents {
 export class ColumnType {
     id: any;
     name: string;
+    index: number;
     category: string;
     items: ItemType[];
 }

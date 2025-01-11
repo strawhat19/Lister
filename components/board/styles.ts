@@ -47,10 +47,10 @@ export const boardStyles = StyleSheet.create({
         width: 75,
         height: 4,
         borderRadius: 3,
-        backgroundColor: 'black',
+        backgroundColor: colors.columnBG,
     },
     bottomSheetBackground: {
-        backgroundColor: 'black',
+        backgroundColor: colors.columnBG,
     },
     contentContainer: {
         flex: 1,
@@ -79,12 +79,12 @@ export const boardStyles = StyleSheet.create({
     },
     cardTitle: {
         fontSize: 20,
-        color: 'white',
-        fontWeight: 'bold',
+        color: `white`,
+        fontWeight: `bold`,
     },
     cardDescription: {
         fontSize: 16,
-        color: 'white',
+        color: `white`,
         display: `flex`,
         maxWidth: `95%`,
         flexWrap: `wrap`,

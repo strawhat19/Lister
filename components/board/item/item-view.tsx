@@ -58,15 +58,15 @@ export default function ItemView({
                     <TouchableWithoutFeedback onPress={() => handleToggleEdit("name")}>
                         {isEditingName ? (
                             <TextInput
-                                id={`itemName_${selected.id}`}
-                                style={{ ...boardStyles.cardTitle, ...itemFontStyles }}
+                                autoFocus
                                 value={name}
                                 onChangeText={setName}
+                                id={`itemName_${selected.id}`}
                                 onBlur={() => setIsEditingName(false)}
-                                autoFocus
+                                style={{ ...boardStyles.cardTitle, ...itemFontStyles, fontSize: 22 }}
                             />
                         ) : (
-                            <Text id={`itemName_${selected.id}`} style={{ ...boardStyles.cardTitle, ...itemFontStyles }}>
+                            <Text id={`itemName_${selected.id}`} style={{ ...boardStyles.cardTitle, ...itemFontStyles, fontSize: 22 }}>
                                 {name}
                             </Text>
                         )}
@@ -75,15 +75,15 @@ export default function ItemView({
                     <TouchableWithoutFeedback onPress={() => handleToggleEdit("summary")}>
                         {isEditingSummary ? (
                             <TextInput
-                                id={`itemSummary_${selected.id}`}
-                                style={{ ...boardStyles.cardDescription, ...itemFontStyles }}
+                                autoFocus
                                 value={summary}
                                 onChangeText={setSummary}
+                                id={`itemSummary_${selected.id}`}
                                 onBlur={() => setIsEditingSummary(false)}
-                                autoFocus
+                                style={{ ...boardStyles.cardDescription, ...itemFontStyles, fontSize: 18, fontWeight: `bold` }}
                             />
                         ) : (
-                            <Text id={`itemSummary_${selected.id}`} style={{ ...boardStyles.cardDescription, ...itemFontStyles }}>
+                            <Text id={`itemSummary_${selected.id}`} style={{ ...boardStyles.cardDescription, ...itemFontStyles, fontSize: 18, fontWeight: `bold` }}>
                                 {summary}
                             </Text>
                         )}
@@ -91,20 +91,20 @@ export default function ItemView({
                 </View>
             </Animated.View>
 
-            <ScrollView id={`itemDetails_${selected.id}`} style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: 15 }}>
+            <ScrollView id={`itemDetails_${selected.id}`} scrollEnabled={description && typeof description == `string` && description.length >= 500} style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: 15 }}>
                 <TouchableWithoutFeedback onPress={() => handleToggleEdit("description")}>
                     {isEditingDescription ? (
                         <TextInput
-                            id={`itemDescription_${selected.id}`}
-                            style={{ ...boardStyles.cardDescription, ...itemFontStyles }}
+                            autoFocus
+                            multiline
                             value={description}
                             onChangeText={setDescription}
+                            id={`itemDescription_${selected.id}`}
                             onBlur={() => setIsEditingDescription(false)}
-                            multiline
-                            autoFocus
+                            style={{ ...boardStyles.cardDescription, ...itemFontStyles, fontSize: 16, fontWeight: `bold` }}
                         />
                     ) : (
-                        <Text id={`itemDescription_${selected.id}`} style={{ ...boardStyles.cardDescription, ...itemFontStyles }}>
+                        <Text id={`itemDescription_${selected.id}`} style={{ ...boardStyles.cardDescription, ...itemFontStyles, fontSize: 16, fontWeight: `bold` }}>
                             {description}
                         </Text>
                     )}

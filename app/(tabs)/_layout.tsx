@@ -1,10 +1,12 @@
-import React from 'react';
 import { Tabs } from 'expo-router';
+import React, { useContext } from 'react';
+import { SharedContext } from '@/shared/shared';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { colors, View } from '@/components/theme/Themed';
+import { colors, Text, View } from '@/components/theme/Themed';
 import { useClientOnlyValue } from '@/components/theme/useClientOnlyValue';
 
 export default function TabLayout({ backgroundColor = colors.columnBG }) {
+  let { activeTopName } = useContext<any>(SharedContext);
   return (
     <Tabs
       screenOptions={{
@@ -30,42 +32,9 @@ export default function TabLayout({ backgroundColor = colors.columnBG }) {
       <Tabs.Screen
         name={`index`}
         options={{
-          title: `Columns`,
-          headerTitleStyle: {
-            fontSize: 20,
-            color: 'white',
-            fontWeight: 'bold',
-          },
-          // headerShown: false,
+          title: `Boards`,
+          headerShown: false,
           tabBarIcon: ({ color }) => <FontAwesome name={`home`} color={color} size={18} />,
-          headerRight: () => (
-            // <Link href={`/modal`} asChild>
-              <>
-                <View style={{ display: `flex`, flexDirection: `row` }}>
-                  {/* <Pressable>
-                    {({ pressed }) => (
-                      <FontAwesome
-                        size={18}
-                        name={`chevron-left`}
-                        color={ThemedColors[colorScheme ?? `dark`].text}
-                        style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                      />
-                    )}
-                  </Pressable>
-                  <Pressable>
-                    {({ pressed }) => (
-                      <FontAwesome
-                        size={18}
-                        name={`chevron-right`}
-                        color={ThemedColors[colorScheme ?? `dark`].text}
-                        style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                      />
-                    )}
-                  </Pressable> */}
-                </View>
-              </>
-            // {/* </Link> */}
-          ),
         }}
       />
       <Tabs.Screen

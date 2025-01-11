@@ -1,8 +1,8 @@
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
 import { defaultVertImageCards } from './database';
-import { DataNoID, Types } from '@/shared/types/types';
 import { Dimensions, Alert, Platform } from 'react-native';
+import { ColumnType, DataNoID, Types } from '@/shared/types/types';
 
 export const COL = 5;
 export const MARGIN = 8;
@@ -32,22 +32,25 @@ export const animationOptions = {
   duration: animationDuration,
 }
 
-export const defaultBoardColumns = [
+export const defaultBoardColumns: ColumnType[] = [
   { 
+    index: 1, 
     name: `Items`, 
-    category: `Items`,
+    category: `To Do`,
     id: `1-listColumn-items`,
     items: [defaultVertImageCards[0], defaultVertImageCards[1]],
   }, 
   { 
+    index: 2, 
     name: `Active`, 
     category: `Active`,
     id: `2-listColumn-active`,
     items: [defaultVertImageCards[2], defaultVertImageCards[3]],
   },
   { 
+    index: 3, 
     name: `Complete`, 
-    category: `Complete`,
+    category: `Done`,
     id: `3-listColumn-complete`,
     items: [defaultVertImageCards[4], defaultVertImageCards[5], defaultVertImageCards[6]],
   },

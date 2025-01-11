@@ -15,14 +15,14 @@ export default function SliderPagination({ carouselRef, backgroundColor = colors
     }
 
     return (
-        <View style={{ flex: 1, backgroundColor, width: `100%`, marginTop: -1 * (paginationHeightMargin - 55), pointerEvents: `none` }}>
+        <View style={{ flex: 1, backgroundColor, width: `100%`, marginTop: -1 * (paginationHeightMargin - 130), pointerEvents: `none` }}>
             <Pagination.Basic
                 size={8}
                 data={carouselData}
                 progress={progress}
                 onPress={onPressPagination}
                 containerStyle={{ gap: 10, }}
-                activeDotStyle={{ backgroundColor: `#fff` }}
+                activeDotStyle={{ backgroundColor: `#ffffff` }}
                 dotStyle={{ backgroundColor: `rgba(255, 255, 255, 0.5)`, borderRadius: 40 }}
             />
         </View>

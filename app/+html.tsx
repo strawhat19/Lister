@@ -3,11 +3,11 @@ import { ScrollViewStyleReset } from 'expo-router/html';
 
 const responsiveBackground = `
   body {
-    background: ${colors.columnBG};
+    background: ${colors.mainBG};
   }
   @media (prefers-color-scheme: dark) {
     body {
-      background: ${colors.columnBG};
+      background: ${colors.mainBG};
     }
   }
 `;
@@ -32,7 +32,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
         {/* Add any additional <head> elements that you want globally available on web... */}
       </head>
-      <body style={{ backgroundColor: colors.columnBG }}>
+      <body style={{ backgroundColor: colors.mainBG }}>
         {children}
       </body>
     </html>

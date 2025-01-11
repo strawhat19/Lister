@@ -1,21 +1,30 @@
 import Item from '../item/item';
+import { BlurView } from 'expo-blur';
 import { boardStyles } from '../styles';
 import * as Haptics from 'expo-haptics';
 import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
-import { StyleSheet, TouchableOpacity } from 'react-native';
 import { runOnJS } from 'react-native-reanimated';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { ColumnType, ItemType } from '@/shared/types/types';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { gridSpacing, paginationHeightMargin } from '@/shared/variables';
+import { gridSpacing, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 
-export default function Column({ item, backgroundColor = colors.columnBG, swipeCarousel }: ColumnType | any) {
+export default function Column({ 
+    item, 
+    active, 
+    swipeCarousel, 
+    animatedAdjacent, 
+    blurIntensity = 0, 
+    backgroundColor = colors.mainBG, 
+}: ColumnType | any) {
     let { 
         height, 
         selected,
         fadeAnim, 
+        slideIndex,
         isDragging, 
         setDragging, 
         activeTopName,
@@ -33,7 +42,17 @@ export default function Column({ item, backgroundColor = colors.columnBG, swipeC
     }
 
     return (
-        <View id={`column_${item?.id}`} style={{ backgroundColor }}>
+        <View id={`column_${item?.id}`} style={[
+            {  
+                backgroundColor, 
+                opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.55,
+            }, 
+            animatedAdjacent,
+        ]}>
+            <BlurView
+                intensity={blurIntensity}
+                style={[StyleSheet.absoluteFill, { borderRadius: 12 }]}
+            />
             <View style={titleRowStyles.titleRow}>
                 {selected == null && item?.items && item?.items.length > 0 ? (
                     <Text style={titleRowStyles.subtitle}>
@@ -41,7 +60,11 @@ export default function Column({ item, backgroundColor = colors.columnBG, swipeC
                     </Text>
                 ) : <></>}
                 <Text style={[titleRowStyles.title, { flexBasis: selected != null ? `100%` : `50%` }]}>
-                    {selected == null ? item?.name : activeTopName}
+                    {selected == null ? (
+                        `${item?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
+                            toFixedWithoutRounding(slideIndex + 1, 2)
+                        )}`
+                    ) : activeTopName}
                 </Text>
                 {selected == null && item?.items && item?.items.length > 0 ? (
                     <Text style={titleRowStyles.subtitle}>
@@ -102,7 +125,7 @@ export default function Column({ item, backgroundColor = colors.columnBG, swipeC
             <View id={`${item.id}-footer`} style={{ backgroundColor, paddingTop: 10, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
                 <TouchableOpacity 
                     onPress={() => openBottomSheet(item, colors.appleBlue)}
-                    style={{ backgroundColor: colors.appleBlue, width: `92%`, padding: 1, borderRadius: borderRadius - 3 }}
+                    style={{ opacity: selected == null ? 1 : 0, backgroundColor: colors.appleBlue, width: `92%`, padding: 1, borderRadius: borderRadius - 3 }}
                 >
                     <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
                         + Add Item
@@ -121,6 +144,7 @@ export const titleRowStyles = StyleSheet.create({
         flexDirection: `row`, 
         alignItems: `center`,
         marginHorizontal: `auto`, 
+        backgroundColor: `transparent`,
         justifyContent: `space-between`,
     },
     title: { 

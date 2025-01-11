@@ -47,10 +47,10 @@ export const boardStyles = StyleSheet.create({
         width: 75,
         height: 4,
         borderRadius: 3,
-        backgroundColor: colors.columnBG,
+        backgroundColor: colors.mainBG,
     },
     bottomSheetBackground: {
-        backgroundColor: colors.columnBG,
+        backgroundColor: colors.mainBG,
     },
     contentContainer: {
         flex: 1,

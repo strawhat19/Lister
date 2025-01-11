@@ -98,6 +98,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         openBottomSheet,
         closeBottomSheet,
         selected, setSelected,
+        blurBGContainerOpacity,
         isDragging, setDragging,
         modalOpen, setModalOpen,
         slideIndex, setSlideIndex,

@@ -106,6 +106,15 @@ export const generateUniqueID = (existingIDs?: string[]) => {
   return newID;
 }
 
+export const toFixedWithoutRounding = (value, decimalPlaces) => {
+  const str = value.toString();
+  const [integerPart, fractionalPart] = str.split(`.`);
+  if (!fractionalPart || fractionalPart.length <= decimalPlaces) {
+    return str + (fractionalPart ? `` : `.`) + `0`.repeat(decimalPlaces - (fractionalPart?.length || 0));
+  }
+  return `${integerPart}.${fractionalPart.slice(0, decimalPlaces)}`;
+}
+
 export const getLocation = async () => {
   let { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== 'granted') {

@@ -25,16 +25,9 @@ export enum Themes {
 
 export enum SheetComponents {
     Item = `Item`,
+    Column = `Column`,
     Confirm = `Confirm`,
-    ItemForm = `ItemForm`,
-}
-
-export class ColumnType {
-    id: any;
-    name: string;
-    index: number;
-    category: string;
-    items: ItemType[];
+    ItemForm = `Item Form`,
 }
 
 export class ItemViewType {
@@ -55,6 +48,15 @@ export class CustomImageType {
     useReactLazyLoadOnMobile: boolean = false;
 }
 
+export class ColumnType {
+    id: any;
+    name: string;
+    index: number;
+    category: string;
+    items: ItemType[];
+    type?: string | SheetComponents = SheetComponents.Column;
+}
+
 export class ItemType {
     id: any;
     key: any;
@@ -64,6 +66,7 @@ export class ItemType {
     fontColor?: string;
     summary: string = ``;
     description: string = ``;
+    type?: string | SheetComponents = SheetComponents.Item;
     backgroundColor?: keyof typeof colors | string = `appleBlue`;
     constructor(data: Partial<ItemType>) {
         Object.assign(this, data);

@@ -5,12 +5,13 @@ import * as Haptics from 'expo-haptics';
 import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
 import { runOnJS } from 'react-native-reanimated';
+import Animated, { Layout } from 'react-native-reanimated';
 import { StyleSheet, TouchableOpacity } from 'react-native';
-import { ColumnType, ItemType } from '@/shared/types/types';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { gridSpacing, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
+import { gridSpacing, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export default function Column({ 
     item, 
@@ -27,6 +28,7 @@ export default function Column({
         slideIndex,
         isDragging, 
         setDragging, 
+        carouselData,
         activeTopName,
         setCarouselData, 
         openBottomSheet, 
@@ -91,26 +93,27 @@ export default function Column({
                         }}
                         onDragEnd={({ data }) => {
                             setDragging(false);
-                            setCarouselData((prevCarouselData: ColumnType[]) => prevCarouselData.map((list: ColumnType) => {
-                                if (list.id == data[0].listID) {
-                                    return {
-                                        ...list,
-                                        items: data,
-                                    }
+                            const updatedCarouselData = carouselData.map((list: ColumnType) => {
+                                if (list.id === data[0].listID) {
+                                    return { ...list, items: data };
                                 }
                                 return list;
-                            }))
+                            });
+                            setCarouselData(updatedCarouselData);
                         }}
                         renderItem={({ item, drag, isActive }: RenderItemParams<ItemType>) => {
                             return (
-                                <Item
-                                    item={item}
-                                    drag={drag}
-                                    isActive={isActive}
-                                    fadeAnim={fadeAnim}
-                                    openBottomSheet={openBottomSheet}
-                                    closeBottomSheet={closeBottomSheet}
-                                />
+                                <Animated.View layout={Layout.springify()}>
+                                    <Item
+                                        item={item}
+                                        drag={drag}
+                                        isActive={isActive}
+                                        fadeAnim={fadeAnim}
+                                        openBottomSheet={openBottomSheet}
+                                        closeBottomSheet={closeBottomSheet}
+                                        keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
+                                    />
+                                </Animated.View>
                             )
                         }}
                     />
@@ -124,7 +127,13 @@ export default function Column({
             )}
             <View id={`${item.id}-footer`} style={{ backgroundColor, paddingTop: 10, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
                 <TouchableOpacity 
-                    onPress={() => openBottomSheet(item, colors.appleBlue)}
+                    onPress={() => openBottomSheet(new ItemType({
+                        ...item,
+                        name: `+ Add Item`,
+                        type: SheetComponents.ItemForm,
+                        summary: `This is the Item Form`,
+                        description: `You can use this form to edit or create items`,
+                    }), colors.appleBlue)}
                     style={{ opacity: selected == null ? 1 : 0, backgroundColor: colors.appleBlue, width: `92%`, padding: 1, borderRadius: borderRadius - 3 }}
                 >
                     <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>

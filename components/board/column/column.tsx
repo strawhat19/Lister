@@ -14,7 +14,7 @@ import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flat
 import { gridSpacing, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export default function Column({ 
-    item, 
+    column, 
     active, 
     swipeCarousel, 
     animatedAdjacent, 
@@ -44,7 +44,7 @@ export default function Column({
     }
 
     return (
-        <View id={`column_${item?.id}`} style={[
+        <View id={`column_${column?.id}`} style={[
             {  
                 backgroundColor, 
                 opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.55,
@@ -56,28 +56,34 @@ export default function Column({
                 style={[StyleSheet.absoluteFill, { borderRadius: 12 }]}
             />
             <View style={titleRowStyles.titleRow}>
-                {selected == null && item?.items && item?.items.length > 0 ? (
+                {selected == null && column?.category && column?.category?.length > 0 ? (
                     <Text style={titleRowStyles.subtitle}>
-                        {item?.category}
+                        {column?.category}
                     </Text>
                 ) : <></>}
                 <Text style={[titleRowStyles.title, { flexBasis: selected != null ? `100%` : `50%` }]}>
                     {selected == null ? (
-                        `${item?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
+                        `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                             toFixedWithoutRounding(slideIndex + 1, 2)
                         )}`
                     ) : activeTopName}
                 </Text>
-                {selected == null && item?.items && item?.items.length > 0 ? (
-                    <Text style={titleRowStyles.subtitle}>
-                        {item?.items?.length + ` Item(s)`}
-                    </Text>
+                {selected == null ? (
+                    column?.items && column?.items.length > 0 ? (
+                        <Text style={titleRowStyles.subtitle}>
+                            {column?.items?.length + ` Item(s)`}
+                        </Text>
+                    ) : <>
+                        <Text style={titleRowStyles.subtitle}>
+                            0 Item(s)
+                        </Text>
+                    </>
                 ) : <></>}
             </View>
-            {item?.items?.length > 0 ? (
+            {column?.items?.length > 0 ? (
                 <PanGestureHandler enabled={!isDragging} onGestureEvent={handleGesture}>
                     <DraggableFlatList
-                        data={item?.items}
+                        data={column?.items}
                         keyExtractor={(item) => item?.key}
                         style={{ height: height - paginationHeightMargin }}
                         onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
@@ -119,16 +125,16 @@ export default function Column({
                     />
                 </PanGestureHandler>
             ) : (
-                <View style={{ width: `100%`, height: height - paginationHeightMargin, paddingTop: 35 }}>
+                <View style={{ width: `100%`, backgroundColor, height: height - paginationHeightMargin, paddingTop: 35 }}>
                     <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
                         No Items Yet
                     </Text>
                 </View>
             )}
-            <View id={`${item.id}-footer`} style={{ backgroundColor, paddingTop: 10, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
+            <View id={`${column.id}-footer`} style={{ backgroundColor, paddingTop: 10, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
                 <TouchableOpacity 
                     onPress={() => openBottomSheet(new ItemType({
-                        ...item,
+                        ...column,
                         name: `+ Add Item`,
                         type: SheetComponents.ItemForm,
                         summary: `This is the Item Form`,

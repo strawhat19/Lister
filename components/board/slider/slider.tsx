@@ -47,8 +47,8 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
                 pagingEnabled={selected == null}
                 defaultScrollOffsetValue={scrollOffsetValue}
                 modeConfig={{ parallaxScrollingScale: 0.99, parallaxAdjacentItemScale: 0.55 }}
-                renderItem={({ index, item }: any) => (
-                    <Slide index={index} item={item} swipeCarousel={swipeCarousel} />
+                renderItem={({ index, item: column }: any) => (
+                    <Slide index={index} column={column} swipeCarousel={swipeCarousel} />
                 )}
             />
 

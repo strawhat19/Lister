@@ -1,12 +1,12 @@
+import ItemForm from './item-form';
 import React, { useState } from 'react';
 import { web } from '@/shared/variables';
-import { ItemViewType, SheetComponents } from '@/shared/types/types';
-import { Text, View } from '@/components/theme/Themed';
+import { borderRadius, Text, View } from '@/components/theme/Themed';
 import { ScrollView } from 'react-native-gesture-handler';
 import { boardStyles, cardedBorderRight } from '../styles';
 import CustomImage from '@/components/custom-image/custom-image';
+import { ItemViewType, SheetComponents } from '@/shared/types/types';
 import { Animated, TextInput, TouchableWithoutFeedback } from 'react-native';
-import ItemForm from './item-form';
 
 export default function ItemView({ 
     isForm, 
@@ -46,8 +46,9 @@ export default function ItemView({
                         <View 
                             id={`itemImage_${selected.id}`}
                             style={{ 
+                                alignItems: `center`,
                                 ...boardStyles.cardImageContainer, 
-                                ...(web() ? { width: `50%`, alignItems: `center` } : { width: `50%` }) 
+                                minWidth: `50%`,
                             }}
                         >
                             <CustomImage 
@@ -57,6 +58,7 @@ export default function ItemView({
                                     ...cardedBorderRight,
                                     ...boardStyles.cardImage, 
                                     ...(web() && { width: `fit-content` }),
+                                    minWidth: `100%`,
                                 }} 
                             />
                         </View>

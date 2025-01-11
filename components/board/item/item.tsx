@@ -4,7 +4,7 @@ import { SharedContext } from '@/shared/shared';
 import { ItemType } from '@/shared/types/types';
 import { Animated, TouchableOpacity } from 'react-native';
 import CustomImage from '@/components/custom-image/custom-image';
-import { Text, View, borderRadius } from '@/components/theme/Themed';
+import { Text, View, borderRadius, itemCardHeight } from '@/components/theme/Themed';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 
 export default function Item({ item, drag, isActive }: any | RenderItemParams<ItemType>) {
@@ -22,7 +22,7 @@ export default function Item({ item, drag, isActive }: any | RenderItemParams<It
                     id={`card-${item?.id}`}
                     style={{ flex: 1, width: `100%`, backgroundColor: item?.backgroundColor, borderRadius, opacity: fadeAnim }}
                 >
-                    <View style={{ ...boardStyles.card, backgroundColor: item?.backgroundColor }}>
+                    <View style={{ ...boardStyles.card, backgroundColor: item?.backgroundColor, height: itemCardHeight, minHeight: itemCardHeight, maxHeight: itemCardHeight }}>
                         <View style={boardStyles.cardImageContainer}>
                             <CustomImage alt={item?.name} source={{ uri: item?.image }} style={boardStyles.cardImage} />
                         </View>

@@ -8,8 +8,9 @@ import { useColorScheme } from './useColorScheme';
 import { ThemeProps } from '@/shared/types/types';
 import { Text as DefaultText, View as DefaultView } from 'react-native';
 
-// Spacing
+// Sizing & Spacing
 export const borderRadius = 10;
+export const itemCardHeight = 150;
 
 // Colors
 export const colors = {

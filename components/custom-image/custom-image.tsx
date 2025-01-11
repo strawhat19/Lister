@@ -26,6 +26,6 @@ export default function CustomImage({
                 effect={effect} 
                 className={className} 
             />
-        ) : <Image id={id} alt={alt} source={source} style={style} />
+        ) : <Image id={id} alt={alt} source={src} style={style} />
     )
 }

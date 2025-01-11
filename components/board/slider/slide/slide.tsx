@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
 import { useAnimatedStyle } from 'react-native-reanimated';
 
-export default function Slide({ index, item, swipeCarousel }: any) {
+export default function Slide({ index, column, swipeCarousel }: any) {
     let { 
         height, 
         progress, 
@@ -26,7 +26,7 @@ export default function Slide({ index, item, swipeCarousel }: any) {
     return (
         <Column
             key={index}
-            item={item}
+            column={column}
             height={height}
             fadeAnim={fadeAnim}
             swipeCarousel={swipeCarousel}
@@ -34,7 +34,7 @@ export default function Slide({ index, item, swipeCarousel }: any) {
             animatedAdjacent={animatedStyle}
             openBottomSheet={openBottomSheet}
             closeBottomSheet={closeBottomSheet}
-            active={(slideIndex + 1) == item.index}
+            active={(slideIndex + 1) == column.index}
         />
     )
 }

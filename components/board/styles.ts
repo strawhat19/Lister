@@ -92,7 +92,10 @@ export const boardStyles = StyleSheet.create({
     cardImage: {
         flex: 1,
         margin: 0,
-        ...cardedBorder,
+        maxWidth: 115,
+        marginTop: -1,
+        marginLeft: -2,
+        maxHeight: `auto`,
         ...(web() && {
             maxHeight: 500,
             maxWidth: `auto`,

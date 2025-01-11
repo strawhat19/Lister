@@ -3,14 +3,13 @@ import { BlurView } from 'expo-blur';
 import { boardStyles } from './styles';
 import { web } from '@/shared/variables';
 import SlideUp from '../slide-up/slide-up';
-import BottomSheet from '@gorhom/bottom-sheet';
 import { SharedContext } from '@/shared/shared';
+import { View } from '@/components/theme/Themed';
 import { SheetComponents } from '@/shared/types/types';
 import { useSharedValue } from 'react-native-reanimated';
 import { defaultVertImageCards } from '@/shared/database';
 import React, { useContext, useRef, useState } from 'react';
-import { colors, Text, View, borderRadius } from '@/components/theme/Themed';
-import { Animated, TouchableOpacity, Vibration, useWindowDimensions } from 'react-native';
+import { Animated, Vibration, useWindowDimensions } from 'react-native';
 import Carousel, { Pagination, ICarouselInstance } from 'react-native-reanimated-carousel';
 
 export const gridSpacing = 15;
@@ -39,7 +38,7 @@ export const defaultBoardColumns = [
     },
 ]
 
-export default function Board() {
+export default function Board({  }: any) {
     let { setSelected, carouselData } = useContext<any>(SharedContext);
     
     const progress = useSharedValue<number>(0);
@@ -129,37 +128,15 @@ export default function Board() {
             style={{ backgroundColor: `black` }}
             defaultScrollOffsetValue={scrollOffsetValue}
             renderItem={({ index, item }: any) => (
-                <>
-                    {item?.items?.length > 0 ? (
-                        <Column
-                            key={index}
-                            item={item}
-                            openItem={openItem}
-                            fadeAnim={fadeAnim}
-                            swipeCarousel={swipeCarousel}
-                            closeBottomSheet={closeBottomSheet}
-                        />
-                    ) : (
-                        <View style={{ width: `100%`, height: height - paginationHeightMargin, paddingTop: 35 }}>
-                            <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
-                                No Items Yet
-                            </Text>
-                        </View>
-                    )}
-                    <View id={`${item.id}-footer`} style={{ paddingTop: 10, marginTop: -35, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
-                        <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
-                            {item?.name}    
-                        </Text>
-                        <TouchableOpacity 
-                            onPress={() => openItem(item, SheetComponents.ItemForm)}
-                            style={{ backgroundColor: colors.appleBlue, width: `92%`, padding: 1, borderRadius: borderRadius - 3 }}
-                        >
-                            <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
-                                + Add Item
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </>
+                <Column
+                    key={index}
+                    item={item}
+                    height={height}
+                    openItem={openItem}
+                    fadeAnim={fadeAnim}
+                    swipeCarousel={swipeCarousel}
+                    closeBottomSheet={closeBottomSheet}
+                />
             )}
         />
 

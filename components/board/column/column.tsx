@@ -62,7 +62,7 @@ export default function Column({ item, backgroundColor = colors.columnBG, swipeC
                         }}
                         contentContainerStyle={{ 
                             width: `100%`,
-                            gap: gridSpacing - 2, 
+                            gap: gridSpacing - 7, 
                             marginHorizontal: `auto`, 
                             paddingHorizontal: gridSpacing,  
                         }}

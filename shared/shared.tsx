@@ -28,6 +28,12 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const blurBGContainerOpacity = useRef(new Animated.Value(0)).current;
 
+  const closeBottomSheet = () => {
+    setIndx(0);
+    exitFadeBlur();
+    setSelected(null);
+  }
+
   const onSheetChange = (index?: any) => {
     if (index === 0) {
       setActiveTopName(carouselData[slideIndex]?.name);
@@ -49,12 +55,6 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
       setSelected(item);
     }
     Vibration.vibrate(1);
-  }
-
-  const closeBottomSheet = () => {
-    setIndx(0);
-    exitFadeBlur();
-    setSelected(null);
   }
 
   const enterFadeBlur = () => {

@@ -33,11 +33,16 @@ export default function Slider({ backgroundColor = colors.columnBG }: any) {
                 width={width}
                 height={height}
                 ref={carouselRef}
+                mode={`parallax`}
                 data={carouselData}
                 pagingEnabled={true}
-                style={{ backgroundColor }}
                 onProgressChange={progress}
+                style={{ backgroundColor }}
                 defaultScrollOffsetValue={scrollOffsetValue}
+                modeConfig={{
+                    parallaxScrollingScale: 0.99,
+                    parallaxAdjacentItemScale: 0.55,
+                }}
                 renderItem={({ index, item }: any) => (
                     <Column
                         key={index}

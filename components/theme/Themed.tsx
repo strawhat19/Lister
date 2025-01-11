@@ -13,6 +13,7 @@ export const borderRadius = 10;
 // Colors
 export const colors = {
   black: `#000000`,
+  white: `#ffffff`,
   mainBG: `#13181f`,
   appleBlue: `#007AFF`,
   appleGreen: `#34C759`,

@@ -16,7 +16,12 @@ export const animationDuration = 300;
 export const paginationHeightMargin = 200;
 export const cardImageWidth = web() ? `25%` : `33%`;
 
-export const log = (string: string, data?: any) => Platform.OS == `web` ? console.log(string, data) : Alert.alert(string);
+export const log = (string: string, data?: any) => {
+  if (Platform.OS != `web`) {
+    Alert.alert(string);
+  }
+  devEnv && console.log(string, data);
+}
 
 export const showDevFeatures = true;
 export const localDevelopment = process.env.NODE_ENV == `development`;

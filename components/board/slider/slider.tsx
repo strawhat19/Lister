@@ -3,7 +3,7 @@ import { SharedContext } from '@/shared/shared';
 import React, { useContext, useRef } from 'react';
 import { colors } from '@/components/theme/Themed';
 import SliderPagination from './pagination/pagination';
-import { useSharedValue } from 'react-native-reanimated';
+import {useSharedValue } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 export default function Slider({ backgroundColor = colors.columnBG }: any) {
@@ -12,18 +12,31 @@ export default function Slider({ backgroundColor = colors.columnBG }: any) {
     let { 
         width, 
         height, 
+        selected,
         progress, 
         fadeAnim, 
         carouselData, 
+        setSlideIndex,
         openBottomSheet, 
         closeBottomSheet, 
     } = useContext<any>(SharedContext);
 
     const swipeCarousel = (translationX: number) => {
-        carouselRef.current?.scrollTo({
-            count: translationX > 0 ? -1 : 1,
-            animated: true,
-        })
+        if (selected == null) {
+            carouselRef.current?.scrollTo({
+                count: translationX > 0 ? -1 : 1,
+                animated: true,
+            })
+        }
+    }
+
+    const onSwipe = (offsetProgress: number, absoluteProgress: number) => {
+        let useOffset = false;
+        let progToUse = absoluteProgress;
+        if (useOffset) progToUse = offsetProgress;
+        let slideNum = Math.floor(progToUse);
+        progress.value = slideNum;
+        setSlideIndex(slideNum);
     }
 
     return (
@@ -35,9 +48,10 @@ export default function Slider({ backgroundColor = colors.columnBG }: any) {
                 ref={carouselRef}
                 mode={`parallax`}
                 data={carouselData}
-                pagingEnabled={true}
-                onProgressChange={progress}
+                enabled={selected == null}
+                onProgressChange={onSwipe}
                 style={{ backgroundColor }}
+                pagingEnabled={selected == null}
                 defaultScrollOffsetValue={scrollOffsetValue}
                 modeConfig={{
                     parallaxScrollingScale: 0.99,

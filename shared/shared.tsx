@@ -1,11 +1,12 @@
 import 'react-native-gesture-handler';
 
+import { animationOptions } from './variables';
+import { defaultColumns } from './database';
 import { View } from '@/components/theme/Themed';
 import SlideUp from '@/components/slide-up/slide-up';
 import { createContext, useRef, useState } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
 import { ColumnType, ItemType } from '@/shared/types/types';
-import { animationOptions, defaultBoardColumns } from './variables';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Animated, useWindowDimensions, Vibration } from 'react-native';
 
@@ -20,7 +21,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [modalOpen, setModalOpen] = useState(false);
   let [isDragging, setDragging] = useState(false);
   let [selected, setSelected] = useState<ItemType | null>(null);
-  let [carouselData, setCarouselData] = useState<ColumnType[]>(defaultBoardColumns);
+  let [carouselData, setCarouselData] = useState<ColumnType[]>(defaultColumns);
   let [activeTopName, setActiveTopName] = useState(carouselData[slideIndex]?.name);
 
   const progress = useSharedValue<number>(0);

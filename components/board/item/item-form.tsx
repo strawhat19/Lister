@@ -35,9 +35,9 @@ export default function ItemForm({ }: any) {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <ScrollView contentContainerStyle={styles.container}>
+                {/* <ScrollView contentContainerStyle={styles.container}> */}
                     <View style={styles.container}>
-                        <View>
+                        <View id={`ItemFormFields`}>
                             <CustomTextInput
                                 value={form.name}
                                 placeholder={`Name`}
@@ -67,7 +67,7 @@ export default function ItemForm({ }: any) {
                             </Text>
                         </TouchableOpacity>
                     </View>
-                </ScrollView>
+                {/* </ScrollView> */}
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
     )
@@ -76,7 +76,7 @@ export default function ItemForm({ }: any) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 10,
+        padding: 15,
         display: `flex`,
         backgroundColor: colors.black,
         justifyContent: `space-between`,

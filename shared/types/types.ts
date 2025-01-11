@@ -23,6 +23,11 @@ export enum Themes {
     Light = `light`,
 }
 
+export type ThemeProps = {
+  lightColor?: string;
+  darkColor?: string;
+}
+
 export enum SheetComponents {
     Item = `Item`,
     Column = `Column`,

@@ -1,11 +1,12 @@
 import { BlurView } from 'expo-blur';
-import { web } from '@/shared/variables';
 import * as Haptics from 'expo-haptics';
+import { web } from '@/shared/variables';
 import { StatusBar } from 'expo-status-bar';
+import { defaultImages } from '@/shared/database';
 import { useCallback, useRef, useState } from 'react';
+import { colors, Text } from '@/components/theme/Themed';
 import CustomImage from '@/components/custom-image/custom-image';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { colors, Text, vertImages } from '@/components/theme/Themed';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetRefProps, MAX_TRANSLATE_Y } from './bottom-sheet';
 
@@ -48,7 +49,7 @@ export default function CustomBottomSheet() {
             alt={`blur-img`}
             id={`bgImageToBlur`}
             style={blurStyles.image}
-            source={{ uri: vertImages.hand_leaf }}
+            source={{ uri: defaultImages.hand_leaf }}
           />
           <BlurView intensity={blurIntensity} style={[blurStyles.blurContainer, {opacity: 1}]} />
         </View>

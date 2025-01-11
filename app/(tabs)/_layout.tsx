@@ -11,11 +11,10 @@ export default function TabLayout({ backgroundColor = colors.mainBG }) {
     <Tabs
       screenOptions={{
         headerShown: useClientOnlyValue(false, true),
+        tabBarIconStyle: { opacity: selected == null ? 1 : 0 },
         tabBarInactiveTintColor: selected == null ? `white` : `black`,
         tabBarActiveTintColor: selected == null ? colors.appleBlue : `black`,
-        tabBarLabelStyle: {
-          fontWeight: 700,
-        },
+        tabBarLabelStyle: { fontWeight: 700, opacity: selected == null ? 1 : 0 },
         headerStyle: {
           elevation: 0, // Remove shadow on Android
           shadowOpacity: 0, // Remove shadow on iOS
@@ -39,30 +38,6 @@ export default function TabLayout({ backgroundColor = colors.mainBG }) {
         }}
       />
       <Tabs.Screen
-        name={`profile`}
-        options={{
-          title: `Profile`,
-          headerTitleStyle: {
-            fontSize: 20,
-            color: 'white',
-            fontWeight: 'bold',
-          },
-          tabBarIcon: ({ color }) => <FontAwesome name={`id-card`} color={color} size={15} />,
-        }}
-      />
-      <Tabs.Screen
-        name={`experiments`}
-        options={{
-          title: `Experiments`,
-          headerTitleStyle: {
-            fontSize: 20,
-            color: 'white',
-            fontWeight: 'bold',
-          },
-          tabBarIcon: ({ color }) => <FontAwesome name={`flask`} color={color} size={18} />,
-        }}
-      />
-      <Tabs.Screen
         name={`settings`}
         options={{
           title: `Settings`,
@@ -72,6 +47,18 @@ export default function TabLayout({ backgroundColor = colors.mainBG }) {
             fontWeight: 'bold',
           },
           tabBarIcon: ({ color }) => <FontAwesome name={`cog`} color={color} size={18} />,
+        }}
+      />
+      <Tabs.Screen
+        name={`profile`}
+        options={{
+          title: `Profile`,
+          headerTitleStyle: {
+            fontSize: 20,
+            color: 'white',
+            fontWeight: 'bold',
+          },
+          tabBarIcon: ({ color }) => <FontAwesome name={`user`} color={color} size={15} />,
         }}
       />
     </Tabs>

@@ -9,6 +9,8 @@ import { ItemViewType, SheetComponents } from '@/shared/types/types';
 import CustomTextInput from '@/components/custom-input/custom-input';
 import { maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
 
+export const maxItemDescriptionHeight = 251;
+
 export default function ItemView({ 
     selected, 
     backgroundColor, 
@@ -17,6 +19,10 @@ export default function ItemView({
     const [summary, setSummary] = useState(selected.summary);
     const [description, setDescription] = useState(selected.description);
     const itemFontStyles = { ...(selected.fontColor && { color: selected.fontColor }) };
+
+    const scrollingDetailsEnabled = () => {
+        return description && typeof description == `string` && (selected?.image && selected?.image != ``);
+    }
 
     return (
         <>
@@ -55,7 +61,7 @@ export default function ItemView({
                             />
                         </View>
                     ) : <></>}
-                    <View id={`itemTitle_${selected.id}`} style={{ ...boardStyles.cardRight }}>
+                    <View id={`itemTitle_${selected.id}`} style={{ ...boardStyles.cardRight, gap: 0, paddingVertical: 0 }}>
                         <CustomTextInput
                             value={name}
                             multiline={true}
@@ -63,7 +69,7 @@ export default function ItemView({
                             placeholder={`Name`}
                             onChangeText={setName}
                             maxLength={maxItemNameLength}
-                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 22 }}
+                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 22, minHeight: 30 }}
                         />
 
                         <CustomTextInput
@@ -74,7 +80,7 @@ export default function ItemView({
                             placeholder={`Summary`}
                             onChangeText={setSummary}
                             maxLength={maxItemSummaryLength}
-                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 18 }}
+                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 18, minHeight: 215 }}
                         />
                     </View>
                 </> : <></>}
@@ -84,7 +90,7 @@ export default function ItemView({
                 <ScrollView 
                     id={`itemDetails_${selected.id}`}
                     style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: 15 }}
-                    scrollEnabled={description && typeof description == `string` && (selected?.image ? description.length >= 500 : description.length >= 720)} 
+                    scrollEnabled={scrollingDetailsEnabled() ? description.length >= 500 : description.length >= 720} 
                 >
                     <CustomTextInput
                         multiline={true}
@@ -94,7 +100,12 @@ export default function ItemView({
                         placeholder={`Description`}
                         onChangeText={setDescription}
                         maxLength={maxItemDescriptionLength}
-                        style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 16, minHeight: 80 }}
+                        style={{ 
+                            ...itemFontStyles, 
+                            ...styles.itemInput, 
+                            fontSize: 16, 
+                            minHeight: maxItemDescriptionHeight, 
+                        }}
                     />
                 </ScrollView>
             ) : <></>}

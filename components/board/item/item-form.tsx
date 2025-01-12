@@ -86,40 +86,38 @@ export default function ItemForm({ }: any) {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                {/* <ScrollView contentContainerStyle={styles.container}> */}
-                    <View style={styles.container}>
-                        <View id={`ItemFormFields`}>
-                            <CustomTextInput
-                                value={form.name}
-                                placeholder={`Name`}
-                                onChangeText={(text) => handleInputChange('name', text)}
-                            />
-                            <CustomTextInput
-                                value={form.summary}
-                                placeholder={`Summary`}
-                                onChangeText={(text) => handleInputChange('summary', text)}
-                            />
-                            <CustomTextInput
-                                value={form.image}
-                                placeholder={`Image URL`}
-                                onChangeText={(text) => handleInputChange('image', text)}
-                            />
-                            <CustomTextInput
-                                multiline
-                                numberOfLines={4}
-                                value={form.description}
-                                style={{ minHeight: 80 }}
-                                placeholder={`Description`}
-                                onChangeText={(text) => handleInputChange('description', text)}
-                            />
-                        </View>
-                        <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={formError}>
-                            <Text style={[styles.buttonText, { opacity: formError ? 0.5 : 1 }]}>
-                                Save
-                            </Text>
-                        </TouchableOpacity>
+                <View style={styles.container}>
+                    <View id={`ItemFormFields`}>
+                        <CustomTextInput
+                            value={form.name}
+                            placeholder={`Name`}
+                            onChangeText={(text) => handleInputChange('name', text)}
+                        />
+                        <CustomTextInput
+                            value={form.summary}
+                            placeholder={`Summary`}
+                            onChangeText={(text) => handleInputChange('summary', text)}
+                        />
+                        <CustomTextInput
+                            value={form.image}
+                            placeholder={`Image URL`}
+                            onChangeText={(text) => handleInputChange('image', text)}
+                        />
+                        <CustomTextInput
+                            multiline
+                            numberOfLines={4}
+                            value={form.description}
+                            style={{ minHeight: 80 }}
+                            placeholder={`Description`}
+                            onChangeText={(text) => handleInputChange('description', text)}
+                        />
                     </View>
-                {/* </ScrollView> */}
+                    <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={formError}>
+                        <Text style={[styles.buttonText, { opacity: formError ? 0.5 : 1 }]}>
+                            Save
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
     )

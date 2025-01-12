@@ -69,11 +69,10 @@ export const boardStyles = StyleSheet.create({
         backgroundColor: `transparent`,
     },
     cardRight: {
-        gap: 15,
+        gap: 0,
         flex: 1,
-        paddingTop: 30,
         display: `flex`,
-        paddingBottom: 30,
+        paddingVertical: 30,
         flexDirection: `column`,
         backgroundColor: `transparent`,
     },

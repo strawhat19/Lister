@@ -28,7 +28,7 @@ export default function Item({ item, drag, isActive }: any | RenderItemParams<It
                                 <CustomImage alt={item?.name} source={{ uri: item?.image }} style={boardStyles.cardImage} />
                             </View>
                         ) : <View style={{ width: 15 }}></View>}
-                        <View style={boardStyles.cardRight}>
+                        <View style={[boardStyles.cardRight, { gap: 10 }]}>
                             <Text style={{ ...boardStyles.cardTitle, ...item?.fontColor && ({ color: item?.fontColor }) }}>
                                 {item?.name}
                             </Text>

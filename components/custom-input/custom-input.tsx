@@ -1,5 +1,6 @@
-import React, { useId } from 'react';
-import { colors, Text } from '../theme/Themed';
+import { colors, lightColors, Text } from '../theme/Themed';
+import { SharedContext } from '@/shared/shared';
+import React, { useContext, useId } from 'react';
 import { View, Button, Keyboard, TextInput, StyleSheet, InputAccessoryView } from 'react-native';
 
 export default function CustomTextInput({
@@ -13,8 +14,11 @@ export default function CustomTextInput({
     numberOfLines = 1,
     style = { opactiy: 1 },
 }: any) {
+    let { selected } = useContext<any>(SharedContext);
+
     const generatedID = useId();
     const accessoryViewID = `inputAccessoryView-${generatedID}`;
+    const inputFontColor = { color: Object.values(lightColors).includes(selected?.backgroundColor) ? colors.darkTabBorder : colors.white };
 
     const dismissKeyboard = (saveProgress: boolean = false) => {
         if (saveProgress) {
@@ -39,7 +43,7 @@ export default function CustomTextInput({
                 numberOfLines={numberOfLines}
                 placeholder={`Enter ${placeholder}`}
                 inputAccessoryViewID={accessoryViewID}
-                style={multiline ? [styles.input, styles.textarea, style] : [styles.input, style]}
+                style={multiline ? [styles.input, styles.textarea, style, inputFontColor] : [styles.input, style, inputFontColor]}
             />
             <InputAccessoryView nativeID={accessoryViewID}>
                 <View style={styles.accessory}>

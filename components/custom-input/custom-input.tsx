@@ -1,6 +1,6 @@
-import { colors, lightColors, Text } from '../theme/Themed';
 import { SharedContext } from '@/shared/shared';
 import React, { useContext, useId } from 'react';
+import { colors, lightColors, Text } from '../theme/Themed';
 import { View, Button, Keyboard, TextInput, StyleSheet, InputAccessoryView } from 'react-native';
 
 export default function CustomTextInput({
@@ -10,21 +10,22 @@ export default function CustomTextInput({
     onChangeText,
     showLabel = true,
     multiline = false,
+    onBlur = () => {},
     onSave = () => {},
+    onFocus = () => {},
     numberOfLines = 1,
     style = { opactiy: 1 },
 }: any) {
-    let { selected } = useContext<any>(SharedContext);
+    let { selected, setEditing } = useContext<any>(SharedContext);
 
     const generatedID = useId();
     const accessoryViewID = `inputAccessoryView-${generatedID}`;
     const inputFontColor = { color: Object.values(lightColors).includes(selected?.backgroundColor) ? colors.darkTabBorder : colors.white };
 
     const dismissKeyboard = (saveProgress: boolean = false) => {
-        if (saveProgress) {
-            onSave();
-        }
+        if (saveProgress) onSave();
         Keyboard.dismiss();
+        setEditing(false);
     }
 
     return (
@@ -36,6 +37,8 @@ export default function CustomTextInput({
             )}
             <TextInput
                 value={value}
+                onBlur={onBlur}
+                onFocus={onFocus}
                 maxLength={maxLength}
                 multiline={multiline}
                 cursorColor={colors.black}

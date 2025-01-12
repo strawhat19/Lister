@@ -1,5 +1,6 @@
 import ItemForm from './item-form';
-import React, { useState } from 'react';
+import { SharedContext } from '@/shared/shared';
+import React, { useContext, useState } from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { colors, View } from '@/components/theme/Themed';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -11,10 +12,9 @@ import { maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web 
 
 export const maxItemDescriptionHeight = 251;
 
-export default function ItemView({ 
-    selected, 
-    backgroundColor, 
-}: ItemViewType) {
+export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
+    let { editing, setEditing } = useContext<any>(SharedContext);
+
     const [name, setName] = useState(selected.name);
     const [summary, setSummary] = useState(selected.summary);
     const [description, setDescription] = useState(selected.description);
@@ -33,13 +33,13 @@ export default function ItemView({
                     gap: 0,
                     width: `100%`, 
                     backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
-                    height: (web() || selected?.type == SheetComponents.ItemForm) ? 500 : selected?.image ? 280 : `auto`, 
+                    height: editing ? 0 : ((web() || selected?.type == SheetComponents.ItemForm) ? 500 : selected?.image ? 280 : `auto`), 
                 }}
             >
                 {selected?.type == SheetComponents.ItemForm ? <>
                     <ItemForm />
                 </> : <></>}
-                {selected?.type == SheetComponents.Item ? <>
+                {(!editing && selected?.type == SheetComponents.Item) ? <>
                     {(selected?.image && selected?.image != ``) ? (
                         <View 
                             id={`itemImage_${selected.id}`}
@@ -99,6 +99,8 @@ export default function ItemView({
                         value={description}
                         placeholder={`Description`}
                         onChangeText={setDescription}
+                        onBlur={() => setEditing(false)}
+                        onFocus={() => setEditing(true)}
                         maxLength={maxItemDescriptionLength}
                         style={{ 
                             ...itemFontStyles, 

@@ -1,32 +1,27 @@
 import { SharedContext } from '@/shared/shared';
 import React, { useContext, useState } from 'react';
-import { ColumnType, ItemType } from '@/shared/types/types';
+import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import { combineArraysByKey, devEnv, log } from '@/shared/variables';
 import CustomTextInput from '@/components/custom-input/custom-input';
 import { borderRadius, colors, lightColors, randomCardColor, Text } from '@/components/theme/Themed';
 import { View, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 
 export default function ItemForm({ }: any) {
-    let { selected, closeBottomSheet, carouselData, setCarouselData } = useContext<any>(SharedContext);
+    let { selected, editing, setEditing, closeBottomSheet, carouselData, setCarouselData } = useContext<any>(SharedContext);
 
     const [formError, setFormError] = useState(true);
-    const [form, setForm] = useState({
-        name: ``,
-        image: ``,
-        summary: ``,
-        description: ``,
-    })
+    const [form, setForm] = useState({ name: ``, image: ``, summary: ``, description: ``});
 
     const handleInputChange = (field: string, value: string) => {
         setForm({ ...form, [field]: value });
         let formError = !form.name || !form.summary;
         setFormError(formError);
-        devEnv && console.log(`Form`, form);
+        devEnv && console.log(`Form`, { ...form, desc: form?.description?.length, editing });
     }
 
     const handleSubmit = () => {
         if (formError) {
-            log('Error', 'All fields are required!');
+            log(`Error`, `All fields are required!`);
             return;
         }
 
@@ -55,6 +50,7 @@ export default function ItemForm({ }: any) {
             image: form?.image,
             summary: form?.summary,
             backgroundColor: newColor,
+            type: SheetComponents.Item,
             description: form?.description,
             listID: selected?.listID || selected?.id,
             ...(isLightColor && {
@@ -83,33 +79,37 @@ export default function ItemForm({ }: any) {
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior={Platform.OS === `ios` ? `padding` : `height`}
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.container}>
                     <View id={`ItemFormFields`}>
-                        <CustomTextInput
-                            value={form.name}
-                            placeholder={`Name`}
-                            onChangeText={(text) => handleInputChange('name', text)}
-                        />
-                        <CustomTextInput
-                            value={form.summary}
-                            placeholder={`Summary`}
-                            onChangeText={(text) => handleInputChange('summary', text)}
-                        />
-                        <CustomTextInput
-                            value={form.image}
-                            placeholder={`Image URL`}
-                            onChangeText={(text) => handleInputChange('image', text)}
-                        />
+                        {!editing || (editing && form?.description?.length < 43) ? <>
+                            <CustomTextInput
+                                value={form.name}
+                                placeholder={`Name`}
+                                onChangeText={(text) => handleInputChange(`name`, text)}
+                            />
+                            <CustomTextInput
+                                value={form.summary}
+                                placeholder={`Summary`}
+                                onChangeText={(text) => handleInputChange(`summary`, text)}
+                            />
+                            <CustomTextInput
+                                value={form.image}
+                                placeholder={`Image URL`}
+                                onChangeText={(text) => handleInputChange(`image`, text)}
+                            />
+                        </> : <></>}
                         <CustomTextInput
                             multiline
                             numberOfLines={4}
                             value={form.description}
                             style={{ minHeight: 80 }}
                             placeholder={`Description`}
-                            onChangeText={(text) => handleInputChange('description', text)}
+                            onFocus={() => setEditing(true)}
+                            onBlur={() => setEditing(false)}
+                            onChangeText={(text) => handleInputChange(`description`, text)}
                         />
                     </View>
                     <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={formError}>

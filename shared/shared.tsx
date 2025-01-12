@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
-import { animationOptions } from './variables';
 import { defaultColumns } from './database';
+import { animationOptions } from './variables';
 import { View } from '@/components/theme/Themed';
 import SlideUp from '@/components/slide-up/slide-up';
 import { createContext, useRef, useState } from 'react';
@@ -17,6 +17,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [user, setUser] = useState(null);
   let [beta, setBeta] = useState(false);
   let [blur, setBlur] = useState<any>(100);
+  let [editing, setEditing] = useState(false);
   let [slideIndex, setSlideIndex] = useState(0);
   let [modalOpen, setModalOpen] = useState(false);
   let [isDragging, setDragging] = useState(false);
@@ -98,6 +99,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         onSheetChange,
         openBottomSheet,
         closeBottomSheet,
+        editing, setEditing,
         selected, setSelected,
         blurBGContainerOpacity,
         isDragging, setDragging,

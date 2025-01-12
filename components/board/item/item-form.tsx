@@ -10,7 +10,7 @@ export default function ItemForm({ }: any) {
     let { selected, editing, setEditing, closeBottomSheet, carouselData, setCarouselData } = useContext<any>(SharedContext);
 
     const [formError, setFormError] = useState(true);
-    const [form, setForm] = useState({ name: ``, image: ``, summary: ``, description: ``});
+    const [form, setForm] = useState({ name: ``, image: ``, summary: ``, description: `` });
 
     const handleInputChange = (field: string, value: string) => {
         setForm({ ...form, [field]: value });

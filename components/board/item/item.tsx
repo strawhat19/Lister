@@ -24,7 +24,7 @@ export default function Item({ item, drag, isActive }: any | RenderItemParams<It
                 >
                     <View style={{ 
                         ...boardStyles.card, 
-                        gap: 30,
+                        gap: 25,
                         height: itemCardHeight, 
                         minHeight: itemCardHeight, 
                         maxHeight: itemCardHeight,

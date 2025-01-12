@@ -4,12 +4,11 @@ import { boardStyles } from '../styles';
 import * as Haptics from 'expo-haptics';
 import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
-import { runOnJS } from 'react-native-reanimated';
-import Animated, { Layout } from 'react-native-reanimated';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
+import Animated, { Layout, runOnJS } from 'react-native-reanimated';
 import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
+import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { gridSpacing, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
@@ -38,6 +37,15 @@ export default function Column({
     const closeItem = () => {
         Vibration.vibrate(1);
         closeBottomSheet();
+    }
+
+    const deleteItemWithConfirmation = () => {
+        Alert.alert(
+            `Delete Item`,
+            `Are you sure you want to delete this item?`,
+            [{ text: `Cancel`, style: `cancel` }, { text: `Delete`, style: `destructive`, onPress: () => deleteItem() }],
+            { cancelable: true },
+        )
     }
 
     const handleGesture = (event: any) => {
@@ -99,7 +107,7 @@ export default function Column({
                         </Text>
                     ) : (
                         selected?.type == SheetComponents.Item ? (
-                            <TouchableOpacity onPress={() => deleteItem()} style={{ backgroundColor: colors.red, padding: 5, paddingHorizontal: 10, borderRadius: borderRadius - 3 }}>
+                            <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={{ backgroundColor: colors.red, padding: 5, paddingHorizontal: 10, borderRadius: borderRadius - 3 }}>
                                 <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold` }]}>
                                     X Delete
                                 </Text>

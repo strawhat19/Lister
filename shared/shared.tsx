@@ -21,7 +21,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [slideIndex, setSlideIndex] = useState(0);
   let [modalOpen, setModalOpen] = useState(false);
   let [isDragging, setDragging] = useState(false);
-  let [selected, setSelected] = useState<ItemType | null>(null);
+  let [selected, setSelected] = useState<ItemType | ColumnType | null>(null);
   let [carouselData, setCarouselData] = useState<ColumnType[]>(defaultColumns);
   let [activeTopName, setActiveTopName] = useState(carouselData[slideIndex]?.name);
 

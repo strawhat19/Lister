@@ -1,7 +1,7 @@
 import ItemForm from './item-form';
 import React, { useState } from 'react';
 import { web } from '@/shared/variables';
-import { borderRadius, Text, View } from '@/components/theme/Themed';
+import { Text, View } from '@/components/theme/Themed';
 import { ScrollView } from 'react-native-gesture-handler';
 import { boardStyles, cardedBorderRight } from '../styles';
 import CustomImage from '@/components/custom-image/custom-image';
@@ -34,8 +34,8 @@ export default function ItemView({
                 style={{ 
                     ...boardStyles.card, 
                     width: `100%`, 
-                    height: (web() || selected?.type == SheetComponents.ItemForm) ? 500 : 280, 
                     backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
+                    height: (web() || selected?.type == SheetComponents.ItemForm) ? 500 : selected?.image ? 280 : `auto`, 
                 }}
             >
                 {selected?.type == SheetComponents.ItemForm ? <>
@@ -102,7 +102,11 @@ export default function ItemView({
             </Animated.View>
 
             {selected?.type == SheetComponents.Item ? (
-                <ScrollView id={`itemDetails_${selected.id}`} scrollEnabled={description && typeof description == `string` && description.length >= 500} style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: 15 }}>
+                <ScrollView 
+                    id={`itemDetails_${selected.id}`}
+                    style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: 15 }}
+                    scrollEnabled={description && typeof description == `string` && (selected?.image ? description.length >= 500 : description.length >= 720)} 
+                >
                     <TouchableWithoutFeedback onPress={() => handleToggleEdit("description")}>
                         {isEditingDescription ? (
                             <TextInput

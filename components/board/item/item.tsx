@@ -23,14 +23,16 @@ export default function Item({ item, drag, isActive }: any | RenderItemParams<It
                     style={{ flex: 1, width: `100%`, backgroundColor: item?.backgroundColor, borderRadius, opacity: fadeAnim }}
                 >
                     <View style={{ ...boardStyles.card, backgroundColor: item?.backgroundColor, height: itemCardHeight, minHeight: itemCardHeight, maxHeight: itemCardHeight }}>
-                        <View style={boardStyles.cardImageContainer}>
-                            <CustomImage alt={item?.name} source={{ uri: item?.image }} style={boardStyles.cardImage} />
-                        </View>
+                        {item?.image ? (
+                            <View style={boardStyles.cardImageContainer}>
+                                <CustomImage alt={item?.name} source={{ uri: item?.image }} style={boardStyles.cardImage} />
+                            </View>
+                        ) : <View style={{ width: 15 }}></View>}
                         <View style={boardStyles.cardRight}>
                             <Text style={{ ...boardStyles.cardTitle, ...item?.fontColor && ({ color: item?.fontColor }) }}>
                                 {item?.name}
                             </Text>
-                            <Text style={{ ...boardStyles.cardDescription, ...item?.fontColor && ({ color: item?.fontColor }) }}>
+                            <Text numberOfLines={3} ellipsizeMode={`tail`} style={{ ...boardStyles.cardDescription, ...item?.fontColor && ({ color: item?.fontColor }), maxWidth: `90%` }}>
                                 {item?.summary}
                             </Text>
                         </View>

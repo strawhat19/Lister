@@ -65,8 +65,8 @@ export class ColumnType {
 export class ItemType {
     id: any;
     key: any;
-    image: any;
     listID: any;
+    image?: any;
     name: string = ``;
     fontColor?: string;
     summary: string = ``;

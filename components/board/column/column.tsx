@@ -47,6 +47,7 @@ export default function Column({
         <View id={`column_${column?.id}`} style={[
             {  
                 backgroundColor, 
+                paddingTop: 5,
                 opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.55,
             }, 
             animatedAdjacent,
@@ -93,7 +94,7 @@ export default function Column({
                         }}
                         contentContainerStyle={{ 
                             width: `100%`,
-                            gap: gridSpacing - 7, 
+                            gap: gridSpacing - 6.5, 
                             marginHorizontal: `auto`, 
                             paddingHorizontal: gridSpacing,  
                         }}

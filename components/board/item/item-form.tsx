@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 import { ColumnType, ItemType } from '@/shared/types/types';
 import { combineArraysByKey, devEnv, log } from '@/shared/variables';
 import CustomTextInput from '@/components/custom-input/custom-input';
-import { borderRadius, colors, randomCardColor, Text } from '@/components/theme/Themed';
+import { borderRadius, colors, lightColors, randomCardColor, Text } from '@/components/theme/Themed';
 import { View, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 
 export default function ItemForm({ }: any) {
@@ -30,17 +30,37 @@ export default function ItemForm({ }: any) {
             return;
         }
 
+        let lastColor = ``;
+        let newColor = randomCardColor();
+        if (selected?.items && selected?.items?.length > 0) {
+            let lastItemColor = selected?.items[selected?.items.length - 1]?.backgroundColor;
+            if (lastItemColor) {
+                lastColor = lastItemColor;
+                if (lastColor) {
+                    if (lastColor == newColor) {
+                        newColor = randomCardColor(undefined, lastColor);
+                    }
+                }
+            }
+        }
+
+        const isLightColor = Object.values(lightColors).includes(newColor);
         const allItems = combineArraysByKey(carouselData, `items`);
+        const newIndex = allItems?.length + 1;
 
         const newItem = new ItemType({
+            id: newIndex,
+            key: newIndex,
             name: form?.name,
             image: form?.image,
             summary: form?.summary,
-            id: allItems?.length + 1,
-            key: allItems?.length + 1,
+            backgroundColor: newColor,
             description: form?.description,
-            backgroundColor: randomCardColor(),
-        })
+            listID: selected?.listID || selected?.id,
+            ...(isLightColor && {
+                fontColor: colors.darkTabBorder,
+            }),
+        } as ItemType)
 
         const updatedCarouselData = carouselData.map((list: ColumnType) => {
             if (list.id === selected?.listID) {

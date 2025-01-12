@@ -12,24 +12,22 @@ import { Text as DefaultText, View as DefaultView } from 'react-native';
 export const borderRadius = 10;
 export const itemCardHeight = 150;
 
+// Colors
+export const lightColors = {
+  appleYellow: `#FFCC00`,
+  appleGreenMint: `#AAF0D1`,
+}
+
 export const cardColors = {
+  ...lightColors,
   navy: `#04397b`,
   appleBlue: `#007AFF`,
   appleGreen: `#34C759`,
   applePurple: `#5856D6`,
-  appleYellow: `#FFCC00`,
-  appleGreenMint: `#AAF0D1`,
   appleGreenShade: `rgba(0, 125, 27, 1)`,
   appleRed: Platform.OS == `web` ? `rgb(212 67 59)` : `#FF3B30`,
 }
 
-export const randomCardColor = (colorsObject = cardColors) => {
-  const colorValues = Object.values(colorsObject);
-  const randomIndex = Math.floor(Math.random() * colorValues.length);
-  return colorValues[randomIndex];
-}
-
-// Colors
 export const colors = {
   ...cardColors,
   ccc: `#cccccc`,
@@ -42,6 +40,17 @@ export const colors = {
   background: `#13181f`,
   darkTabBorder: `#272729`,
   blackGlass: (alpha) => `rgba(0,0,0, ${alpha})`,
+}
+
+export const randomCardColor = (colorsObject = cardColors, previousColor?: string) => {
+  const colorValues = Object.values(colorsObject);
+  if (previousColor && typeof previousColor === `string`) {
+    const filteredColors = colorValues.filter(color => color !== previousColor);
+    const randomIndex = Math.floor(Math.random() * filteredColors.length);
+    return filteredColors[randomIndex];
+  }
+  const randomIndex = Math.floor(Math.random() * colorValues.length);
+  return colorValues[randomIndex];
 }
 
 export type TextProps = ThemeProps & DefaultText[`props`];

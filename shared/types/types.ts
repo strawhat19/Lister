@@ -54,6 +54,7 @@ export class CustomImageType {
 
 export class ColumnType {
     id: any;
+    listID: any;
     name: string;
     index: number;
     category: string;
@@ -64,8 +65,8 @@ export class ColumnType {
 export class ItemType {
     id: any;
     key: any;
-    listID: any;
     image?: any;
+    listID!: any;
     name: string = ``;
     fontColor?: string;
     summary: string = ``;

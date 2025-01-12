@@ -85,7 +85,7 @@ export default function Column({
                 <PanGestureHandler enabled={!isDragging} onGestureEvent={handleGesture}>
                     <DraggableFlatList
                         data={column?.items}
-                        keyExtractor={(item) => item?.key}
+                        keyExtractor={(item) => `${item.id}-${item?.key}`}
                         style={{ height: height - paginationHeightMargin }}
                         onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                         onDragBegin={() => {

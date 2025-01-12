@@ -36,7 +36,6 @@ export enum SheetComponents {
 }
 
 export class ItemViewType {
-    isForm: boolean = true; 
     selected: ItemType | null;
     backgroundColor?: keyof typeof colors | string = `appleBlue`;
 }
@@ -75,5 +74,8 @@ export class ItemType {
     backgroundColor?: keyof typeof colors | string = `appleBlue`;
     constructor(data: Partial<ItemType>) {
         Object.assign(this, data);
+        if (!this.description || this.description == ``) {
+            this.description = this.summary;
+        }
     }
 }

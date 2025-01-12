@@ -137,6 +137,7 @@ export default function Column({
                     onPress={() => openBottomSheet(new ItemType({
                         ...column,
                         name: `+ Add Item`,
+                        listID: column?.id,
                         type: SheetComponents.ItemForm,
                         summary: `This is the Item Form`,
                         description: `You can use this form to edit or create items`,

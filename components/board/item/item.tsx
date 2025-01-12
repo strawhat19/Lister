@@ -23,7 +23,7 @@ export default function Item({ item, drag, isActive }: any | RenderItemParams<It
                     style={{ flex: 1, width: `100%`, backgroundColor: item?.backgroundColor, borderRadius, opacity: fadeAnim }}
                 >
                     <View style={{ ...boardStyles.card, backgroundColor: item?.backgroundColor, height: itemCardHeight, minHeight: itemCardHeight, maxHeight: itemCardHeight }}>
-                        {item?.image ? (
+                        {(item?.image && item?.image != ``) ? (
                             <View style={boardStyles.cardImageContainer}>
                                 <CustomImage alt={item?.name} source={{ uri: item?.image }} style={boardStyles.cardImage} />
                             </View>

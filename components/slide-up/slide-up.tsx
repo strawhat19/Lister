@@ -49,7 +49,7 @@ export default function SlideUp({ backgroundColor = colors.mainBG }: any) {
                 <BottomSheetView style={boardStyles.contentContainer}>
                     <>
                         {selected != null ? <>
-                            <ItemView isForm={true} selected={selected} />
+                            <ItemView selected={selected} />
                         </> : <></>}
                     </>
                 </BottomSheetView>

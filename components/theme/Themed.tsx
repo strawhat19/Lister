@@ -12,16 +12,8 @@ import { Text as DefaultText, View as DefaultView } from 'react-native';
 export const borderRadius = 10;
 export const itemCardHeight = 150;
 
-// Colors
-export const colors = {
-  ccc: `#cccccc`,
+export const cardColors = {
   navy: `#04397b`,
-  dark: `#272729`,
-  black: `#000000`,
-  paper: `#f0f0f0`,
-  white: `#ffffff`,
-  light: `#2f95dc`,
-  mainBG: `#13181f`,
   appleBlue: `#007AFF`,
   appleGreen: `#34C759`,
   background: `#13181f`,
@@ -30,8 +22,26 @@ export const colors = {
   darkTabBorder: `#272729`,
   appleGreenMint: `#AAF0D1`,
   appleGreenShade: `rgba(0, 125, 27, 1)`,
-  blackGlass: (alpha) => `rgba(0,0,0, ${alpha})`,
   appleRed: Platform.OS == `web` ? `rgb(212 67 59)` : `#FF3B30`,
+}
+
+export const randomCardColor = (colorsObject = cardColors) => {
+  const colorValues = Object.values(colorsObject);
+  const randomIndex = Math.floor(Math.random() * colorValues.length);
+  return colorValues[randomIndex];
+}
+
+// Colors
+export const colors = {
+  ...cardColors,
+  ccc: `#cccccc`,
+  dark: `#272729`,
+  black: `#000000`,
+  paper: `#f0f0f0`,
+  white: `#ffffff`,
+  light: `#2f95dc`,
+  mainBG: `#13181f`,
+  blackGlass: (alpha) => `rgba(0,0,0, ${alpha})`,
 }
 
 export type TextProps = ThemeProps & DefaultText[`props`];

@@ -54,13 +54,6 @@ export const getTimezone = (date: Date) => {
   return match ? match[1] : ``;
 }
 
-export const generateID = () => {
-  let id = Math.random().toString(36).substr(2, 9);
-  return Array.from(id).map(char => {
-    return Math.random() > 0.5 ? char.toUpperCase() : char;
-  }).join(``);
-}
-
 export const getOrder = (x: any, y: any) => {
   'worklet';
   const row = Math.round(y / SIZE);
@@ -74,6 +67,23 @@ export const getPosition = (index: any) => {
     x: (index % COL) * SIZE,
     y: Math.floor(index / COL) * SIZE,
   }
+}
+
+export const generateID = () => {
+  let id = Math.random().toString(36).substr(2, 9);
+  return Array.from(id).map(char => {
+    return Math.random() > 0.5 ? char.toUpperCase() : char;
+  }).join(``);
+}
+
+export const combineArraysByKey = <T>(data: T[], key: keyof T): any[] => {
+  return data.reduce((combined, item) => {
+    const arrayToCombine = item[key];
+    if (Array.isArray(arrayToCombine)) {
+      return combined.concat(arrayToCombine); // Combine if it's an array
+    }
+    return combined; // Skip if the key's value is not an array
+  }, [] as any[]); // Start with an empty array
 }
   
 export const generateUniqueID = (existingIDs?: string[]) => {

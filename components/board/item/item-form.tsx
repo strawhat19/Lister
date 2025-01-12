@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import { devEnv, log } from '@/shared/variables';
+import { SharedContext } from '@/shared/shared';
+import React, { useContext, useState } from 'react';
+import { ColumnType, ItemType } from '@/shared/types/types';
+import { combineArraysByKey, devEnv, log } from '@/shared/variables';
 import CustomTextInput from '@/components/custom-input/custom-input';
-import { borderRadius, colors, Text } from '@/components/theme/Themed';
-import { View, StyleSheet, Platform, ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
+import { borderRadius, colors, randomCardColor, Text } from '@/components/theme/Themed';
+import { View, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 
 export default function ItemForm({ }: any) {
+    let { selected, closeBottomSheet, carouselData, setCarouselData } = useContext<any>(SharedContext);
+
     const [formError, setFormError] = useState(true);
     const [form, setForm] = useState({
         name: ``,
@@ -26,7 +30,34 @@ export default function ItemForm({ }: any) {
             return;
         }
 
-        log('Form Submitted', JSON.stringify(form, null, 2));
+        const allItems = combineArraysByKey(carouselData, `items`);
+
+        const newItem = new ItemType({
+            name: form?.name,
+            image: form?.image,
+            summary: form?.summary,
+            id: allItems?.length + 1,
+            key: allItems?.length + 1,
+            description: form?.description,
+            backgroundColor: randomCardColor(),
+        })
+
+        const updatedCarouselData = carouselData.map((list: ColumnType) => {
+            if (list.id === selected?.listID) {
+                return { 
+                    ...list, 
+                    items: [
+                        ...list.items, 
+                        newItem,
+                    ]
+                };
+            }
+            return list;
+        });
+
+        setCarouselData(updatedCarouselData);
+
+        closeBottomSheet();
     }
 
     return (

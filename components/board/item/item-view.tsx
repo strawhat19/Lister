@@ -9,7 +9,6 @@ import { ItemViewType, SheetComponents } from '@/shared/types/types';
 import { Animated, TextInput, TouchableWithoutFeedback } from 'react-native';
 
 export default function ItemView({ 
-    isForm, 
     selected, 
     backgroundColor, 
 }: ItemViewType) {
@@ -42,7 +41,7 @@ export default function ItemView({
                     <ItemForm />
                 </> : <></>}
                 {selected?.type == SheetComponents.Item ? <>
-                    {selected.image ? (
+                    {(selected?.image && selected?.image != ``) ? (
                         <View 
                             id={`itemImage_${selected.id}`}
                             style={{ 

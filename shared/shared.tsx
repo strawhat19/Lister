@@ -1,12 +1,14 @@
 import 'react-native-gesture-handler';
 
 import { defaultColumns } from './database';
-import { animationOptions } from './variables';
 import { View } from '@/components/theme/Themed';
 import SlideUp from '@/components/slide-up/slide-up';
-import { createContext, useRef, useState } from 'react';
+import { databaseNames, db } from './server/firebase';
+import { animationOptions, devEnv } from './variables';
 import { useSharedValue } from 'react-native-reanimated';
 import { ColumnType, ItemType } from '@/shared/types/types';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { createContext, useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Animated, useWindowDimensions, Vibration } from 'react-native';
 
@@ -15,12 +17,14 @@ export const SharedContext = createContext({});
 export default function Shared({ children }: { children: React.ReactNode; }) {
   let [indx, setIndx] = useState(0);
   let [user, setUser] = useState(null);
+  let [users, setUsers] = useState([]);
   let [beta, setBeta] = useState(false);
   let [blur, setBlur] = useState<any>(100);
   let [editing, setEditing] = useState(false);
   let [slideIndex, setSlideIndex] = useState(0);
   let [modalOpen, setModalOpen] = useState(false);
   let [isDragging, setDragging] = useState(false);
+  let [usersLoading, setUsersLoading] = useState(false);
   let [selected, setSelected] = useState<ItemType | ColumnType | null>(null);
   let [carouselData, setCarouselData] = useState<ColumnType[]>(defaultColumns);
   let [activeTopName, setActiveTopName] = useState(carouselData[slideIndex]?.name);
@@ -42,6 +46,27 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
       closeBottomSheet();
     }
   }
+
+  useEffect(() => {
+    devEnv && console.log(process.env.AUTHDOMAIN);
+    // const usersCollection = collection(db, databaseNames.users);
+    // const unsubscribeFromUserDatabase = onSnapshot(usersCollection, snapshot => {
+    //     setUsersLoading(true);
+    //     const usersFromDB: any[] = [];
+    //     snapshot.forEach((doc) => usersFromDB.push({ ...doc.data() } as any));
+    //     console.log(`Users Update from Firebase`, JSON.stringify(usersFromDB, null, 2));
+    //     setUsers(usersFromDB);
+    //     setUsersLoading(false);
+    //   }, error => {
+    //     console.log(`Error getting Users from Firebase`, JSON.stringify(error, null, 2));
+    //     setUsersLoading(false);
+    //   }
+    // )
+
+    // return () => {
+    //   unsubscribeFromUserDatabase();
+    // }
+  }, [])
 
   const openBottomSheet = (item?: any, backgroundColor?: any) => {
     enterFadeBlur();
@@ -97,6 +122,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         indx, setIndx,
         blur, setBlur,
         onSheetChange,
+        users, setUsers,
         openBottomSheet,
         closeBottomSheet,
         editing, setEditing,
@@ -105,6 +131,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         isDragging, setDragging,
         modalOpen, setModalOpen,
         slideIndex, setSlideIndex,
+        usersLoading, setUsersLoading,
         carouselData, setCarouselData,
         activeTopName, setActiveTopName,
       }}

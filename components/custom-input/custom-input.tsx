@@ -10,10 +10,10 @@ export default function CustomTextInput({
     onChangeText,
     showLabel = true,
     multiline = false,
+    numberOfLines = 1,
     onBlur = () => {},
     onSave = () => {},
     onFocus = () => {},
-    numberOfLines = 1,
     style = { opactiy: 1 },
 }: any) {
     let { selected, setEditing } = useContext<any>(SharedContext);

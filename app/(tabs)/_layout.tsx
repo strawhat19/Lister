@@ -25,7 +25,7 @@ export default function TabLayout({ backgroundColor = colors.mainBG }) {
           minHeight: 60,
           backgroundColor,
           paddingBottom: 10,
-          borderColor: `transparent`,
+          borderColor: colors.transparent,
           pointerEvents: selected == null ? `auto` : `none`,
         },
       }}>

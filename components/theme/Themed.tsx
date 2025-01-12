@@ -14,35 +14,41 @@ export const itemCardHeight = 150;
 
 // Colors
 export const lightColors = {
-  appleYellow: `#FFCC00`,
-  appleGreenMint: `#AAF0D1`,
+  appleMint: `rgba(174, 230, 216, 1)`,
+  appleYellow: `rgba(255, 204, 0, 1)`,
+  appleGolden: `rgba(255, 215, 0, 1)`,
+  appleGreenMint: `rgba(170, 240, 209, 1)`,
 }
 
 export const cardColors = {
   ...lightColors,
-  navy: `#04397b`,
-  appleBlue: `#007AFF`,
-  appleGreen: `#34C759`,
-  applePurple: `#5856D6`,
+  red: `rgba(255, 0, 0, 1)`,
+  navy: `rgba(4, 57, 123, 1)`,
+  appleBlue: `rgba(0, 122, 255, 1)`,
+  applePurple: `rgba(88, 86, 214, 1)`,
+  appleGreen: `rgba(52, 199, 89, 1)`,
   appleGreenShade: `rgba(0, 125, 27, 1)`,
-  appleRed: Platform.OS == `web` ? `rgb(212 67 59)` : `#FF3B30`,
+  appleRed: Platform.OS === `web` ? `rgba(212, 67, 59, 1)` : `rgba(255, 59, 48, 1)`,
 }
 
 export const colors = {
   ...cardColors,
   ccc: `#cccccc`,
   dark: `#272729`,
-  black: `#000000`,
-  paper: `#f0f0f0`,
-  white: `#ffffff`,
   light: `#2f95dc`,
-  mainBG: `#000000`,
-  background: `#13181f`,
-  pasteBlackBG: `#2a2f35`,
-  jiraColumnBG: `#23262A`,
-  darkTabBorder: `#272729`,
   transparent: `transparent`,
-  blackGlass: (alpha) => `rgba(0,0,0, ${alpha})`,
+  black: `rgba(0, 0, 0, 1)`,
+  mainBG: `rgba(0, 0, 0, 1)`,
+  darkGray: `rgba(39, 39, 41, 1)`,
+  paper: `rgba(240, 240, 240, 1)`,
+  white: `rgba(255, 255, 255, 1)`,
+  background: `rgba(19, 24, 31, 1)`,
+  lightBlue: `rgba(47, 149, 220, 1)`,
+  lightGray: `rgba(204, 204, 204, 1)`,
+  darkTabBorder: `rgba(39, 39, 41, 1)`,
+  pasteBlackBG: `rgba(42, 47, 53, 1)`,
+  jiraColumnBG: `rgba(35, 38, 42, 1)`,
+  blackGlass: (alpha) => `rgba(0, 0, 0, ${alpha})`,
 }
 
 export const randomCardColor = (colorsObject = cardColors, previousColor?: string) => {

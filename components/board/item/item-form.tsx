@@ -1,10 +1,10 @@
 import { SharedContext } from '@/shared/shared';
 import React, { useContext, useState } from 'react';
-import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import { combineArraysByKey, devEnv, log } from '@/shared/variables';
 import CustomTextInput from '@/components/custom-input/custom-input';
+import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import { borderRadius, colors, lightColors, randomCardColor, Text } from '@/components/theme/Themed';
-import { View, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
+import { View, Vibration, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 
 export default function ItemForm({ }: any) {
     let { selected, editing, setEditing, closeBottomSheet, carouselData, setCarouselData } = useContext<any>(SharedContext);
@@ -72,6 +72,7 @@ export default function ItemForm({ }: any) {
         });
 
         setCarouselData(updatedCarouselData);
+        Vibration.vibrate(1);
 
         closeBottomSheet();
     }
@@ -128,6 +129,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 15,
         display: `flex`,
+        borderRadius: 12,
         backgroundColor: colors.black,
         justifyContent: `space-between`,
     },

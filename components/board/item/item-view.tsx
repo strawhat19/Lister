@@ -33,7 +33,8 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                     gap: 0,
                     width: `100%`, 
                     backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
-                    height: editing ? 0 : ((web() || selected?.type == SheetComponents.ItemForm) ? 500 : selected?.image ? 280 : `auto`), 
+                    paddingTop: selected?.type == SheetComponents.Item && selected?.image ? 0 : 5,
+                    height: (editing && selected?.type == SheetComponents.Item) ? 0 : ((web() || selected?.type == SheetComponents.ItemForm) ? 500 : selected?.image ? 280 : `auto`), 
                 }}
             >
                 {selected?.type == SheetComponents.ItemForm ? <>
@@ -80,7 +81,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             placeholder={`Summary`}
                             onChangeText={setSummary}
                             maxLength={maxItemSummaryLength}
-                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 18, minHeight: 215 }}
+                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 18, minHeight: selected?.image ? 215 : `auto` }}
                         />
                     </View>
                 </> : <></>}
@@ -89,7 +90,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
             {selected?.type == SheetComponents.Item ? (
                 <ScrollView 
                     id={`itemDetails_${selected.id}`}
-                    style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: 15 }}
+                    style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: selected?.image ? 15 : 0 }}
                     scrollEnabled={scrollingDetailsEnabled() ? description.length >= 500 : description.length >= 720} 
                 >
                     <CustomTextInput
@@ -105,8 +106,8 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                         style={{ 
                             ...itemFontStyles, 
                             ...styles.itemInput, 
-                            fontSize: 16, 
                             minHeight: maxItemDescriptionHeight, 
+                            fontSize: 16, 
                         }}
                     />
                 </ScrollView>

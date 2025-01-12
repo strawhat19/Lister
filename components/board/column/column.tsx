@@ -6,8 +6,8 @@ import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
 import { runOnJS } from 'react-native-reanimated';
 import Animated, { Layout } from 'react-native-reanimated';
-import { StyleSheet, TouchableOpacity } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
+import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
@@ -35,10 +35,16 @@ export default function Column({
         closeBottomSheet, 
     } = useContext<any>(SharedContext);
 
+    const closeItem = () => {
+        Vibration.vibrate(1);
+        closeBottomSheet();
+    }
+
     const handleGesture = (event: any) => {
         'worklet';
+        const sensitivity = 25;
         const { translationX, velocityX } = event.nativeEvent;
-        const horizontalMovement = Math.abs(translationX) > 15 && Math.abs(velocityX) > 15;
+        const horizontalMovement = Math.abs(translationX) > sensitivity && Math.abs(velocityX) > sensitivity;
         if (!horizontalMovement) return;
         runOnJS(swipeCarousel)(translationX);
     }
@@ -52,10 +58,25 @@ export default function Column({
         description: `You can use this form to edit or create items`,
     })
 
+    const deleteItem = () => {
+        const updatedCarouselData = carouselData.map((list: ColumnType) => {
+            if (list.id === column?.id) {
+                return { 
+                    ...list, 
+                    items: list.items.filter(itm => itm?.id != selected?.id)
+                };
+            }
+            return list;
+        });
+        setCarouselData(updatedCarouselData);
+        closeItem();
+    }
+
     return (
         <View id={`column_${column?.id}`} style={[
             {  
                 width: `100%`,
+                marginTop: 15,
                 paddingTop: 5,
                 backgroundColor, 
                 marginHorizontal: `auto`,
@@ -64,14 +85,28 @@ export default function Column({
             animatedAdjacent,
         ]}>
             <BlurView intensity={blurIntensity} style={[StyleSheet.absoluteFill, { borderRadius: 12 }]} />
-            <View style={{ backgroundColor: selected == null ? colors.background : colors.black, width: `95%`, marginHorizontal: `auto`, borderRadius: 12, padding: 0 }}>
-                <View style={titleRowStyles.titleRow}>
+            <View style={{ 
+                padding: 0,
+                width: `95%`, 
+                borderRadius: 12, 
+                marginHorizontal: `auto`, 
+                backgroundColor: selected == null ? colors.background : colors.black, 
+            }}>
+                <View style={[titleRowStyles.titleRow, { paddingVertical: 7 }]}>
                     {selected == null && column?.category && column?.category?.length > 0 ? (
                         <Text style={titleRowStyles.subtitle}>
                             {column?.category}
                         </Text>
-                    ) : <></>}
-                    <Text style={[titleRowStyles.title, { flexBasis: selected != null ? `100%` : `50%` }]}>
+                    ) : (
+                        selected?.type == SheetComponents.Item ? (
+                            <TouchableOpacity onPress={() => deleteItem()} style={{ backgroundColor: colors.red, padding: 5, paddingHorizontal: 10, borderRadius: borderRadius - 3 }}>
+                                <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold` }]}>
+                                    X Delete
+                                </Text>
+                            </TouchableOpacity>
+                        ) : <></>
+                    )}
+                    <Text style={[titleRowStyles.title, { flexBasis: selected?.type == SheetComponents.ItemForm ? `75%` : `50%` }]}>
                         {selected == null ? (
                             `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                 toFixedWithoutRounding(slideIndex + 1, 1)
@@ -88,7 +123,13 @@ export default function Column({
                                 0 Item(s)
                             </Text>
                         </>
-                    ) : <></>}
+                    ) : (
+                        <TouchableOpacity onPress={() => closeItem()} style={{ backgroundColor: colors.navy, padding: 5, paddingHorizontal: 10, borderRadius: borderRadius - 3 }}>
+                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold` }]}>
+                                X Close
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
                 {column?.items?.length > 0 ? (
                     <PanGestureHandler enabled={!isDragging} onGestureEvent={handleGesture}>
@@ -158,7 +199,7 @@ export default function Column({
 
 export const titleRowStyles = StyleSheet.create({
     titleRow: {
-        width: `90%`, 
+        width: `100%`, 
         display: `flex`, 
         flexWrap: `wrap`, 
         flexDirection: `row`, 
@@ -170,20 +211,15 @@ export const titleRowStyles = StyleSheet.create({
     title: { 
         fontSize: 20, 
         width: `auto`, 
-        paddingTop: 25, 
         color: `white`, 
-        flexBasis: `50%`, 
-        paddingBottom: 15, 
         fontWeight: `bold`, 
         textAlign: `center`, 
     },
     subtitle: { 
         fontSize: 16, 
         width: `auto`, 
-        paddingTop: 25, 
         color: `white`, 
         flexBasis: `25%`, 
-        paddingBottom: 15, 
         textAlign: `center`, 
     },
 })

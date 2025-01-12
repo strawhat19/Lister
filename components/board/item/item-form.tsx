@@ -108,6 +108,7 @@ export default function ItemForm({ }: any) {
                                 multiline
                                 numberOfLines={4}
                                 value={form.description}
+                                style={{ minHeight: 80 }}
                                 placeholder={`Description`}
                                 onChangeText={(text) => handleInputChange('description', text)}
                             />

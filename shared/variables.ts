@@ -5,6 +5,9 @@ import { Dimensions, Alert, Platform } from 'react-native';
 
 export const COL = 5;
 export const MARGIN = 8;
+export const maxItemNameLength = 25;
+export const maxItemSummaryLength = 125;
+export const maxItemDescriptionLength = 9999;
 export const SIZE = Dimensions.get(`window`).width / COL - MARGIN;
 
 export const web = () => Platform.OS == `web`;
@@ -25,7 +28,7 @@ export const log = (string: string, data?: any) => {
 export const showDevFeatures = true;
 export const localDevelopment = process.env.NODE_ENV == `development`;
 export const urlHostIncludes = (string) => window.location.host.includes(string);
-export const devEnv = (web() ? (urlHostIncludes(`local`) || urlHostIncludes(`:80`)) : localDevelopment) ? showDevFeatures : false;
+export const devEnv = (web() ? (urlHostIncludes(`local`) || urlHostIncludes(`:`)) : localDevelopment) ? showDevFeatures : false;
 
 export const capWords = (str: string) => str.replace(/\b\w/g, (match) => match.toUpperCase());
 export const getNumberFromString = (string: string) => parseInt((string.match(/\d+/) as any)[0]);

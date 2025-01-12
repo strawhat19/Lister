@@ -39,6 +39,7 @@ export const colors = {
   mainBG: `#13181f`,
   background: `#13181f`,
   darkTabBorder: `#272729`,
+  transparent: `transparent`,
   blackGlass: (alpha) => `rgba(0,0,0, ${alpha})`,
 }
 

@@ -4,11 +4,14 @@ import { View, Button, Keyboard, TextInput, StyleSheet, InputAccessoryView } fro
 
 export default function CustomTextInput({
     value,
+    maxLength,
     placeholder,
     onChangeText,
-    onSave = () => {},
+    showLabel = true,
     multiline = false,
+    onSave = () => {},
     numberOfLines = 1,
+    style = { opactiy: 1 },
 }: any) {
     const generatedID = useId();
     const accessoryViewID = `inputAccessoryView-${generatedID}`;
@@ -22,17 +25,21 @@ export default function CustomTextInput({
 
     return (
         <>
-            <Text style={styles.label}>
-                {placeholder}
-            </Text>
+            {showLabel && (
+                <Text style={styles.label}>
+                    {placeholder}
+                </Text>
+            )}
             <TextInput
                 value={value}
+                maxLength={maxLength}
                 multiline={multiline}
+                cursorColor={colors.black}
                 onChangeText={onChangeText}
                 numberOfLines={numberOfLines}
                 placeholder={`Enter ${placeholder}`}
                 inputAccessoryViewID={accessoryViewID}
-                style={multiline ? [styles.input, styles.textarea] : styles.input}
+                style={multiline ? [styles.input, styles.textarea, style] : [styles.input, style]}
             />
             <InputAccessoryView nativeID={accessoryViewID}>
                 <View style={styles.accessory}>
@@ -51,11 +58,12 @@ const styles = StyleSheet.create({
         fontWeight: `bold`,
     },
     textarea: {
-        height: 80,
+        height: `auto`,
         textAlignVertical: `top`,
     },
     input: {
-        height: 40,
+        minHeight: 30,
+        height: `auto`,
         borderWidth: 1,
         borderRadius: 5,
         marginBottom: 15,

@@ -1,12 +1,13 @@
 import ItemForm from './item-form';
 import React, { useState } from 'react';
-import { web } from '@/shared/variables';
-import { Text, View } from '@/components/theme/Themed';
+import { Animated, StyleSheet } from 'react-native';
+import { colors, View } from '@/components/theme/Themed';
 import { ScrollView } from 'react-native-gesture-handler';
 import { boardStyles, cardedBorderRight } from '../styles';
 import CustomImage from '@/components/custom-image/custom-image';
 import { ItemViewType, SheetComponents } from '@/shared/types/types';
-import { Animated, TextInput, TouchableWithoutFeedback } from 'react-native';
+import CustomTextInput from '@/components/custom-input/custom-input';
+import { maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
 
 export default function ItemView({ 
     selected, 
@@ -14,17 +15,8 @@ export default function ItemView({
 }: ItemViewType) {
     const [name, setName] = useState(selected.name);
     const [summary, setSummary] = useState(selected.summary);
-    const [isEditingName, setIsEditingName] = useState(false);
-    const [isEditingSummary, setIsEditingSummary] = useState(false);
     const [description, setDescription] = useState(selected.description);
-    const [isEditingDescription, setIsEditingDescription] = useState(false);
     const itemFontStyles = { ...(selected.fontColor && { color: selected.fontColor }) };
-
-    const handleToggleEdit = (field: string) => {
-        if (field === `name`) setIsEditingName(!isEditingName);
-        if (field === `summary`) setIsEditingSummary(!isEditingSummary);
-        if (field === `description`) setIsEditingDescription(!isEditingDescription);
-    }
 
     return (
         <>
@@ -32,6 +24,7 @@ export default function ItemView({
                 id={`sheetCard_${selected?.id}`} 
                 style={{ 
                     ...boardStyles.card, 
+                    gap: 0,
                     width: `100%`, 
                     backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
                     height: (web() || selected?.type == SheetComponents.ItemForm) ? 500 : selected?.image ? 280 : `auto`, 
@@ -45,8 +38,8 @@ export default function ItemView({
                         <View 
                             id={`itemImage_${selected.id}`}
                             style={{ 
-                                alignItems: `center`,
                                 ...boardStyles.cardImageContainer, 
+                                alignItems: `center`,
                                 minWidth: `50%`,
                             }}
                         >
@@ -63,39 +56,26 @@ export default function ItemView({
                         </View>
                     ) : <></>}
                     <View id={`itemTitle_${selected.id}`} style={{ ...boardStyles.cardRight }}>
-                        <TouchableWithoutFeedback onPress={() => handleToggleEdit("name")}>
-                            {isEditingName ? (
-                                <TextInput
-                                    autoFocus
-                                    value={name}
-                                    onChangeText={setName}
-                                    id={`itemName_${selected.id}`}
-                                    onBlur={() => setIsEditingName(false)}
-                                    style={{ ...boardStyles.cardTitle, ...itemFontStyles, fontSize: 22 }}
-                                />
-                            ) : (
-                                <Text id={`itemName_${selected.id}`} style={{ ...boardStyles.cardTitle, ...itemFontStyles, fontSize: 22 }}>
-                                    {name}
-                                </Text>
-                            )}
-                        </TouchableWithoutFeedback>
+                        <CustomTextInput
+                            value={name}
+                            multiline={true}
+                            showLabel={false}
+                            placeholder={`Name`}
+                            onChangeText={setName}
+                            maxLength={maxItemNameLength}
+                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 22 }}
+                        />
 
-                        <TouchableWithoutFeedback onPress={() => handleToggleEdit("summary")}>
-                            {isEditingSummary ? (
-                                <TextInput
-                                    autoFocus
-                                    value={summary}
-                                    onChangeText={setSummary}
-                                    id={`itemSummary_${selected.id}`}
-                                    onBlur={() => setIsEditingSummary(false)}
-                                    style={{ ...boardStyles.cardDescription, ...itemFontStyles, fontSize: 18, fontWeight: `bold` }}
-                                />
-                            ) : (
-                                <Text id={`itemSummary_${selected.id}`} style={{ ...boardStyles.cardDescription, ...itemFontStyles, fontSize: 18, fontWeight: `bold` }}>
-                                    {summary}
-                                </Text>
-                            )}
-                        </TouchableWithoutFeedback>
+                        <CustomTextInput
+                            value={summary}
+                            multiline={true}
+                            showLabel={false}
+                            numberOfLines={5}
+                            placeholder={`Summary`}
+                            onChangeText={setSummary}
+                            maxLength={maxItemSummaryLength}
+                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 18 }}
+                        />
                     </View>
                 </> : <></>}
             </Animated.View>
@@ -106,25 +86,27 @@ export default function ItemView({
                     style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: 15 }}
                     scrollEnabled={description && typeof description == `string` && (selected?.image ? description.length >= 500 : description.length >= 720)} 
                 >
-                    <TouchableWithoutFeedback onPress={() => handleToggleEdit("description")}>
-                        {isEditingDescription ? (
-                            <TextInput
-                                autoFocus
-                                multiline
-                                value={description}
-                                onChangeText={setDescription}
-                                id={`itemDescription_${selected.id}`}
-                                onBlur={() => setIsEditingDescription(false)}
-                                style={{ ...boardStyles.cardDescription, ...itemFontStyles, fontSize: 16, fontWeight: `bold` }}
-                            />
-                        ) : (
-                            <Text id={`itemDescription_${selected.id}`} style={{ ...boardStyles.cardDescription, ...itemFontStyles, fontSize: 16, fontWeight: `bold` }}>
-                                {description}
-                            </Text>
-                        )}
-                    </TouchableWithoutFeedback>
+                    <CustomTextInput
+                        multiline={true}
+                        showLabel={false}
+                        numberOfLines={999}
+                        value={description}
+                        placeholder={`Description`}
+                        onChangeText={setDescription}
+                        maxLength={maxItemDescriptionLength}
+                        style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 16, minHeight: 80 }}
+                    />
                 </ScrollView>
             ) : <></>}
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    itemInput: { 
+        ...boardStyles.cardTitle, 
+        backgroundColor: colors.transparent, 
+        borderColor: colors.transparent, 
+        padding: 0,
+    },
+})

@@ -1,4 +1,5 @@
 import { Image, Platform } from 'react-native';
+import { defaultImages } from '@/shared/database';
 import { CustomImageType } from '@/shared/types/types';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
@@ -26,6 +27,12 @@ export default function CustomImage({
                 effect={effect} 
                 className={className} 
             />
-        ) : <Image id={id} alt={alt} source={src} style={style} />
+        ) : (
+            Object.values(defaultImages).includes(src) ? (
+                <Image id={id} alt={alt} source={src} style={style} />
+            ) : (
+                <Image id={id} alt={alt} src={src} source={src} style={style} />
+            )
+        )
     )
 }

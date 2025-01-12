@@ -96,26 +96,6 @@ export const itemObjects = {
     summary: `The sky is a vast, expansive canvas that stretches endlessly above, painted with a palette that shifts throughout the day.`,
     description: `At dawn, it awakens with soft hues of pink, orange, and lavender, gradually brightening into a radiant blue as the sun ascends. During the day, it can appear as a brilliant azure dome, dotted with fluffy white clouds drifting lazily, or cloaked in dramatic shades of gray when storms approach. At dusk, the sky transforms again, showcasing fiery streaks of red, gold, and purple, fading into deeper tones as night falls. Under the cover of darkness, it becomes a velvet-black expanse adorned with twinkling stars and the silvery glow of the moon, offering a sense of wonder and mystery. The sky is ever-changing, a reflection of the world's moods and an eternal reminder of nature's boundless beauty.`,
   }),
-  TheSky2: new ItemType({
-    id: 9,
-    key: 9,
-    name: `The Sky 2`,
-    image: defaultImages.sky,
-    listID: `4-listColumn-new`,
-    backgroundColor: colors.navy,
-    summary: `The sky is a vast, expansive canvas that stretches endlessly above, painted with a palette that shifts throughout the day.`,
-    description: `At dawn, it awakens with soft hues of pink, orange, and lavender, gradually brightening into a radiant blue as the sun ascends. During the day, it can appear as a brilliant azure dome, dotted with fluffy white clouds drifting lazily, or cloaked in dramatic shades of gray when storms approach. At dusk, the sky transforms again, showcasing fiery streaks of red, gold, and purple, fading into deeper tones as night falls. Under the cover of darkness, it becomes a velvet-black expanse adorned with twinkling stars and the silvery glow of the moon, offering a sense of wonder and mystery. The sky is ever-changing, a reflection of the world's moods and an eternal reminder of nature's boundless beauty.`,
-  }),
-  TheSky3: new ItemType({
-    id: 10,
-    key: 10,
-    name: `The Sky 3`,
-    listID: `4-listColumn-new`,
-    // image: defaultImages.sky,
-    backgroundColor: colors.navy,
-    summary: `The sky is a vast, expansive canvas that stretches endlessly above, painted with a palette that shifts throughout the day.`,
-    description: `At dawn, it awakens with soft hues of pink, orange, and lavender, gradually brightening into a radiant blue as the sun ascends. During the day, it can appear as a brilliant azure dome, dotted with fluffy white clouds drifting lazily, or cloaked in dramatic shades of gray when storms approach. At dusk, the sky transforms again, showcasing fiery streaks of red, gold, and purple, fading into deeper tones as night falls. Under the cover of darkness, it becomes a velvet-black expanse adorned with twinkling stars and the silvery glow of the moon, offering a sense of wonder and mystery. The sky is ever-changing, a reflection of the world's moods and an eternal reminder of nature's boundless beauty.`,
-  }),
 }
 
 export const defaultItems: ItemType[] = Object.values(itemObjects);
@@ -127,8 +107,7 @@ export const defaultColumns: ColumnType[] = [
     category: `To Do`,
     id: `1-listColumn-items`,
     listID: `1-listColumn-items`,
-    items: [],
-    // items: [itemObjects.JellyFish, itemObjects.MotherNature],
+    items: [itemObjects.JellyFish, itemObjects.MotherNature],
   }, 
   { 
     index: 2, 
@@ -136,8 +115,7 @@ export const defaultColumns: ColumnType[] = [
     category: `Active`,
     id: `2-listColumn-active`,
     listID: `2-listColumn-active`,
-    items: [],
-    // items: [itemObjects.Festivals, itemObjects.PlayingMusic],
+    items: [itemObjects.Festivals, itemObjects.PlayingMusic],
   },
   { 
     index: 3, 
@@ -145,16 +123,14 @@ export const defaultColumns: ColumnType[] = [
     category: `Done`,
     id: `3-listColumn-complete`,
     listID: `3-listColumn-complete`,
-    items: [],
-    // items: [itemObjects.CleanEnergy, itemObjects.TheOutside, itemObjects.Singing],
+    items: [itemObjects.CleanEnergy, itemObjects.TheOutside, itemObjects.Singing],
   },
-  // { 
-  //   index: 4, 
-  //   name: `New`, 
-  //   category: `New`,
-  //   id: `4-listColumn-new`,
-  //   listID: `4-listColumn-new`,
-  //   items: [],
-  //   // items: [itemObjects.TheSky, itemObjects.TheSky2, itemObjects.TheSky3],
-  // },
+  { 
+    index: 4, 
+    name: `New`, 
+    category: `New`,
+    id: `4-listColumn-new`,
+    listID: `4-listColumn-new`,
+    items: [itemObjects.TheSky],
+  },
 ]

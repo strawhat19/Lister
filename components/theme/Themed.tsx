@@ -16,10 +16,8 @@ export const cardColors = {
   navy: `#04397b`,
   appleBlue: `#007AFF`,
   appleGreen: `#34C759`,
-  background: `#13181f`,
   applePurple: `#5856D6`,
   appleYellow: `#FFCC00`,
-  darkTabBorder: `#272729`,
   appleGreenMint: `#AAF0D1`,
   appleGreenShade: `rgba(0, 125, 27, 1)`,
   appleRed: Platform.OS == `web` ? `rgb(212 67 59)` : `#FF3B30`,
@@ -41,6 +39,8 @@ export const colors = {
   white: `#ffffff`,
   light: `#2f95dc`,
   mainBG: `#13181f`,
+  background: `#13181f`,
+  darkTabBorder: `#272729`,
   blackGlass: (alpha) => `rgba(0,0,0, ${alpha})`,
 }
 

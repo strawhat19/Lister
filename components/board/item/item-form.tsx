@@ -137,5 +137,5 @@ const styles = StyleSheet.create({
         fontWeight: `bold`,
     },
     buttonText: { fontSize: 16, textAlign: `center`, fontWeight: `bold` },
-    button: { width: `100%`, backgroundColor: colors.appleBlue, paddingVertical: 3, borderRadius: borderRadius - 5, },
+    button: { width: `100%`, backgroundColor: colors.navy, paddingVertical: 3, borderRadius: borderRadius - 5, },
 })

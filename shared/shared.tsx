@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler';
-
 import { defaultColumns } from './database';
 import { View } from '@/components/theme/Themed';
 import SlideUp from '@/components/slide-up/slide-up';
@@ -47,25 +46,24 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     }
   }
 
-  useEffect(() => {
-    devEnv && console.log(process.env.AUTHDOMAIN);
-    // const usersCollection = collection(db, databaseNames.users);
-    // const unsubscribeFromUserDatabase = onSnapshot(usersCollection, snapshot => {
-    //     setUsersLoading(true);
-    //     const usersFromDB: any[] = [];
-    //     snapshot.forEach((doc) => usersFromDB.push({ ...doc.data() } as any));
-    //     console.log(`Users Update from Firebase`, JSON.stringify(usersFromDB, null, 2));
-    //     setUsers(usersFromDB);
-    //     setUsersLoading(false);
-    //   }, error => {
-    //     console.log(`Error getting Users from Firebase`, JSON.stringify(error, null, 2));
-    //     setUsersLoading(false);
-    //   }
-    // )
+  useEffect(() => {    
+    const usersCollection = collection(db, databaseNames.users);
+    const unsubscribeFromUserDatabase = onSnapshot(usersCollection, snapshot => {
+        setUsersLoading(true);
+        const usersFromDB: any[] = [];
+        snapshot.forEach((doc) => usersFromDB.push({ ...doc.data() } as any));
+        devEnv && console.log(`Users Update from Firebase`, JSON.stringify(usersFromDB, null, 2));
+        setUsers(usersFromDB);
+        setUsersLoading(false);
+      }, error => {
+        console.log(`Error getting Users from Firebase`, JSON.stringify(error, null, 2));
+        setUsersLoading(false);
+      }
+    )
 
-    // return () => {
-    //   unsubscribeFromUserDatabase();
-    // }
+    return () => {
+      unsubscribeFromUserDatabase();
+    }
   }, [])
 
   const openBottomSheet = (item?: any, backgroundColor?: any) => {

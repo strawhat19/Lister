@@ -4,6 +4,7 @@ import { boardStyles } from '../styles';
 import * as Haptics from 'expo-haptics';
 import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, { Layout, runOnJS } from 'react-native-reanimated';
 import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
@@ -22,15 +23,15 @@ export default function Column({
 }: ColumnType | any) {
     let { 
         users,
+        board,
         height, 
+        setBoard, 
         selected,
         fadeAnim, 
         slideIndex,
         isDragging, 
         setDragging, 
-        carouselData,
         activeTopName,
-        setCarouselData, 
         openBottomSheet, 
         closeBottomSheet, 
     } = useContext<any>(SharedContext);
@@ -41,6 +42,7 @@ export default function Column({
     }
 
     const deleteItemWithConfirmation = () => {
+        Vibration.vibrate(1);
         Alert.alert(
             `Delete Item`,
             `Are you sure you want to delete this item?`,
@@ -51,7 +53,7 @@ export default function Column({
 
     const handleGesture = (event: any) => {
         'worklet';
-        const sensitivity = 25;
+        const sensitivity = 20;
         const { translationX, velocityX } = event.nativeEvent;
         const horizontalMovement = Math.abs(translationX) > sensitivity && Math.abs(velocityX) > sensitivity;
         if (!horizontalMovement) return;
@@ -68,7 +70,7 @@ export default function Column({
     })
 
     const deleteItem = () => {
-        const updatedCarouselData = carouselData.map((list: ColumnType) => {
+        const updatedCarouselData = board.map((list: ColumnType) => {
             if (list.id === column?.id) {
                 return { 
                     ...list, 
@@ -77,7 +79,7 @@ export default function Column({
             }
             return list;
         });
-        setCarouselData(updatedCarouselData);
+        setBoard(updatedCarouselData);
         closeItem();
     }
 
@@ -108,22 +110,19 @@ export default function Column({
                         </Text>
                     ) : (
                         selected?.type == SheetComponents.Item ? (
-                            <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={{ backgroundColor: colors.red, padding: 5, paddingHorizontal: 10, borderRadius: borderRadius - 3 }}>
+                            <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: colors.red }]}>
+                                <FontAwesome name={`trash`} color={colors.white} size={14} />
                                 <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold` }]}>
-                                    X Delete
+                                    Delete
                                 </Text>
                             </TouchableOpacity>
                         ) : <></>
                     )}
                     <Text style={[titleRowStyles.title, { flexBasis: selected?.type == SheetComponents.ItemForm ? `75%` : `50%` }]}>
                         {selected == null ? (
-                           !devEnv ? (
-                            `Users - ${users?.length}`
-                           ) : (
-                            `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
+                           `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                 toFixedWithoutRounding(slideIndex + 1, 1)
                             )}`
-                           )
                         ) : activeTopName}
                     </Text>
                     {selected == null ? (
@@ -137,9 +136,10 @@ export default function Column({
                             </Text>
                         </>
                     ) : (
-                        <TouchableOpacity onPress={() => closeItem()} style={{ backgroundColor: colors.navy, padding: 5, paddingHorizontal: 10, borderRadius: borderRadius - 3 }}>
+                        <TouchableOpacity onPress={() => closeItem()} style={[titleRowStyles.topButton, { backgroundColor: colors.navy }]}>
+                            <FontAwesome name={`ban`} color={colors.white} size={14} />
                             <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold` }]}>
-                                X Close
+                                Cancel
                             </Text>
                         </TouchableOpacity>
                     )}
@@ -163,13 +163,13 @@ export default function Column({
                             }}
                             onDragEnd={({ data }) => {
                                 setDragging(false);
-                                const updatedCarouselData = carouselData.map((list: ColumnType) => {
+                                const updatedCarouselData = board.map((list: ColumnType) => {
                                     if (list.id === data[0].listID) {
                                         return { ...list, items: data };
                                     }
                                     return list;
                                 });
-                                setCarouselData(updatedCarouselData);
+                                setBoard(updatedCarouselData);
                             }}
                             renderItem={({ item, drag, isActive }: RenderItemParams<ItemType>) => {
                                 return (
@@ -234,5 +234,14 @@ export const titleRowStyles = StyleSheet.create({
         color: `white`, 
         flexBasis: `25%`, 
         textAlign: `center`, 
+    },
+    topButton: {
+        gap: 5,
+        padding: 5, 
+        display: `flex`,
+        flexDirection: `row`,
+        alignItems: `center`,
+        paddingHorizontal: 10, 
+        borderRadius: borderRadius - 3, 
     },
 })

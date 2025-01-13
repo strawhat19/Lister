@@ -90,8 +90,8 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
             {selected?.type == SheetComponents.Item ? (
                 <ScrollView 
                     id={`itemDetails_${selected.id}`}
-                    style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: selected?.image ? 15 : 0 }}
                     scrollEnabled={scrollingDetailsEnabled() ? description.length >= 500 : description.length >= 720} 
+                    style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: selected?.image ? 15 : 0 }}
                 >
                     <CustomTextInput
                         multiline={true}

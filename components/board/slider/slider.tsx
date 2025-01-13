@@ -14,7 +14,7 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
         height, 
         selected,
         progress, 
-        carouselData,
+        board,
         setSlideIndex,
     } = useContext<any>(SharedContext);
 
@@ -40,7 +40,7 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
                 height={height}
                 mode={`parallax`}
                 ref={carouselRef}
-                data={carouselData}
+                data={board}
                 enabled={selected == null}
                 onProgressChange={progress}
                 style={{ backgroundColor }}

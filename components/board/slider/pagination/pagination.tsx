@@ -5,7 +5,7 @@ import { paginationHeightMargin } from '@/shared/variables';
 import { Pagination } from 'react-native-reanimated-carousel';
 
 export default function SliderPagination({ carouselRef }: any) {
-    let { selected, progress, carouselData } = useContext<any>(SharedContext);
+    let { selected, progress, board } = useContext<any>(SharedContext);
 
     const onPressPagination = (index: number) => {
         carouselRef.current?.scrollTo({
@@ -18,7 +18,7 @@ export default function SliderPagination({ carouselRef }: any) {
         <View style={{ flex: 1, opacity: selected == null ? 1 : 0, backgroundColor: colors.transparent, width: `100%`, marginTop: -1 * (paginationHeightMargin - 127), pointerEvents: `none` }}>
             <Pagination.Basic
                 size={8}
-                data={carouselData}
+                data={board}
                 progress={progress}
                 onPress={onPressPagination}
                 containerStyle={{ gap: 10, }}

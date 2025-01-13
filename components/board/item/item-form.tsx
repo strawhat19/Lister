@@ -7,7 +7,7 @@ import { borderRadius, colors, lightColors, randomCardColor, Text } from '@/comp
 import { View, Vibration, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 
 export default function ItemForm({ }: any) {
-    let { selected, editing, setEditing, closeBottomSheet, carouselData, setCarouselData } = useContext<any>(SharedContext);
+    let { selected, editing, setEditing, closeBottomSheet, board, setBoard } = useContext<any>(SharedContext);
 
     const [formError, setFormError] = useState(true);
     const [form, setForm] = useState({ name: ``, image: ``, summary: ``, description: `` });
@@ -40,7 +40,7 @@ export default function ItemForm({ }: any) {
         }
 
         const isLightColor = Object.values(lightColors).includes(newColor);
-        const allItems = combineArraysByKey(carouselData, `items`);
+        const allItems = combineArraysByKey(board, `items`);
         const newIndex = allItems?.length + 1;
 
         const newItem = new ItemType({
@@ -58,7 +58,7 @@ export default function ItemForm({ }: any) {
             }),
         } as ItemType)
 
-        const updatedCarouselData = carouselData.map((list: ColumnType) => {
+        const updatedCarouselData = board.map((list: ColumnType) => {
             if (list.id === selected?.listID) {
                 return { 
                     ...list, 
@@ -71,7 +71,7 @@ export default function ItemForm({ }: any) {
             return list;
         });
 
-        setCarouselData(updatedCarouselData);
+        setBoard(updatedCarouselData);
         Vibration.vibrate(1);
 
         closeBottomSheet();

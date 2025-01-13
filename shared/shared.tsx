@@ -24,9 +24,9 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [modalOpen, setModalOpen] = useState(false);
   let [isDragging, setDragging] = useState(false);
   let [usersLoading, setUsersLoading] = useState(false);
+  let [board, setBoard] = useState<ColumnType[]>(defaultColumns);
   let [selected, setSelected] = useState<ItemType | ColumnType | null>(null);
-  let [carouselData, setCarouselData] = useState<ColumnType[]>(defaultColumns);
-  let [activeTopName, setActiveTopName] = useState(carouselData[slideIndex]?.name);
+  let [activeTopName, setActiveTopName] = useState(board[slideIndex]?.name);
 
   const progress = useSharedValue<number>(0);
   const { width, height } = useWindowDimensions();
@@ -41,7 +41,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
 
   const onSheetChange = (index?: any) => {
     if (index === 0) {
-      setActiveTopName(carouselData[slideIndex]?.name);
+      setActiveTopName(board[slideIndex]?.name);
       closeBottomSheet();
     }
   }
@@ -120,6 +120,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         indx, setIndx,
         blur, setBlur,
         onSheetChange,
+        board, setBoard,
         users, setUsers,
         openBottomSheet,
         closeBottomSheet,
@@ -130,7 +131,6 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         modalOpen, setModalOpen,
         slideIndex, setSlideIndex,
         usersLoading, setUsersLoading,
-        carouselData, setCarouselData,
         activeTopName, setActiveTopName,
       }}
     >

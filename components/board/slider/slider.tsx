@@ -6,15 +6,15 @@ import SliderPagination from './pagination/pagination';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
-export default function Slider({ backgroundColor = colors.mainBG }: any) {
+export default function Slider({ backgroundColor = colors.mainBG, overWriteData, itemToRender }: any) {
     const carouselRef = useRef<ICarouselInstance>(null);
     const scrollOffsetValue = useSharedValue<number>(0);
     let { 
+        board,
         width, 
         height, 
         selected,
         progress, 
-        board,
         setSlideIndex,
     } = useContext<any>(SharedContext);
 
@@ -40,15 +40,15 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
                 height={height}
                 mode={`parallax`}
                 ref={carouselRef}
-                data={board}
                 enabled={selected == null}
                 onProgressChange={progress}
                 style={{ backgroundColor }}
                 pagingEnabled={selected == null}
+                data={overWriteData ? overWriteData : board}
                 defaultScrollOffsetValue={scrollOffsetValue}
                 modeConfig={{ parallaxScrollingScale: 0.99, parallaxAdjacentItemScale: 0.55 }}
                 renderItem={({ index, item: column }: any) => (
-                    <Slide index={index} column={column} swipeCarousel={swipeCarousel} />
+                    itemToRender ? itemToRender : <Slide index={index} column={column} swipeCarousel={swipeCarousel} />
                 )}
             />
 

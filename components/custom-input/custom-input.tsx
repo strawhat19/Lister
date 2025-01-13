@@ -20,7 +20,7 @@ export default function CustomTextInput({
 
     const generatedID = useId();
     const accessoryViewID = `inputAccessoryView-${generatedID}`;
-    const inputFontColor = { color: Object.values(lightColors).includes(selected?.backgroundColor) ? colors.darkTabBorder : colors.white };
+    const inputFontColor = { color: Object.values(lightColors).includes(selected?.backgroundColor) ? colors.dark : colors.white };
 
     const dismissKeyboard = (saveProgress: boolean = false) => {
         if (saveProgress) onSave();

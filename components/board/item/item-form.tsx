@@ -54,7 +54,7 @@ export default function ItemForm({ }: any) {
             description: form?.description,
             listID: selected?.listID || selected?.id,
             ...(isLightColor && {
-                fontColor: colors.darkTabBorder,
+                fontColor: colors.dark,
             }),
         } as ItemType)
 

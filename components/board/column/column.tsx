@@ -2,8 +2,8 @@ import Item from '../item/item';
 import { BlurView } from 'expo-blur';
 import { boardStyles } from '../styles';
 import * as Haptics from 'expo-haptics';
-import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
+import React, { useCallback, useContext } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, { Layout, runOnJS } from 'react-native-reanimated';
@@ -67,6 +67,7 @@ export default function Column({
 
     const handleGesture = (event: any) => {
         'worklet';
+        if (isDragging) return;
         const sensitivity = 20;
         const { translationX, velocityX } = event.nativeEvent;
         const horizontalMovement = Math.abs(translationX) > sensitivity && Math.abs(velocityX) > sensitivity;
@@ -87,7 +88,8 @@ export default function Column({
         setBoard(updatedBoardData);
     }
 
-    const renderDraggableItem = (item, drag, isActive) => {
+    const renderDraggableItem = useCallback(
+        ({ item, drag, isActive }: RenderItemParams<ItemType>) => {
         return (
             <Animated.View layout={Layout.springify()}>
                 <Item
@@ -101,7 +103,7 @@ export default function Column({
                 />
             </Animated.View>
         )
-    }
+    }, [])
 
     const deleteItem = () => {
         const updatedBoardData = board.map((list: ColumnType) => {
@@ -179,18 +181,20 @@ export default function Column({
                     )}
                 </View>
                 {column?.items?.length > 0 ? (
-                    <PanGestureHandler enabled={!isDragging} onGestureEvent={handleGesture}>
+                    // <PanGestureHandler enabled={!isDragging} onGestureEvent={null}>
                         <DraggableFlatList
+                            bounces={true}
                             data={column?.items}
                             onDragBegin={onDragBegin}
+                            directionalLockEnabled={true}
+                            renderItem={renderDraggableItem}
                             keyExtractor={(item) => `${item.id}-${item?.key}`}
                             style={{ height: height - paginationHeightMargin }}
                             onDragEnd={onDragEndData => onDragEnd(onDragEndData)}
                             onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                            renderItem={({ item, drag, isActive }: RenderItemParams<ItemType>) => renderDraggableItem(item, drag, isActive)}
                             contentContainerStyle={{ width: `100%`, gap: gridSpacing - 8, marginHorizontal: `auto`, paddingHorizontal: gridSpacing }}
                         />
-                    </PanGestureHandler>
+                    // </PanGestureHandler>
                 ) : (
                     <View style={{ width: `100%`, backgroundColor, height: height - paginationHeightMargin, paddingTop: 35 }}>
                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>

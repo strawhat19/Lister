@@ -10,7 +10,7 @@ import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
 import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
-import { gridSpacing, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+import { devEnv, gridSpacing, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export default function Column({ 
     column, 
@@ -21,6 +21,7 @@ export default function Column({
     backgroundColor = colors.mainBG, 
 }: ColumnType | any) {
     let { 
+        users,
         height, 
         selected,
         fadeAnim, 
@@ -116,9 +117,13 @@ export default function Column({
                     )}
                     <Text style={[titleRowStyles.title, { flexBasis: selected?.type == SheetComponents.ItemForm ? `75%` : `50%` }]}>
                         {selected == null ? (
+                           !devEnv ? (
+                            `Users - ${users?.length}`
+                           ) : (
                             `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                 toFixedWithoutRounding(slideIndex + 1, 1)
                             )}`
+                           )
                         ) : activeTopName}
                     </Text>
                     {selected == null ? (

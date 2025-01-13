@@ -21,7 +21,7 @@ export default function ItemForm({ }: any) {
 
     const handleSubmit = () => {
         if (formError) {
-            log(`Error`, `All fields are required!`);
+            log(`Error`, `All fields are required!`, true);
             return;
         }
 
@@ -58,7 +58,7 @@ export default function ItemForm({ }: any) {
             }),
         } as ItemType)
 
-        const updatedCarouselData = board.map((list: ColumnType) => {
+        const updatedBoardData = board.map((list: ColumnType) => {
             if (list.id === selected?.listID) {
                 return { 
                     ...list, 
@@ -71,7 +71,7 @@ export default function ItemForm({ }: any) {
             return list;
         });
 
-        setBoard(updatedCarouselData);
+        setBoard(updatedBoardData);
         Vibration.vibrate(1);
 
         closeBottomSheet();

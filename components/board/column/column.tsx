@@ -11,7 +11,7 @@ import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
 import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
-import { devEnv, gridSpacing, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+import { gridSpacing, log, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export default function Column({ 
     column, 
@@ -41,6 +41,20 @@ export default function Column({
         closeBottomSheet();
     }
 
+    const onDragBegin = () => {
+        setDragging(true);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
+
+    const itemForm = new ItemType({
+        ...column,
+        name: `+ Add Item`,
+        listID: column?.id,
+        type: SheetComponents.ItemForm,
+        summary: `This is the Item Form`,
+        description: `You can use this form to edit or create items`,
+    })
+
     const deleteItemWithConfirmation = () => {
         Vibration.vibrate(1);
         Alert.alert(
@@ -60,26 +74,46 @@ export default function Column({
         runOnJS(swipeCarousel)(translationX);
     }
 
-    const itemForm = new ItemType({
-        ...column,
-        name: `+ Add Item`,
-        listID: column?.id,
-        type: SheetComponents.ItemForm,
-        summary: `This is the Item Form`,
-        description: `You can use this form to edit or create items`,
-    })
+    const onDragEnd = (onDragEndData: any) => {
+        log(`onDragEndData`, onDragEndData);
+        let { data } = onDragEndData;
+        setDragging(false);
+        const updatedBoardData = board.map((list: ColumnType) => {
+            if (list.id === data[0].listID) {
+                return { ...list, items: data };
+            }
+            return list;
+        })
+        setBoard(updatedBoardData);
+    }
+
+    const renderDraggableItem = (item, drag, isActive) => {
+        return (
+            <Animated.View layout={Layout.springify()}>
+                <Item
+                    item={item}
+                    drag={drag}
+                    isActive={isActive}
+                    fadeAnim={fadeAnim}
+                    openBottomSheet={openBottomSheet}
+                    closeBottomSheet={closeBottomSheet}
+                    keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
+                />
+            </Animated.View>
+        )
+    }
 
     const deleteItem = () => {
-        const updatedCarouselData = board.map((list: ColumnType) => {
+        const updatedBoardData = board.map((list: ColumnType) => {
             if (list.id === column?.id) {
                 return { 
                     ...list, 
                     items: list.items.filter(itm => itm?.id != selected?.id)
-                };
+                }
             }
             return list;
         });
-        setBoard(updatedCarouselData);
+        setBoard(updatedBoardData);
         closeItem();
     }
 
@@ -118,7 +152,7 @@ export default function Column({
                             </TouchableOpacity>
                         ) : <></>
                     )}
-                    <Text style={[titleRowStyles.title, { flexBasis: selected?.type == SheetComponents.ItemForm ? `75%` : `50%` }]}>
+                    <Text style={[titleRowStyles.title, { flexBasis: selected?.type == SheetComponents.ItemForm ? `70%` : `50%` }]}>
                         {selected == null ? (
                            `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                 toFixedWithoutRounding(slideIndex + 1, 1)
@@ -148,44 +182,13 @@ export default function Column({
                     <PanGestureHandler enabled={!isDragging} onGestureEvent={handleGesture}>
                         <DraggableFlatList
                             data={column?.items}
+                            onDragBegin={onDragBegin}
                             keyExtractor={(item) => `${item.id}-${item?.key}`}
                             style={{ height: height - paginationHeightMargin }}
+                            onDragEnd={onDragEndData => onDragEnd(onDragEndData)}
                             onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                            onDragBegin={() => {
-                                setDragging(true);
-                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                            }}
-                            contentContainerStyle={{ 
-                                width: `100%`,
-                                gap: gridSpacing - 8, 
-                                marginHorizontal: `auto`, 
-                                paddingHorizontal: gridSpacing,  
-                            }}
-                            onDragEnd={({ data }) => {
-                                setDragging(false);
-                                const updatedCarouselData = board.map((list: ColumnType) => {
-                                    if (list.id === data[0].listID) {
-                                        return { ...list, items: data };
-                                    }
-                                    return list;
-                                });
-                                setBoard(updatedCarouselData);
-                            }}
-                            renderItem={({ item, drag, isActive }: RenderItemParams<ItemType>) => {
-                                return (
-                                    <Animated.View layout={Layout.springify()}>
-                                        <Item
-                                            item={item}
-                                            drag={drag}
-                                            isActive={isActive}
-                                            fadeAnim={fadeAnim}
-                                            openBottomSheet={openBottomSheet}
-                                            closeBottomSheet={closeBottomSheet}
-                                            keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
-                                        />
-                                    </Animated.View>
-                                )
-                            }}
+                            renderItem={({ item, drag, isActive }: RenderItemParams<ItemType>) => renderDraggableItem(item, drag, isActive)}
+                            contentContainerStyle={{ width: `100%`, gap: gridSpacing - 8, marginHorizontal: `auto`, paddingHorizontal: gridSpacing }}
                         />
                     </PanGestureHandler>
                 ) : (

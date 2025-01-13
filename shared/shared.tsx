@@ -1,9 +1,9 @@
 import 'react-native-gesture-handler';
 import { defaultColumns } from './database';
 import { View } from '@/components/theme/Themed';
+import { animationOptions, log } from './variables';
 import SlideUp from '@/components/slide-up/slide-up';
 import { databaseNames, db } from './server/firebase';
-import { animationOptions, devEnv } from './variables';
 import { useSharedValue } from 'react-native-reanimated';
 import { ColumnType, ItemType } from '@/shared/types/types';
 import { collection, onSnapshot } from 'firebase/firestore';
@@ -52,11 +52,11 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         setUsersLoading(true);
         const usersFromDB: any[] = [];
         snapshot.forEach((doc) => usersFromDB.push({ ...doc.data() } as any));
-        devEnv && console.log(`Users Update from Firebase`, JSON.stringify(usersFromDB, null, 2));
+        log(`Users Update from Firebase`, usersFromDB);
         setUsers(usersFromDB);
         setUsersLoading(false);
       }, error => {
-        console.log(`Error getting Users from Firebase`, JSON.stringify(error, null, 2));
+        log(`Error getting Users from Firebase`, error);
         setUsersLoading(false);
       }
     )

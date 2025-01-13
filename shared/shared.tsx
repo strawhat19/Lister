@@ -46,26 +46,6 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     }
   }
 
-  useEffect(() => {    
-    const usersCollection = collection(db, databaseNames.users);
-    const unsubscribeFromUserDatabase = onSnapshot(usersCollection, snapshot => {
-        setUsersLoading(true);
-        const usersFromDB: any[] = [];
-        snapshot.forEach((doc) => usersFromDB.push({ ...doc.data() } as any));
-        log(`Users Update from Firebase`, usersFromDB);
-        setUsers(usersFromDB);
-        setUsersLoading(false);
-      }, error => {
-        log(`Error getting Users from Firebase`, error);
-        setUsersLoading(false);
-      }
-    )
-
-    return () => {
-      unsubscribeFromUserDatabase();
-    }
-  }, [])
-
   const openBottomSheet = (item?: any, backgroundColor?: any) => {
     enterFadeBlur();
     setIndx(1);
@@ -105,6 +85,26 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
       ...animationOptions,
     }).start();
   }
+
+  // useEffect(() => {    
+  //   const usersCollection = collection(db, databaseNames.users);
+  //   const unsubscribeFromUserDatabase = onSnapshot(usersCollection, snapshot => {
+  //       setUsersLoading(true);
+  //       const usersFromDB: any[] = [];
+  //       snapshot.forEach((doc) => usersFromDB.push({ ...doc.data() } as any));
+  //       log(`Users Update from Firebase`, usersFromDB);
+  //       setUsers(usersFromDB);
+  //       setUsersLoading(false);
+  //     }, error => {
+  //       log(`Error getting Users from Firebase`, error);
+  //       setUsersLoading(false);
+  //     }
+  //   )
+
+  //   return () => {
+  //     unsubscribeFromUserDatabase();
+  //   }
+  // }, [])
 
   return (
     <SharedContext.Provider 

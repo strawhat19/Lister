@@ -16,7 +16,7 @@ export default function ItemForm({ }: any) {
         setForm({ ...form, [field]: value });
         let formError = !form.name || !form.summary;
         setFormError(formError);
-        devEnv && console.log(`Form`, { ...form, desc: form?.description?.length, editing });
+        log(`Form`, { ...form, desc: form?.description?.length, editing });
     }
 
     const handleSubmit = () => {

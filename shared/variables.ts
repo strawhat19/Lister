@@ -19,10 +19,9 @@ export const paginationHeightMargin = 200;
 export const cardImageWidth = web() ? `25%` : `33%`;
 
 export const log = (string: string, data?: any, alert = false) => {
-  if (alert && Platform.OS != `web`) {
-    Alert.alert(string);
-  }
-  devEnv && console.log(string, JSON.stringify(data, null, 2));
+  if (alert == true && Platform.OS != `web`) Alert.alert(string);
+  if (data) devEnv && console.log(string, JSON.stringify(data, null, 2));
+  else devEnv && console.log(string);
 }
 
 export const showDevFeatures = true;

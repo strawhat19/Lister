@@ -5,6 +5,7 @@ import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
 import React, { useCallback, useContext } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, { Layout, runOnJS } from 'react-native-reanimated';
 import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
@@ -15,6 +16,7 @@ import { gridSpacing, log, paginationHeightMargin, toFixedWithoutRounding } from
 export default function Column({ 
     column, 
     active, 
+    swipeCarousel,
     animatedAdjacent, 
     blurIntensity = 0, 
     backgroundColor = colors.mainBG, 
@@ -26,6 +28,7 @@ export default function Column({
         setBoard, 
         selected,
         fadeAnim, 
+        isDragging,
         slideIndex,
         setDragging, 
         activeTopName,
@@ -63,9 +66,9 @@ export default function Column({
     }
 
     const onDragEnd = (onDragEndData: any) => {
+        setDragging(false);
         log(`onDragEndData`, onDragEndData);
         let { data } = onDragEndData;
-        setDragging(false);
         const updatedBoardData = board.map((list: ColumnType) => {
             if (list.id === data[0].listID) {
                 return { ...list, items: data };
@@ -73,6 +76,26 @@ export default function Column({
             return list;
         })
         setBoard(updatedBoardData);
+    }
+
+    const handleGesture = (event: any) => {
+        'worklet';
+        if (isDragging) return; // Skip if dragging or swiping is locked
+        log(`gesture inner`);
+
+        const sensitivity = 30; // Adjust sensitivity for horizontal swipe
+        const { translationX, translationY, velocityX } = event.nativeEvent;
+
+        // Determine if the gesture is primarily horizontal
+        const isHorizontalSwipe =
+            Math.abs(translationX) > Math.abs(translationY) && // Horizontal motion dominates
+            Math.abs(translationX) > sensitivity && // Sufficient horizontal movement
+            Math.abs(velocityX) > sensitivity; // Sufficient horizontal velocity
+
+        if (isHorizontalSwipe) {
+            log(`horizontal inner`, isHorizontalSwipe);
+            runOnJS(swipeCarousel)(translationX); // Trigger swipeCarousel with translationX
+        }
     }
 
     const renderDraggableItem = useCallback(
@@ -168,23 +191,26 @@ export default function Column({
                     )}
                 </View>
                 {column?.items?.length > 0 ? (
-                    <DraggableFlatList
-                        bounces={true}
-                        data={column?.items}
-                        onDragBegin={onDragBegin}
-                        directionalLockEnabled={true}
-                        renderItem={renderDraggableItem}
-                        keyExtractor={(item) => `${item.id}-${item?.key}`}
-                        style={{ height: height - paginationHeightMargin }}
-                        onDragEnd={(onDragEndData) => onDragEnd(onDragEndData)}
-                        onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                        contentContainerStyle={{
-                            width: `100%`,
-                            gap: gridSpacing - 8,
-                            marginHorizontal: `auto`,
-                            paddingHorizontal: gridSpacing,
-                        }}
-                    />
+                    // <PanGestureHandler waitFor={carouselRef} enabled={!isDragging} onGestureEvent={!isDragging ? handleGesture : null}>
+                        <DraggableFlatList
+                            bounces={true}
+                            data={column?.items}
+                            onDragBegin={onDragBegin}
+                            directionalLockEnabled={true}
+                            renderItem={renderDraggableItem}
+                            keyExtractor={(item) => `${item.id}-${item?.key}`}
+                            style={{ height: height - paginationHeightMargin }}
+                            onDragEnd={(onDragEndData) => onDragEnd(onDragEndData)}
+                            onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                            contentContainerStyle={{
+                                width: `100%`,
+                                paddingBottom: 3,
+                                gap: gridSpacing - 8,
+                                marginHorizontal: `auto`,
+                                paddingHorizontal: gridSpacing,
+                            }}
+                        />
+                    // </PanGestureHandler>
                 ) : (
                     <View style={{ width: `100%`, backgroundColor, height: height - paginationHeightMargin, paddingTop: 35 }}>
                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>

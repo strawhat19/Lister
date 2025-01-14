@@ -11,6 +11,17 @@ import { createContext, useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Animated, useWindowDimensions, Vibration } from 'react-native';
 
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from 'react-native-reanimated';
+
+// This is the default configuration
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.error,
+  strict: false, // Reanimated runs in strict mode by default
+});
+
 export const SharedContext = createContext({});
 
 export default function Shared({ children }: { children: React.ReactNode; }) {
@@ -86,7 +97,8 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     }).start();
   }
 
-  // useEffect(() => {    
+  useEffect(() => {    
+    log(`initialized`);
   //   const usersCollection = collection(db, databaseNames.users);
   //   const unsubscribeFromUserDatabase = onSnapshot(usersCollection, snapshot => {
   //       setUsersLoading(true);
@@ -104,7 +116,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   //   return () => {
   //     unsubscribeFromUserDatabase();
   //   }
-  // }, [])
+  }, [])
 
   return (
     <SharedContext.Provider 

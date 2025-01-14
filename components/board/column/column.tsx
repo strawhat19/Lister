@@ -83,7 +83,7 @@ export default function Column({
         if (isDragging) return; // Skip if dragging or swiping is locked
         log(`gesture inner`);
 
-        const sensitivity = 30; // Adjust sensitivity for horizontal swipe
+        const sensitivity = 20; // Adjust sensitivity for horizontal swipe
         const { translationX, translationY, velocityX } = event.nativeEvent;
 
         // Determine if the gesture is primarily horizontal
@@ -191,7 +191,7 @@ export default function Column({
                     )}
                 </View>
                 {column?.items?.length > 0 ? (
-                    // <PanGestureHandler waitFor={carouselRef} enabled={!isDragging} onGestureEvent={!isDragging ? handleGesture : null}>
+                    <PanGestureHandler enabled={!isDragging} onGestureEvent={!isDragging ? handleGesture : null}>
                         <DraggableFlatList
                             bounces={true}
                             data={column?.items}
@@ -204,13 +204,14 @@ export default function Column({
                             onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                             contentContainerStyle={{
                                 width: `100%`,
-                                paddingBottom: 3,
+                                height: `auto`,
+                                paddingBottom: 2,
                                 gap: gridSpacing - 8,
                                 marginHorizontal: `auto`,
                                 paddingHorizontal: gridSpacing,
                             }}
                         />
-                    // </PanGestureHandler>
+                    </PanGestureHandler>
                 ) : (
                     <View style={{ width: `100%`, backgroundColor, height: height - paginationHeightMargin, paddingTop: 35 }}>
                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>

@@ -1,14 +1,36 @@
+import * as Haptics from 'expo-haptics';
 import { boardStyles } from '../styles';
-import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
 import { ItemType } from '@/shared/types/types';
+import { Layout } from 'react-native-reanimated';
+import React, { useCallback, useContext, useState } from 'react';
 import CustomImage from '@/components/custom-image/custom-image';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
-import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { Text, View, borderRadius, colors, itemCardHeight } from '@/components/theme/Themed';
+import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 
 export default function Item({ item, drag, isActive, getIndex }: any | RenderItemParams<ItemType>) {
+    let [subtasks, setSubtasks] = useState([{id: 1, name: `one`}, {id: 2, name: `two`}]);
     let { selected, fadeAnim, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
+
+    const renderDraggableItem = useCallback(
+        ({ item, drag, isActive, getIndex }: RenderItemParams<ItemType>) => {
+        return (
+            <ScaleDecorator>
+                <TouchableOpacity
+                    onLongPress={drag}
+                    disabled={isActive}
+                    style={[boardStyles.rowItem, { width: `100%`, minHeight: 35, backgroundColor: item?.backgroundColor }]}
+                >
+                    <View style={{width: `100%`, backgroundColor: item?.backgroundColor}}>
+                        <Text style={{ textAlign: `center` }}>
+                            {getIndex() + 1} - {item?.name}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+            </ScaleDecorator>
+        )
+    }, [])
 
     return (
         <ScaleDecorator>
@@ -51,6 +73,24 @@ export default function Item({ item, drag, isActive, getIndex }: any | RenderIte
                     </View>
                 </Animated.View>
             </TouchableOpacity>
+            {/* <DraggableFlatList
+                bounces={true}
+                data={subtasks}
+                directionalLockEnabled={true}
+                renderItem={renderDraggableItem}
+                keyExtractor={(item) => item.id.toString()}
+                style={{ height: `auto`, minHeight: subtasks.length * 35}}
+                onDragEnd={(onDragEndData) => setSubtasks(onDragEndData?.data)}
+                onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                contentContainerStyle={{
+                    gap: 1,
+                    width: `100%`,
+                    height: `auto`,
+                    paddingBottom: 2,
+                    marginHorizontal: `auto`,
+                }}
+            /> */}
         </ScaleDecorator>
     )
 }

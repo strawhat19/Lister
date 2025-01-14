@@ -69,6 +69,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             showLabel={false}
                             placeholder={`Name`}
                             onChangeText={setName}
+                            // onSave={() => onSave()}
                             maxLength={maxItemNameLength}
                             style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 22, minHeight: 30 }}
                         />

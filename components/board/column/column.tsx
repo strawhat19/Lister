@@ -3,14 +3,14 @@ import { BlurView } from 'expo-blur';
 import { boardStyles } from '../styles';
 import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
-import React, { useCallback, useContext } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, { Layout, runOnJS } from 'react-native-reanimated';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
 import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
-import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
+import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
+import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { gridSpacing, log, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export default function Column({ 
@@ -35,6 +35,14 @@ export default function Column({
         openBottomSheet, 
         closeBottomSheet, 
     } = useContext<any>(SharedContext);
+
+    const loadingMessages = {
+        loading: `Loading`,
+        zero: `No Items Yet`,
+    }
+
+    const [loading, setLoading] = useState(false);
+    const [columnData, setColumnData] = useState(column?.items);
 
     const closeItem = () => {
         Vibration.vibrate(1);
@@ -66,16 +74,16 @@ export default function Column({
     }
 
     const onDragEnd = (onDragEndData: any) => {
+        // setLoading(true);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         setDragging(false);
         let { data } = onDragEndData;
-        const updatedBoardData = board.map((list: ColumnType) => {
-            if (list.id === data[0].listID) {
-                return { ...list, items: data };
-            }
-            return list;
-        })
-        setBoard(updatedBoardData);
+        setColumnData(data);
     }
+
+    // useEffect(() => {
+    //     setLoading(false);
+    // }, [columnData])
 
     const deleteItem = () => {
         const updatedBoardData = board.map((list: ColumnType) => {
@@ -93,7 +101,6 @@ export default function Column({
 
     const renderDraggableItem = useCallback(
         ({ item, drag, isActive, getIndex }: RenderItemParams<ItemType>) => {
-        let index = getIndex();
         return (
             <Animated.View layout={Layout.springify()}>
                 <Item
@@ -185,9 +192,9 @@ export default function Column({
                                         ) : activeTopName}
                                     </Text>
                                     {selected == null ? (
-                                        column?.items && column?.items.length > 0 ? (
+                                        columnData && columnData.length > 0 ? (
                                             <Text style={titleRowStyles.subtitle}>
-                                                {column?.items?.length + ` Item(s)`}
+                                                {columnData?.length + ` Item(s)`}
                                             </Text>
                                         ) : <>
                                             <Text style={titleRowStyles.subtitle}>
@@ -203,11 +210,11 @@ export default function Column({
                                         </TouchableOpacity>
                                     )}
                                 </View>
-                                {column?.items?.length > 0 ? (
+                                {(!loading || columnData?.length > 0) ? (
                                     // <PanGestureHandler enabled={!isDragging} activeOffsetX={[-10, 10]} activeOffsetY={[-10, 10]} onGestureEvent={!isDragging ? handleGesture : null}>
                                         <DraggableFlatList
                                             bounces={true}
-                                            data={column?.items}
+                                            data={columnData}
                                             onDragBegin={onDragBegin}
                                             scrollEnabled={!isDragging}
                                             directionalLockEnabled={true}
@@ -230,7 +237,7 @@ export default function Column({
                                 ) : (
                                     <View style={{ width: `100%`, backgroundColor, height: height - paginationHeightMargin, paddingTop: 35 }}>
                                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
-                                            No Items Yet
+                                            {columnData?.length > 0 ? loadingMessages.zero : loadingMessages.loading}
                                         </Text>
                                     </View>
                                 )}

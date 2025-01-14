@@ -3,9 +3,9 @@ import { defaultColumns } from './database';
 import { View } from '@/components/theme/Themed';
 import { animationOptions, log } from './variables';
 import SlideUp from '@/components/slide-up/slide-up';
-import { databaseNames, db } from './server/firebase';
 import { useSharedValue } from 'react-native-reanimated';
 import { collection, onSnapshot } from 'firebase/firestore';
+import { usersDatabaseCollection, db } from './server/firebase';
 import { ColumnType, ItemType, Views } from '@/shared/types/types';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -102,7 +102,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
 
   useEffect(() => {    
     // log(`initialized`);
-  //   const usersCollection = collection(db, databaseNames.users);
+  //   const usersCollection = collection(db, usersDatabaseCollection);
   //   const unsubscribeFromUserDatabase = onSnapshot(usersCollection, snapshot => {
   //       setUsersLoading(true);
   //       const usersFromDB: any[] = [];

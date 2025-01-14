@@ -44,8 +44,8 @@ export default function Subtasks({ tasks = defaultTasks }: any) {
             showsVerticalScrollIndicator={false}
             keyExtractor={(item) => item.id.toString()}
             style={{ height: `auto`, minHeight: subtasks.length * 35}}
-            onDragEnd={(onDragEndData) => setSubtasks(onDragEndData?.data)}
             onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+            onDragEnd={async (onDragEndData) => await setSubtasks(onDragEndData?.data)}
             onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
             contentContainerStyle={{
                 gap: 1,

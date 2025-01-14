@@ -20,7 +20,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
     const [name, setName] = useState(selected.name);
     const [subtaskName, setSubtaskName] = useState(``);
     const [summary, setSummary] = useState(selected.summary);
-    const [subtasks, setSubtasks] = useState<TaskType[]>(defaultTasks);
+    const [subtasks, setSubtasks] = useState<TaskType[]>(selected?.tasks);
     const [description, setDescription] = useState(selected.description);
     const itemFontStyles = { ...(selected.fontColor && { color: selected.fontColor }) };
 
@@ -35,7 +35,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
 
     const addTask = () => {
         Vibration.vibrate(1);
-        setSubtasks(prevTasks => [...prevTasks, { id: prevTasks.length + 1, name: subtaskName }]);
+        setSubtasks(prevTasks => [...prevTasks, { id: prevTasks.length + 1, index: prevTasks.length + 1, name: subtaskName }]);
         setSubtaskName(``);
     }
 

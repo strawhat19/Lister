@@ -73,12 +73,12 @@ export default function Column({
         )
     }
 
-    const onDragEnd = (onDragEndData: any) => {
+    const onDragEnd = async (onDragEndData: any) => {
         // setLoading(true);
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         setDragging(false);
         let { data } = onDragEndData;
-        setColumnData(data);
+        await setColumnData(data);
     }
 
     // useEffect(() => {
@@ -221,7 +221,7 @@ export default function Column({
                                             renderItem={renderDraggableItem}
                                             keyExtractor={(item) => item.id.toString()}
                                             onScrollBeginDrag={() => setDragging(false)}
-                                            onDragEnd={(onDragEndData) => onDragEnd(onDragEndData)}
+                                            onDragEnd={async (onDragEndData) => await onDragEnd(onDragEndData)}
                                             style={{ height: `auto`, maxHeight: height - paginationHeightMargin}}
                                             onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                                             contentContainerStyle={{

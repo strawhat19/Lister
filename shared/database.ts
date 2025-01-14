@@ -13,14 +13,16 @@ export const defaultListIDs = {
   listColumn_3_complete: `listColumn_3_complete`,
 }
 
-export const defaultTasks: TaskType[] = [
-  {id: 1, name: `One`}, 
-  {id: 2, name: `Two`}, 
-  {id: 3, name: `Three`}, 
-  {id: 4, name: `Four`}, 
-  {id: 5, name: `Five`}, 
-  {id: 6, name: `Six`},
-];
+export const defaultTaskObjects = {
+  One: new TaskType({id: `aeiou`, index: 1, name: `One`}), 
+  Two: new TaskType({id: `bedce`, index: 2, name: `Two`}), 
+  Three: new TaskType({id: `zpaom`, index: 3, name: `Three`}), 
+  Four: new TaskType({id: `ximci`, index: 4, name: `Four`}), 
+  Five: new TaskType({id: `podad`, index: 5, name: `Five`}), 
+  Six: new TaskType({id: `xmmdw`, index: 6, name: `Six`}),
+}
+
+export const defaultTasks: TaskType[] = Object.values(defaultTaskObjects);
 
 export const defaultImages = {
   sky: require('@/assets/images/hq/sky.jpg'),
@@ -38,6 +40,7 @@ export const itemObjects = {
     id: 1,
     key: 1,
     name: `Jelly Fish`,
+    tasks: defaultTasks,
     fontColor: colors.white,
     type: SheetComponents.Item,
     image: defaultImages.jelly_fish,
@@ -49,6 +52,7 @@ export const itemObjects = {
   MotherNature: new ItemType({
     id: 2,
     key: 2,
+    tasks: defaultTasks,
     name: `Mother Nature`,
     type: SheetComponents.Item,
     image: defaultImages.hand_leaf,
@@ -60,6 +64,7 @@ export const itemObjects = {
   PlayingMusic: new ItemType({
     id: 3,
     key: 3,
+    tasks: defaultTasks,
     name: `Playing Music`,
     type: SheetComponents.Item,
     backgroundColor: colors.appleRed,
@@ -72,6 +77,7 @@ export const itemObjects = {
     id: 4,
     key: 4,
     name: `Festivals`,
+    tasks: defaultTasks,
     fontColor: colors.dark,
     type: SheetComponents.Item,
     image: defaultImages.wind_flag,
@@ -83,6 +89,7 @@ export const itemObjects = {
   CleanEnergy: new ItemType({
     id: 5,
     key: 5,
+    tasks: defaultTasks,
     name: `Clean Energy`,
     type: SheetComponents.Item,
     image: defaultImages.wind_mills,
@@ -95,6 +102,7 @@ export const itemObjects = {
     id: 6,
     key: 6,
     name: `Singing`,
+    tasks: defaultTasks,
     type: SheetComponents.Item,
     image: defaultImages.singing_rockstar,
     backgroundColor: colors.appleGreenShade,
@@ -105,6 +113,7 @@ export const itemObjects = {
   TheOutside: new ItemType({
     id: 7,
     key: 7,
+    tasks: defaultTasks,
     name: `The Outside`,
     fontColor: colors.dark,
     type: SheetComponents.Item,
@@ -118,6 +127,7 @@ export const itemObjects = {
     id: 8,
     key: 8,
     name: `The Sky`,
+    tasks: defaultTasks,
     image: defaultImages.sky,
     type: SheetComponents.Item,
     backgroundColor: colors.navy,

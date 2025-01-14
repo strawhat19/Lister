@@ -1,7 +1,5 @@
 import { colors } from '@/components/theme/Themed';
-import { ColumnType, ItemType, SheetComponents } from './types/types';
-
-export const defaultTasks = [{id: 1, name: `One`}, {id: 2, name: `Two`}, {id: 3, name: `Three`}, {id: 4, name: `Four`}, {id: 5, name: `Five`}, {id: 6, name: `Six`}];
+import { ColumnType, ItemType, SheetComponents, TaskType } from './types/types';
 
 export const defaultCategories = {
   To_Do: `To Do`,
@@ -14,6 +12,15 @@ export const defaultListIDs = {
   listColumn_2_active: `listColumn_2_active`,
   listColumn_3_complete: `listColumn_3_complete`,
 }
+
+export const defaultTasks: TaskType[] = [
+  {id: 1, name: `One`}, 
+  {id: 2, name: `Two`}, 
+  {id: 3, name: `Three`}, 
+  {id: 4, name: `Four`}, 
+  {id: 5, name: `Five`}, 
+  {id: 6, name: `Six`},
+];
 
 export const defaultImages = {
   sky: require('@/assets/images/hq/sky.jpg'),

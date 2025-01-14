@@ -1,14 +1,14 @@
 import * as Haptics from 'expo-haptics';
 import { boardStyles } from '../styles';
-import { ItemType } from '@/shared/types/types';
 import { TouchableOpacity } from 'react-native';
 import { defaultTasks } from '@/shared/database';
 import React, { useCallback, useState } from 'react';
+import { ItemType, TaskType } from '@/shared/types/types';
 import { colors, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 
-export default function Subtasks({ tasks = defaultTasks, item }: any) {
-    let [subtasks, setSubtasks] = useState(tasks);
+export default function Subtasks({ tasks = defaultTasks }: any) {
+    let [subtasks, setSubtasks] = useState<TaskType[]>(tasks);
 
     const renderDraggableItem = useCallback(
         ({ item, drag, isActive, getIndex }: RenderItemParams<ItemType>) => {

@@ -23,16 +23,20 @@ export enum Themes {
     Light = `light`,
 }
 
-export type ThemeProps = {
-  lightColor?: string;
-  darkColor?: string;
+export enum Orientations {
+    Portrait = `Portrait`,
+    Landscape = `Landscape`,
 }
 
-export enum SheetComponents {
-    Item = `Item`,
-    Column = `Column`,
-    Confirm = `Confirm`,
-    ItemForm = `Item Form`,
+export type ThemeProps = {
+    darkColor?: string;
+    lightColor?: string;
+}
+
+export enum BoardTypes {
+    Tier = `Tier`,
+    Grid = `Grid`,
+    Kanban = `Kanban`,
 }
 
 export enum Views {
@@ -41,9 +45,21 @@ export enum Views {
     Comments = `Comments`,
 }
 
+export enum SheetComponents {
+    Item = `Item`,
+    Task = `Task`,
+    Board = `Board`,
+    Column = `Column`,
+    ItemForm = `Item Form`,
+}
+
 export class ItemViewType {
     selected: ItemType | null;
     backgroundColor?: keyof typeof colors | string = `appleBlue`;
+
+    constructor(data: Partial<ItemViewType>) {
+        Object.assign(this, data);
+    }
 }
 
 export class CustomImageType {
@@ -56,34 +72,117 @@ export class CustomImageType {
     height: number | string = 1260;
     className: string = `customImageClass`;
     useReactLazyLoadOnMobile: boolean = false;
+
+    constructor(data: Partial<CustomImageType>) {
+        Object.assign(this, data);
+    }
+}
+
+export class BoardType {
+    // Meta
+    key?: any;
+    index?: number;
+    id: string | number;
+    type?: string | SheetComponents = SheetComponents.Board;
+
+    // Relational
+    items?: ItemType[] = [];
+    columns?: ColumnType[] = [];
+    listIDs?: string[] | number[] = [];
+    itemIDs?: string[] | number[] = [];
+
+    // Data
+    name: string;
+    creator?: string = ``;
+    boardType?: BoardTypes = BoardTypes.Kanban;
+    created?: string | Date = new Date().toLocaleString(`en-US`);
+    updated?: string | Date = new Date().toLocaleString(`en-US`);
+    backgroundColor?: keyof typeof colors | string = colors.black;
+
+    constructor(data: Partial<BoardType>) {
+        Object.assign(this, data);
+    }
 }
 
 export class ColumnType {
-    id: any;
-    listID: any;
-    name: string;
-    index: number;
-    category: string;
-    items: ItemType[];
+    // Meta
+    key?: any;
+    index?: number;
+    id: string | number;
     type?: string | SheetComponents = SheetComponents.Column;
+
+    // Relational
+    items: ItemType[] = [];
+    listID?: string | number;
+    boardID?: string | number;
+    itemIDs?: string[] | number[] = [];
+
+    // Data
+    name: string;
+    category: string;
+    creator?: string = ``;
+    created?: string | Date = new Date().toLocaleString(`en-US`);
+    updated?: string | Date = new Date().toLocaleString(`en-US`);
+    backgroundColor?: keyof typeof colors | string = colors.background;
+
+    constructor(data: Partial<ColumnType>) {
+        Object.assign(this, data);
+    }
 }
 
 export class ItemType {
-    id: any;
-    key: any;
+    // Meta
+    key?: any;
+    index?: number;
+    id: string | number;
+    type?: string | SheetComponents = SheetComponents.Item;
+
+    // Relational
+    tasks?: TaskType[] = [];
+    listID!: number | string;
+    boardID?: number | string;
+    taskIDs?: number[] | string[] = [];
+
+    // Data
     image?: any;
-    listID!: any;
-    tasks?: any[];
     name: string = ``;
     fontColor?: string;
     summary: string = ``;
+    creator?: string = ``;
     description: string = ``;
-    type?: string | SheetComponents = SheetComponents.Item;
-    backgroundColor?: keyof typeof colors | string = `appleBlue`;
+    orientation?: Orientations = Orientations.Portrait;
+    created?: string | Date = new Date().toLocaleString(`en-US`);
+    updated?: string | Date = new Date().toLocaleString(`en-US`);
+    backgroundColor?: keyof typeof colors | string = colors.appleBlue;
+    
     constructor(data: Partial<ItemType>) {
         Object.assign(this, data);
         if (!this.description || this.description == ``) {
             this.description = this.summary;
         }
+    }
+}
+
+export class TaskType {
+    // Meta
+    key?: any;
+    index?: number;
+    id: string | number;
+    type?: string | SheetComponents = SheetComponents.Task;
+
+    // Relational
+    itemID?: number | string;
+    listID?: number | string;
+    boardID?: number | string;
+
+    // Data
+    name: string = ``;
+    creator?: string = ``;
+    created?: string | Date = new Date().toLocaleString(`en-US`);
+    updated?: string | Date = new Date().toLocaleString(`en-US`);
+    backgroundColor?: keyof typeof colors | string = colors.black;
+
+    constructor(data: Partial<TaskType>) {
+        Object.assign(this, data);
     }
 }

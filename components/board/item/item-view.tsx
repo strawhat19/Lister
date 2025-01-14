@@ -7,9 +7,9 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { boardStyles, cardedBorderRight } from '../styles';
 import CustomImage from '@/components/custom-image/custom-image';
 import CustomTextInput from '@/components/custom-input/custom-input';
-import { ItemViewType, SheetComponents, Views } from '@/shared/types/types';
 import { colors, globalStyles, Text, View } from '@/components/theme/Themed';
 import { Animated, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
+import { ItemViewType, SheetComponents, TaskType, Views } from '@/shared/types/types';
 import { maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
 
 export const maxItemDescriptionHeight = 251;
@@ -19,8 +19,8 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
 
     const [name, setName] = useState(selected.name);
     const [subtaskName, setSubtaskName] = useState(``);
-    const [subtasks, setSubtasks] = useState(defaultTasks);
     const [summary, setSummary] = useState(selected.summary);
+    const [subtasks, setSubtasks] = useState<TaskType[]>(defaultTasks);
     const [description, setDescription] = useState(selected.description);
     const itemFontStyles = { ...(selected.fontColor && { color: selected.fontColor }) };
 

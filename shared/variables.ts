@@ -1,7 +1,7 @@
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
 import { DataNoID, Types } from '@/shared/types/types';
-import { Dimensions, Alert, Platform } from 'react-native';
+import { Dimensions, Alert, Platform, Vibration } from 'react-native';
 
 export const COL = 5;
 export const MARGIN = 8;
@@ -108,6 +108,7 @@ export const toFixedWithoutRounding = (value, decimalPlaces) => {
 }
 
 export const getLocation = async () => {
+  Vibration.vibrate(1);
   let { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== 'granted') {
     Alert.alert('Permission Denied', 'Location access is required.');
@@ -159,6 +160,7 @@ export const countPropertiesInObject = (obj: any) => {
 }
 
 export const openCamera = async () => {
+  Vibration.vibrate(1);
   const permission = await ImagePicker.requestCameraPermissionsAsync();
   if (permission.granted) {
     let result: any = await ImagePicker.launchCameraAsync();

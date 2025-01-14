@@ -85,6 +85,13 @@ export default function Column({
     //     setLoading(false);
     // }, [columnData])
 
+    useEffect(() => {
+       let thisColumn = board?.find(col => col?.id == column.id);
+       if (thisColumn) {
+        setColumnData(thisColumn?.items);
+       }  
+    }, [board])
+
     const deleteItem = () => {
         const updatedBoardData = board.map((list: ColumnType) => {
             if (list.id === column?.id) {

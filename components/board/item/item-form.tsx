@@ -16,7 +16,6 @@ export default function ItemForm({ }: any) {
         setForm({ ...form, [field]: value });
         let formError = !form.name || !form.summary;
         setFormError(formError);
-        log(`Form`, { ...form, desc: form?.description?.length, editing });
     }
 
     const handleSubmit = () => {
@@ -98,6 +97,7 @@ export default function ItemForm({ }: any) {
                             />
                             <CustomTextInput
                                 value={form.image}
+                                endIconName={`camera`}
                                 placeholder={`Image URL`}
                                 onChangeText={(text) => handleInputChange(`image`, text)}
                             />

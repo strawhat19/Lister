@@ -5,8 +5,8 @@ import { animationOptions, log } from './variables';
 import SlideUp from '@/components/slide-up/slide-up';
 import { databaseNames, db } from './server/firebase';
 import { useSharedValue } from 'react-native-reanimated';
-import { ColumnType, ItemType } from '@/shared/types/types';
 import { collection, onSnapshot } from 'firebase/firestore';
+import { ColumnType, ItemType, Views } from '@/shared/types/types';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Animated, useWindowDimensions, Vibration } from 'react-native';
@@ -31,6 +31,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [beta, setBeta] = useState(false);
   let [blur, setBlur] = useState<any>(100);
   let [editing, setEditing] = useState(false);
+  let [view, setView] = useState(Views.Details);
   let [slideIndex, setSlideIndex] = useState(0);
   let [modalOpen, setModalOpen] = useState(false);
   let [isDragging, setDragging] = useState(false);
@@ -47,7 +48,9 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   const closeBottomSheet = () => {
     setIndx(0);
     exitFadeBlur();
+    setEditing(false);
     setSelected(null);
+    setView(Views.Details);
   }
 
   const onSheetChange = (index?: any) => {
@@ -126,6 +129,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         progress,
         fadeAnim,
         exitFadeBlur,
+        view, setView,
         enterFadeBlur,
         user, setUser, 
         beta, setBeta, 

@@ -15,6 +15,7 @@ export default function CustomTextInput({
     onSave = () => {},
     onFocus = () => {},
     style = { opactiy: 1 },
+    placeholderTextColor = undefined,
 }: any) {
     let { selected, setEditing } = useContext<any>(SharedContext);
 
@@ -46,6 +47,7 @@ export default function CustomTextInput({
                 numberOfLines={numberOfLines}
                 placeholder={`Enter ${placeholder}`}
                 inputAccessoryViewID={accessoryViewID}
+                placeholderTextColor={placeholderTextColor}
                 style={multiline ? [styles.input, styles.textarea, style, inputFontColor] : [styles.input, style, inputFontColor]}
             />
             <InputAccessoryView nativeID={accessoryViewID}>

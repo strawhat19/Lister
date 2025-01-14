@@ -17,6 +17,7 @@ export const db = getFirestore(app);
 export const databaseNames = {
   users: `users`,
   items: `items`,
+  tasks: `tasks`,
   boards: `boards`,
   columns: `columns`,
 }

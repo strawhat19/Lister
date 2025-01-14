@@ -3,7 +3,7 @@
  * https://docs.expo.io/guides/color-schemes/
 */
 
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { useColorScheme } from './useColorScheme';
 import { ThemeProps } from '@/shared/types/types';
 import { Text as DefaultText, View as DefaultView } from 'react-native';
@@ -62,6 +62,12 @@ export const randomCardColor = (colorsObject = cardColors, previousColor?: strin
 
 export type TextProps = ThemeProps & DefaultText[`props`];
 export type ViewProps = ThemeProps & DefaultView[`props`];
+
+export const globalStyles = StyleSheet.create({
+  flexRow: {
+    display: `flex`, flexDirection: `row`, alignItems: `center`,
+  }
+})
 
 export const defaultTabStyles = {
   title: {

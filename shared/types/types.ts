@@ -35,6 +35,12 @@ export enum SheetComponents {
     ItemForm = `Item Form`,
 }
 
+export enum Views {
+    Details = `Details`,
+    Subtasks = `Subtasks`,
+    Comments = `Comments`,
+}
+
 export class ItemViewType {
     selected: ItemType | null;
     backgroundColor?: keyof typeof colors | string = `appleBlue`;
@@ -67,6 +73,7 @@ export class ItemType {
     key: any;
     image?: any;
     listID!: any;
+    tasks?: any[];
     name: string = ``;
     fontColor?: string;
     summary: string = ``;

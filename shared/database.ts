@@ -1,6 +1,8 @@
 import { colors } from '@/components/theme/Themed';
 import { ColumnType, ItemType, SheetComponents } from './types/types';
 
+export const defaultTasks = [{id: 1, name: `One`}, {id: 2, name: `Two`}, {id: 3, name: `Three`}, {id: 4, name: `Four`}, {id: 5, name: `Five`}, {id: 6, name: `Six`}];
+
 export const defaultCategories = {
   To_Do: `To Do`,
   Active: `Active`,
@@ -46,7 +48,7 @@ export const itemObjects = {
     backgroundColor: colors.appleBlue,
     listID: defaultListIDs.listColumn_1_items,
     summary: `Immerse yourself in the nurturing embrace of nature.`,
-    description: `Immerse yourself in the nurturing embrace of nature. This card reflects the harmony between humanity and the environment, symbolized by a delicate hand cradling a leaf. Immerse yourself in the nurturing embrace of nature. This card reflects the harmony between humanity and the environment. Immerse yourself in the nurturing embrace of nature. This card reflects the harmony between humanity and the environment, symbolized by a delicate hand cradling a leaf. Symbolized by a delicate leaf.`,
+    description: `Immerse yourself in the nurturing embrace of nature. This card reflects the harmony between humanity and the environment, symbolized by a delicate hand cradling a leaf. Immerse yourself in the nurturing embrace of nature. This card reflects the harmony between humanity and the environment. Immerse yourself in the nurturing embrace of nature. This card reflects the harmony between humanity and the environment.`,
   }),
   PlayingMusic: new ItemType({
     id: 3,

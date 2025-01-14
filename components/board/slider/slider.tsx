@@ -14,9 +14,10 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
     let { 
         board,
         width, 
-        height, 
+        height,
         selected,
         progress, 
+        isDragging, 
         setSlideIndex,
     } = useContext<any>(SharedContext);
 
@@ -26,31 +27,40 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
     }, [progress])
 
     const swipeCarousel = (translationX) => {
-        if (selected == null && !swiping.current) { // Ensure no swiping lock
-            swiping.current = true; // Lock swiping
+        if (selected == null) { // Ensure no swiping lock
+            // swiping.current = true; // Lock swiping
             carouselRef.current?.scrollTo({
                 count: translationX > 0 ? -1 : 1,
                 animated: true,
             });
     
-            // Unlock swiping after animation completes (adjust based on animation duration)
-            setTimeout(() => {
-                swiping.current = false;
-            }, 50); // Adjust the duration to match the carousel animation speed
+            // // Unlock swiping after animation completes (adjust based on animation duration)
+            // setTimeout(() => {
+            //     swiping.current = false;
+            // }, 50); // Adjust the duration to match the carousel animation speed
+        }
+    }
+
+    const handleGesture = (event: any) => {
+        'worklet';
+        if (isDragging) return; // Skip if dragging or swiping is locked
+
+        const sensitivity = 30; // Adjust sensitivity for horizontal swipe
+        const { translationX, translationY, velocityX } = event.nativeEvent;
+
+        // Determine if the gesture is primarily horizontal
+        const isHorizontalSwipe =
+            Math.abs(translationX) > Math.abs(translationY) && // Horizontal motion dominates
+            Math.abs(translationX) > sensitivity && // Sufficient horizontal movement
+            Math.abs(velocityX) > sensitivity; // Sufficient horizontal velocity
+
+        if (isHorizontalSwipe) {
+            runOnJS(swipeCarousel)(translationX); // Trigger swipeCarousel with translationX
         }
     }
 
     return (
-        <PanGestureHandler
-            onGestureEvent={({ nativeEvent }) => {
-                const { translationX, velocityX } = nativeEvent;
-                const sensitivity = 30;
-                if (Math.abs(translationX) > sensitivity && Math.abs(velocityX) > sensitivity) {
-                    // Pass horizontal swipe to the carousel
-                    swipeCarousel(translationX);
-                }
-            }}
-        >
+        <PanGestureHandler onGestureEvent={handleGesture}>
             <>
                 <Carousel
                     loop={true}

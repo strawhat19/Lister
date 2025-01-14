@@ -5,6 +5,8 @@ import { colors } from '@/components/theme/Themed';
 import SliderPagination from './pagination/pagination';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
+import { log } from '@/shared/variables';
 
 export default function Slider({ backgroundColor = colors.mainBG }: any) {
     const swiping = useRef(false);
@@ -44,35 +46,53 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
     }
 
     return (
-        <>
-            <Carousel
-                loop={true}
-                data={board}
-                width={width}
-                height={height}
-                mode={`parallax`}
-                ref={carouselRef}
-                enabled={selected == null}
-                onProgressChange={progress}
-                style={{ backgroundColor }}
-                pagingEnabled={selected == null}
-                defaultScrollOffsetValue={scrollOffsetValue}
-                modeConfig={{ parallaxScrollingScale: 0.99, parallaxAdjacentItemScale: 0.55 }}
-                renderItem={({ index, item: column }: any) => (
-                    <Column
-                        key={index}
-                        column={column}
-                        height={height}
-                        fadeAnim={fadeAnim}
-                        swipeCarousel={swipeCarousel}
-                        openBottomSheet={openBottomSheet}
-                        closeBottomSheet={closeBottomSheet}
-                        active={(slideIndex + 1) == column.index}
-                    />
-                )}
-            />
+        // <PanGestureHandler onGestureEvent={(event) => log(`carousel gesture`, event)}>
+            <>
+                <Carousel
+                    loop={true}
+                    data={board}
+                    width={width}
+                    height={height}
+                    mode={`parallax`}
+                    ref={carouselRef}
+                    enabled={selected == null}
+                    onProgressChange={progress}
+                    pagingEnabled={selected == null}
+                    style={{ 
+                        // top: 0,
+                        // left: 0,
+                        // zIndex: 1,                             
+                        backgroundColor,
+                        // width: `100%`,
+                        // height: `100%`,
+                        // position: `absolute`,
+                        // pointerEvents: `auto`,
+                        // backgroundColor: colors.transparent, 
+                    }}
+                    defaultScrollOffsetValue={scrollOffsetValue}
+                    modeConfig={{ parallaxScrollingScale: 0.99, parallaxAdjacentItemScale: 0.55 }}
+                    renderItem={({ index, item: column }: any) => (
+                        // <GestureHandlerRootView>
+                            // <PanGestureHandler onGestureEvent={(event) => log(`carousel gesture`, event)}>
+                                // <>
+                                    <Column
+                                        key={index}
+                                        column={column}
+                                        height={height}
+                                        fadeAnim={fadeAnim}
+                                        swipeCarousel={swipeCarousel}
+                                        openBottomSheet={openBottomSheet}
+                                        closeBottomSheet={closeBottomSheet}
+                                        active={(slideIndex + 1) == column.index}
+                                    />
+                                // </>
+                            // </PanGestureHandler>
+                        // </GestureHandlerRootView>
+                    )}
+                />
 
-            <SliderPagination carouselRef={carouselRef} />
-        </>
+                <SliderPagination carouselRef={carouselRef} />
+            </>
+        // </PanGestureHandler>
     )
 }

@@ -98,7 +98,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   }
 
   useEffect(() => {    
-    log(`initialized`);
+    // log(`initialized`);
   //   const usersCollection = collection(db, databaseNames.users);
   //   const unsubscribeFromUserDatabase = onSnapshot(usersCollection, snapshot => {
   //       setUsersLoading(true);

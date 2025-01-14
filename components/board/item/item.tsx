@@ -2,12 +2,12 @@ import { boardStyles } from '../styles';
 import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
 import { ItemType } from '@/shared/types/types';
-import { Animated, TouchableOpacity } from 'react-native';
 import CustomImage from '@/components/custom-image/custom-image';
+import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { Text, View, borderRadius, colors, itemCardHeight } from '@/components/theme/Themed';
 
-export default function Item({ item, drag, isActive }: any | RenderItemParams<ItemType>) {
+export default function Item({ item, drag, isActive, getIndex }: any | RenderItemParams<ItemType>) {
     let { selected, fadeAnim, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
 
     return (
@@ -15,7 +15,7 @@ export default function Item({ item, drag, isActive }: any | RenderItemParams<It
             <TouchableOpacity
                 onLongPress={drag}
                 disabled={isActive}
-                style={boardStyles.rowItem}
+                style={[boardStyles.rowItem, { position: `relative` }]}
                 onPress={() => selected != null ? closeBottomSheet() : openBottomSheet(item)}
             >
                 <Animated.View
@@ -35,7 +35,12 @@ export default function Item({ item, drag, isActive }: any | RenderItemParams<It
                                 <CustomImage alt={item?.name} source={{ uri: item?.image }} style={boardStyles.cardImage} />
                             </View>
                         ) : <View style={{ width: 15 }}></View>}
-                        <View style={[boardStyles.cardRight, { gap: 10 }]}>
+                        <View style={[boardStyles.cardRight, { gap: 10, position: `relative` }]}>
+                            <View style={[styles.indexBadge, { display: `flex`, justifyContent: `center`, alignItems: `center` }]}>
+                                <Text style={{ ...boardStyles.cardTitle, color: colors.white, fontSize: 16 }}>
+                                    {getIndex() + 1}
+                                </Text>
+                            </View>
                             <Text style={{ ...boardStyles.cardTitle, ...item?.fontColor && ({ color: item?.fontColor }) }}>
                                 {item?.name}
                             </Text>
@@ -49,3 +54,7 @@ export default function Item({ item, drag, isActive }: any | RenderItemParams<It
         </ScaleDecorator>
     )
 }
+
+const styles = StyleSheet.create({
+    indexBadge: { backgroundColor: colors.background, position: `absolute`, top: 10, right: 10, borderRadius: `100%`, width: 25, height: 25 },
+})

@@ -81,7 +81,6 @@ export default function Column({
     const handleGesture = (event: any) => {
         'worklet';
         if (isDragging) return; // Skip if dragging or swiping is locked
-        log(`gesture inner`);
 
         const sensitivity = 20; // Adjust sensitivity for horizontal swipe
         const { translationX, translationY, velocityX } = event.nativeEvent;
@@ -93,7 +92,6 @@ export default function Column({
             Math.abs(velocityX) > sensitivity; // Sufficient horizontal velocity
 
         if (isHorizontalSwipe) {
-            log(`horizontal inner`, isHorizontalSwipe);
             runOnJS(swipeCarousel)(translationX); // Trigger swipeCarousel with translationX
         }
     }

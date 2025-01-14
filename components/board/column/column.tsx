@@ -30,6 +30,7 @@ export default function Column({
         fadeAnim, 
         slideIndex,
         isDragging, 
+        carouselRef,
         setDragging, 
         activeTopName,
         openBottomSheet, 
@@ -67,12 +68,20 @@ export default function Column({
 
     const handleGesture = (event: any) => {
         'worklet';
-        if (isDragging) return;
-        const sensitivity = 20;
-        const { translationX, velocityX } = event.nativeEvent;
-        const horizontalMovement = Math.abs(translationX) > sensitivity && Math.abs(velocityX) > sensitivity;
-        if (!horizontalMovement) return;
-        runOnJS(swipeCarousel)(translationX);
+        if (isDragging) return; // Skip if dragging or swiping is locked
+
+        const sensitivity = 30; // Adjust sensitivity for horizontal swipe
+        const { translationX, translationY, velocityX } = event.nativeEvent;
+
+        // Determine if the gesture is primarily horizontal
+        const isHorizontalSwipe =
+            Math.abs(translationX) > Math.abs(translationY) && // Horizontal motion dominates
+            Math.abs(translationX) > sensitivity && // Sufficient horizontal movement
+            Math.abs(velocityX) > sensitivity; // Sufficient horizontal velocity
+
+        if (isHorizontalSwipe) {
+            runOnJS(swipeCarousel)(translationX); // Trigger swipeCarousel with translationX
+        }
     }
 
     const onDragEnd = (onDragEndData: any) => {
@@ -181,7 +190,7 @@ export default function Column({
                     )}
                 </View>
                 {column?.items?.length > 0 ? (
-                    // <PanGestureHandler enabled={!isDragging} onGestureEvent={null}>
+                    <PanGestureHandler waitFor={carouselRef} enabled={!isDragging} onGestureEvent={!isDragging ? handleGesture : null}>
                         <DraggableFlatList
                             bounces={true}
                             data={column?.items}
@@ -189,12 +198,25 @@ export default function Column({
                             directionalLockEnabled={true}
                             renderItem={renderDraggableItem}
                             keyExtractor={(item) => `${item.id}-${item?.key}`}
-                            style={{ height: height - paginationHeightMargin }}
-                            onDragEnd={onDragEndData => onDragEnd(onDragEndData)}
-                            onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                            contentContainerStyle={{ width: `100%`, gap: gridSpacing - 8, marginHorizontal: `auto`, paddingHorizontal: gridSpacing }}
+                            style={{
+                                position: 'relative', // Position flat list absolutely
+                                zIndex: -1, // Flat list itself has lower zIndex
+                                backgroundColor: colors.transparent,
+                                height: height - paginationHeightMargin, // Ensure it fills the available space
+                            }}
+                            onDragEnd={(onDragEndData) => onDragEnd(onDragEndData)}
+                            onPlaceholderIndexChange={() =>
+                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+                            }
+                            contentContainerStyle={{
+                                width: `100%`,
+                                gap: gridSpacing - 8,
+                                marginHorizontal: `auto`,
+                                paddingHorizontal: gridSpacing,
+                                backgroundColor: colors.transparent,
+                            }}
                         />
-                    // </PanGestureHandler>
+                    </PanGestureHandler>
                 ) : (
                     <View style={{ width: `100%`, backgroundColor, height: height - paginationHeightMargin, paddingTop: 35 }}>
                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>

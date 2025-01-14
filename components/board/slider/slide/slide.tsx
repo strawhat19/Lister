@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
 import { useAnimatedStyle } from 'react-native-reanimated';
 
-export default function Slide({ index, column, swipeCarousel }: any) {
+export default function Slide({ index, column, swipeCarousel, carouselRef }: any) {
     let { 
         height, 
         progress, 
@@ -29,6 +29,7 @@ export default function Slide({ index, column, swipeCarousel }: any) {
             column={column}
             height={height}
             fadeAnim={fadeAnim}
+            carouselRef={carouselRef}
             swipeCarousel={swipeCarousel}
             blurIntensity={blurIntensity}
             animatedAdjacent={animatedStyle}

@@ -10,18 +10,26 @@ export default function CustomTextInput({
     placeholder,
     onChangeText,
     onDone = null,
+    width = `100%`,
+    onCancel = null,
+    endIconSize = 18,
     endIconName = ``,
     showLabel = true,
     multiline = false,
     numberOfLines = 1,
+    doneText = `Done`,
     onBlur = () => {},
     onSave = () => {},
     onFocus = () => {},
     endIconStyle = null,
+    cancelText = `Cancel`,
     style = { opactiy: 1 },
     endIconPress = () => {},
     endIconDisabled = false,
-    placeholderTextColor = undefined,
+    doneColor = colors.disabledFont,
+    cancelColor = colors.disabledFont,
+    endIconColor = colors.disabledFont,
+    placeholderTextColor = colors.disabledFont,
 }: any) {
     let { selected, setEditing } = useContext<any>(SharedContext);
 
@@ -36,7 +44,7 @@ export default function CustomTextInput({
     }
 
     return (
-        <>
+        <View style={{ width, overflow: `hidden` }}>
             {showLabel && (
                 <Text style={styles.label}>
                     {placeholder}
@@ -55,24 +63,32 @@ export default function CustomTextInput({
                     placeholder={`Enter ${placeholder}`}
                     inputAccessoryViewID={accessoryViewID}
                     placeholderTextColor={placeholderTextColor}
-                    style={[multiline ? [styles.input, styles.textarea, style, inputFontColor, { width: endIconName == `` ? `100%` : `80%` }] : [styles.input, style, inputFontColor, { width: endIconName == `` ? `100%` : `80%` }], {
+                    style={[multiline ? [styles.input, styles.textarea, style, inputFontColor, { width: endIconName == `` ? `100%` : `85%` }] : [styles.input, style, inputFontColor, { width: endIconName == `` ? `100%` : `85%` }], {
                         // borderWidth: 1,
-                        // borderColor: colors.background,
+                        // borderColor: colors.white,
                     }]}
                 />
                 {endIconName != `` ? (
-                    <TouchableOpacity disabled={endIconDisabled} style={[styles.cameraButton, endIconStyle != null ? endIconStyle : {}]} onPress={() => endIconPress()}>
-                        <FontAwesome name={endIconName} color={colors.white} />
+                    <TouchableOpacity disabled={endIconDisabled} style={[styles.endButton, endIconStyle != null ? endIconStyle : {}]} onPress={() => endIconPress()}>
+                        <FontAwesome name={endIconName} color={endIconColor} size={endIconSize} />
                     </TouchableOpacity>
                 ) : <></>}
             </View>
             <InputAccessoryView nativeID={accessoryViewID}>
                 <View style={styles.accessory}>
-                    <Button title={`Cancel`} onPress={() => dismissKeyboard()} />
-                    <Button title={`Done`} onPress={() => onDone != null ? onDone() : dismissKeyboard(true)} />
+                    <TouchableOpacity style={{ paddingVertical: 6, paddingHorizontal: 20, flex: 1 }} onPress={() => onCancel != null ? onCancel() : dismissKeyboard()}>
+                        <Text style={{ fontSize: 16, color: cancelColor }}>
+                            {cancelText}
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ paddingVertical: 6, paddingHorizontal: 20, flex: 1 }} onPress={() => onDone != null ? onDone() : dismissKeyboard(true)}>
+                        <Text style={{ fontSize: 16, color: doneColor, textAlign: `right` }}>
+                            {doneText}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </InputAccessoryView>
-        </>
+        </View>
     )
 }
 
@@ -83,16 +99,17 @@ const styles = StyleSheet.create({
         fontWeight: `bold`,
     },
     textarea: {
-        height: `auto`,
+        height: `100%`,
         textAlignVertical: `top`,
     },
-    cameraButton: { 
-        padding: 5, 
+    endButton: { 
         width: `100%`, 
         maxHeight: 30, 
         height: `100%`, 
-        maxWidth: `20%`, 
-        borderRadius: 5, 
+        maxWidth: `15%`, 
+        borderRadius: 5,
+        paddingVertical: 5, 
+        paddingHorizontal: 1, 
         ...globalStyles.flexRow, 
         justifyContent: `center`, 
         backgroundColor: colors.navy, 
@@ -110,11 +127,10 @@ const styles = StyleSheet.create({
         borderColor: colors.transparent,
     },
     accessory: {
+        gap: 5,
         borderTopWidth: 0,
         fontWeight: `bold`,
-        paddingVertical: 3,
         flexDirection: `row`,
-        paddingHorizontal: 10,
         backgroundColor: colors.mainBG,
         justifyContent: `space-between`,
     },

@@ -2,9 +2,9 @@ import { SharedContext } from '@/shared/shared';
 import React, { useContext, useState } from 'react';
 import { ColumnType, ItemType, Views } from '@/shared/types/types';
 import CustomTextInput from '@/components/custom-input/custom-input';
-import { combineArraysByKey, log, openCamera } from '@/shared/variables';
-import { borderRadius, colors, lightColors, randomCardColor, Text } from '@/components/theme/Themed';
-import { View, Vibration, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
+import { borderRadius, colors, globalStyles, lightColors, randomCardColor, Text, View } from '@/components/theme/Themed';
+import { Vibration, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
+import { combineArraysByKey, genID, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, openCamera } from '@/shared/variables';
 
 export default function ItemForm({ }: any) {
     let { selected, editing, setEditing, closeBottomSheet, board, setBoard } = useContext<any>(SharedContext);
@@ -42,9 +42,11 @@ export default function ItemForm({ }: any) {
         const allItems = combineArraysByKey(board, `items`);
         const newIndex = allItems?.length + 1;
 
+        const { id } = genID(Views.Item, newIndex);
+
         const newItem = new ItemType({
+            id,
             tasks: [],
-            id: newIndex,
             key: newIndex,
             index: newIndex,
             type: Views.Item,
@@ -85,37 +87,43 @@ export default function ItemForm({ }: any) {
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.container}>
-                    <View id={`ItemFormFields`}>
-                        {!editing || (editing && form?.description?.length < 43) ? <>
-                            <CustomTextInput
-                                value={form.name}
-                                placeholder={`Name`}
-                                style={{ ...styles.borderedInput }}
-                                onChangeText={(text) => handleInputChange(`name`, text)}
-                            />
-                            <CustomTextInput
-                                value={form.summary}
-                                placeholder={`Summary`}
-                                style={{ ...styles.borderedInput }}
-                                onChangeText={(text) => handleInputChange(`summary`, text)}
-                            />
-                            <CustomTextInput
-                                value={form.image}
-                                endIconName={`camera`}
-                                placeholder={`Image URL`}
-                                endIconPress={() => openCamera()}
-                                style={{ ...styles.borderedInput }}
-                                onChangeText={(text) => handleInputChange(`image`, text)}
-                            />
-                        </> : <></>}
+                    <View id={`ItemFormFields`} style={styles.formFields}>
+                        {!editing || (editing && form?.description?.length < 43) ? (
+                            <>
+                                <CustomTextInput
+                                    value={form.name}
+                                    placeholder={`Name`}
+                                    maxLength={maxItemNameLength}
+                                    style={{ ...styles.borderedInput }}
+                                    onChangeText={(text) => handleInputChange(`name`, text)}
+                                />
+                                <CustomTextInput
+                                    value={form.summary}
+                                    placeholder={`Summary`}
+                                    maxLength={maxItemSummaryLength}
+                                    style={{ ...styles.borderedInput }}
+                                    onChangeText={(text) => handleInputChange(`summary`, text)}
+                                />
+                                <CustomTextInput
+                                    value={form.image}
+                                    endIconName={`camera`}
+                                    placeholder={`Image URL`}
+                                    endIconStyle={{ maxWidth: 42 }}
+                                    endIconPress={() => openCamera()}
+                                    style={{ ...styles.borderedInput }}
+                                    onChangeText={(text) => handleInputChange(`image`, text)}
+                                />
+                            </>
+                        ) : <></>}
                         <CustomTextInput
                             multiline
-                            numberOfLines={4}
+                            numberOfLines={15}
                             value={form.description}
                             placeholder={`Description`}
                             onFocus={() => setEditing(true)}
                             onBlur={() => setEditing(false)}
-                            style={{ ...styles.borderedInput, minHeight: 80 }}
+                            maxLength={maxItemDescriptionLength}
+                            style={{ ...styles.borderedInput, minHeight: 50 }}
                             onChangeText={(text) => handleInputChange(`description`, text)}
                         />
                     </View>
@@ -135,16 +143,29 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 15,
         display: `flex`,
+        maxHeight: `auto`,
         borderRadius: 12,
+        overflow: `visible`,
+        // borderColor: colors.white,
         backgroundColor: colors.black,
         justifyContent: `space-between`,
     },
     label: {
         fontSize: 16,
         marginBottom: 5,
+        maxHeight: `auto`,
         fontWeight: `bold`,
     },
-    borderedInput: { borderWidth: 1, borderColor: colors.background, },
+    formFields: {
+        flex: 1,
+        borderWidth: 5,
+        height: `100%`,
+        maxHeight: `auto`,
+        overflow: `visible`,
+        // borderColor: colors.white,
+        backgroundColor: colors.transparent,
+    },
+    borderedInput: { borderWidth: 1, borderColor: colors.black, },
     buttonText: { fontSize: 16, textAlign: `center`, fontWeight: `bold` },
     button: { width: `100%`, backgroundColor: colors.navy, paddingVertical: 3, borderRadius: borderRadius - 5, },
 })

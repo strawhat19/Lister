@@ -1,6 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { boardStyles } from '../styles';
-import { genID, log } from '@/shared/variables';
+import { genID, log, maxTaskNameLength } from '@/shared/variables';
 import { SharedContext } from '@/shared/shared';
 import { defaultTasks } from '@/shared/database';
 import { ItemType, TaskType, Views } from '@/shared/types/types';
@@ -28,7 +28,7 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
         setTasks(prevTasks => {
             const type = Views.Task;
             const newIndex = prevTasks.length + 1;
-            const { id } = genID(`Task`, Views.Task, newIndex);
+            const { id } = genID(Views.Task, newIndex);
 
             const newTask = new TaskType({ 
                 id, 
@@ -41,7 +41,7 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
 
             setTimeout(() => {
                 listRef.current?.scrollToEnd({ animated: true });
-            }, 100);
+            }, 150);
 
             return updatedTasks;
         });
@@ -55,10 +55,10 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
     }
 
     const renderDraggableItem = useCallback(
-        ({ item, drag, isActive, getIndex }: RenderItemParams<ItemType>) => {
-        let index = getIndex();
-        let isFirst: boolean = index == 0 ? true : false;
-        let isLast: boolean = index == tasks.length - 1 ? true : false;
+        ({ item, drag, isActive }: RenderItemParams<ItemType>) => {
+        let index = item?.index;
+        let isFirst: boolean = index == 1 ? true : false;
+        let isLast: boolean = index == selected?.tasks?.length ? true : false;
         return (
             <ScaleDecorator>
                 <TouchableOpacity
@@ -77,7 +77,7 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
                 >
                     <View style={{width: `100%`, backgroundColor: colors.transparent}}>
                         <Text style={{ textAlign: `left`, paddingLeft: 35 }}>
-                            {index + 1} - {item?.name}
+                            {index}. {item?.name}
                         </Text>
                     </View>
                 </TouchableOpacity>
@@ -117,12 +117,16 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
                     showLabel={false}
                     placeholder={`Name`}
                     endIconName={`save`}
+                    onDone={() => addTask()}
                     onChangeText={setTaskName}
+                    maxLength={maxTaskNameLength}
                     endIconPress={() => addTask()}
                     endIconDisabled={taskName == ``}
                     onBlur={() => setEditing(false)}
                     onFocus={() => setEditing(true)}
-                    placeholderTextColor={colors.white}
+                    doneText={taskName == `` ? `Done` : `Add`}
+                    doneColor={taskName == `` ? colors.disabledFont : colors.white}
+                    endIconColor={taskName == `` ? colors.disabledFont : colors.white}
                     endIconStyle={{ minHeight: 35, maxHeight: 35, backgroundColor: colors.black }}
                     style={{ width: `80%`, minHeight: 35, ...globalStyles.flexRow, marginBottom: 0, }}
                 />

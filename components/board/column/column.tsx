@@ -42,7 +42,7 @@ export default function Column({
     }
 
     const [loading, setLoading] = useState(false);
-    const [columnData, setColumnData] = useState(column?.items);
+    const [items, setItems] = useState(column?.items);
 
     const closeItem = () => {
         Vibration.vibrate(1);
@@ -79,7 +79,7 @@ export default function Column({
         setDragging(false);
         let { data } = onDragEndData;
         const updatedItems = data?.map((item, itemIndex) => ({ ...item, index: itemIndex + 1}));
-        await setColumnData(updatedItems);
+        await setItems(updatedItems);
     }
 
     // useEffect(() => {
@@ -89,19 +89,20 @@ export default function Column({
     useEffect(() => {
        let thisColumn = board?.find(col => col?.id == column.id);
        if (thisColumn) {
-        setColumnData(thisColumn?.items);
+        setItems(thisColumn?.items);
        }  
     }, [board])
 
     const deleteItem = () => {
-        const updatedBoardData = board.map((list: ColumnType) => {
+        const updatedBoardData = board.map((list: ColumnType, listIndex) => {
+            let updatedIndexList = { ...list, index: listIndex + 1 };
             if (list.id === column?.id) {
                 return { 
-                    ...list, 
+                    ...updatedIndexList, 
                     items: list.items.filter(itm => itm?.id != selected?.id)
                 }
             }
-            return list;
+            return updatedIndexList;
         });
         setBoard(updatedBoardData);
         closeItem();
@@ -200,9 +201,9 @@ export default function Column({
                                         ) : activeTopName}
                                     </Text>
                                     {selected == null ? (
-                                        columnData && columnData.length > 0 ? (
+                                        items && items.length > 0 ? (
                                             <Text style={titleRowStyles.subtitle}>
-                                                {columnData?.length + ` Item(s)`}
+                                                {items?.length + ` Item(s)`}
                                             </Text>
                                         ) : <>
                                             <Text style={titleRowStyles.subtitle}>
@@ -218,11 +219,11 @@ export default function Column({
                                         </TouchableOpacity>
                                     )}
                                 </View>
-                                {(!loading || columnData?.length > 0) ? (
+                                {(!loading || items?.length > 0) ? (
                                     // <PanGestureHandler enabled={!isDragging} activeOffsetX={[-10, 10]} activeOffsetY={[-10, 10]} onGestureEvent={!isDragging ? handleGesture : null}>
                                         <DraggableFlatList
                                             bounces={true}
-                                            data={columnData}
+                                            data={items}
                                             onDragBegin={onDragBegin}
                                             scrollEnabled={!isDragging}
                                             directionalLockEnabled={true}
@@ -245,12 +246,12 @@ export default function Column({
                                 ) : (
                                     <View style={{ width: `100%`, backgroundColor, height: height - paginationHeightMargin, paddingTop: 35 }}>
                                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
-                                            {columnData?.length > 0 ? loadingMessages.zero : loadingMessages.loading}
+                                            {items?.length > 0 ? loadingMessages.zero : loadingMessages.loading}
                                         </Text>
                                     </View>
                                 )}
                                 <View id={`${column.id}-footer`} style={{ backgroundColor: colors.transparent, paddingTop: 5, paddingVertical: 10, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
-                                    <TouchableOpacity  onPress={() => openBottomSheet(itemForm, colors.navy)} style={{ ...titleRowStyles.addItemButton, ...globalStyles.flexRow, opacity: selected == null ? 1 : 0, justifyContent: `space-evenly` }}>
+                                    <TouchableOpacity  onPress={() => openBottomSheet(itemForm, colors.navy)} style={{ ...titleRowStyles.addItemButton, ...globalStyles.flexRow, opacity: selected == null ? 1 : 0, justifyContent: `space-around` }}>
                                         <FontAwesome name={`bars`} color={colors.lightBlue} size={20} />
                                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
                                             + Add Item

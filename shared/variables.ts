@@ -1,11 +1,12 @@
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import { DataNoID, IDData, Types, Views } from '@/shared/types/types';
+import { IDData, Types, Views } from '@/shared/types/types';
 import { Dimensions, Alert, Platform, Vibration } from 'react-native';
 
 export const COL = 5;
 export const MARGIN = 8;
-export const maxItemNameLength = 25;
+export const maxItemNameLength = 13;
+export const maxTaskNameLength = 42;
 export const maxItemSummaryLength = 125;
 export const maxItemDescriptionLength = 9999;
 export const SIZE = Dimensions.get(`window`).width / COL - MARGIN;
@@ -176,20 +177,17 @@ export const openCamera = async () => {
   }
 }
 
-export const genID = (name = ``, type: Types | Views = Types.Data, index = 1): IDData => {
-  let uuid = generateUniqueID();
-  if (!name || name == ``) name = type;
-  name = capitalizeAllWords(name);
+export const genID = (type: Types | Views = Types.Data, index = 1): IDData => {
   let now = new Date();
+  let uuid = generateUniqueID();
   let date = now.toLocaleString(`en-US`);
   let currentDateTimeStamp = formatDate(now);
   let currentDateTimeStampNoSpaces = formatDate(now, `timezoneNoSpaces`);
-  let id = `${index}_${type}_${name}_${currentDateTimeStampNoSpaces}_${uuid}`;
-  let title = `${index} ${name} ${currentDateTimeStamp} ${uuid}`;
+  let title = `${index} ${type} ${currentDateTimeStamp} ${uuid}`;
+  let id = `${index}_${type}_${currentDateTimeStampNoSpaces}_${uuid}`;
   return new IDData({
     id,
     date,
-    name,
     uuid,
     type,
     index,

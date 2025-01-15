@@ -64,7 +64,6 @@ export class ItemViewType {
 
 export class IDData {
     id: any;
-    name: string;
     index: number;
     date: Date | string;
     type: Views | Types;

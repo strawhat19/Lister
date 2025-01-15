@@ -37,7 +37,7 @@ export default function Item({ item, drag, isActive, getIndex }: any | RenderIte
                         ) : <View style={{ width: 15 }}></View>}
                         <View style={[boardStyles.cardRight, { gap: 10, position: `relative` }]}>
                             <View style={[styles.indexBadge, { display: `flex`, justifyContent: `center`, alignItems: `center` }]}>
-                                <Text style={{ ...boardStyles.cardTitle, color: colors.white, fontSize: 16 }}>
+                                <Text style={{ ...boardStyles.cardTitle, color: item?.fontColor ? item?.fontColor : colors.white, fontSize: 16 }}>
                                     {getIndex() + 1}
                                 </Text>
                             </View>
@@ -56,5 +56,13 @@ export default function Item({ item, drag, isActive, getIndex }: any | RenderIte
 }
 
 const styles = StyleSheet.create({
-    indexBadge: { backgroundColor: colors.background, position: `absolute`, top: 10, right: 10, borderRadius: `100%`, width: 25, height: 25 },
+    indexBadge: { 
+        top: 10, 
+        right: 10, 
+        width: 25, 
+        height: 25 ,
+        borderRadius: `100%`, 
+        position: `absolute`, 
+        backgroundColor: colors.transparent, 
+    },
 })

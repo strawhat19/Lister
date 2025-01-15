@@ -28,7 +28,6 @@ export const lightColors = {
 
 export const cardColors = {
   ...lightColors,
-  black: `rgba(0, 0, 0, 1)`,
   red: `rgba(255, 0, 0, 1)`,
   navy: `rgba(4, 57, 123, 1)`,
   appleBlue: `rgba(0, 122, 255, 1)`,
@@ -40,14 +39,17 @@ export const cardColors = {
 
 export const colors = {
   ...cardColors,
-  mainBG: cardColors.black,
   transparent: `transparent`,
+  black: `rgba(0, 0, 0, 1)`,
+  mainBG: `rgba(0, 0, 0, 1)`,
   dark: `rgba(39, 39, 41, 1)`,
   paper: `rgba(240, 240, 240, 1)`,
   background: `rgba(19, 24, 31, 1)`,
+  disabledFont: `rgb(105, 124, 147)`,
   pasteBlackBG: `rgba(42, 47, 53, 1)`,
   jiraColumnBG: `rgba(35, 38, 42, 1)`,
   blackGlass: (alpha) => `rgba(0, 0, 0, ${alpha})`,
+  defaultTextInputPlaceholderFontColor: `rgba(136, 136, 136, 1)`,
 }
 
 export const randomCardColor = (colorsObject = cardColors, previousColor?: string) => {

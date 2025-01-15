@@ -57,8 +57,9 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                     ...boardStyles.card, 
                     gap: 0,
                     width: `100%`, 
-                    backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
+                    alignItems: `center`,
                     paddingTop: selected?.type == Views.Item && selected?.image ? 0 : 5,
+                    backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
                     height: (editing && selected?.type == Views.Item) ? 0 : ((web() || selected?.type == Views.ItemForm) ? 500 : selected?.image ? 280 : `auto`), 
                 }}
             >
@@ -87,7 +88,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             />
                         </View>
                     ) : <></>}
-                    <View id={`itemTitle_${selected.id}`} style={{ ...boardStyles.cardRight, gap: 0, paddingVertical: 0 }}>
+                    <View id={`itemTitle_${selected.id}`} style={{ ...boardStyles.cardRight, gap: 0, paddingVertical: 0, alignItems: `flex-start`, display: `flex`, flexDirection: `column`, justifyContent: `flex-start`, marginTop: -170 }}>
                         <CustomTextInput
                             value={name}
                             multiline={true}
@@ -95,7 +96,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             placeholder={`Name`}
                             onChangeText={setName}
                             maxLength={maxItemNameLength}
-                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 22, minHeight: 30 }}
+                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 21, minHeight: 30, }}
                         />
 
                         <CustomTextInput
@@ -106,7 +107,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             placeholder={`Summary`}
                             onChangeText={setSummary}
                             maxLength={maxItemSummaryLength}
-                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 18, minHeight: selected?.image ? 215 : `auto` }}
+                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 18, minHeight: selected?.image ? 215 : `auto`, }}
                         />
                     </View>
                 </> : <></>}
@@ -132,7 +133,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             maxLength={maxItemDescriptionLength}
                             style={{ 
                                 ...itemFontStyles, 
-                                ...styles.itemInput, 
+                                ...styles.itemInput,
                                 minHeight: maxItemDescriptionHeight, 
                                 fontSize: 16, 
                             }}
@@ -149,6 +150,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
 }
 
 const styles = StyleSheet.create({
+    borderedInput: { borderWidth: 1, borderColor: colors.background, },
     itemInput: { 
         ...boardStyles.cardTitle, 
         backgroundColor: colors.transparent, 

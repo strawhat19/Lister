@@ -1,23 +1,30 @@
 import * as Haptics from 'expo-haptics';
 import { boardStyles } from '../styles';
+import { genID, log } from '@/shared/variables';
 import { SharedContext } from '@/shared/shared';
 import { defaultTasks } from '@/shared/database';
 import { ItemType, TaskType, Views } from '@/shared/types/types';
-import React, { useCallback, useContext, useState } from 'react';
 import CustomTextInput from '@/components/custom-input/custom-input';
 import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
-import DraggableFlatList, { DragEndParams, RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { genID } from '@/shared/variables';
+import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 
 export default function Tasks({ selected, taskItems = defaultTasks }: any) {
+    const listRef = useRef(null);
+
     let [taskName, setTaskName] = useState(``);
     let { setEditing } = useContext<any>(SharedContext);
     let [tasks, setTasks] = useState<TaskType[]>(taskItems);
 
+    const onPressTask = (item: TaskType) => {
+        Vibration.vibrate(1);
+        log(`Task`, item);
+    }
+
     const addTask = () => {
         Vibration.vibrate(1);
-        
+
         setTasks(prevTasks => {
             const type = Views.Task;
             const newIndex = prevTasks.length + 1;
@@ -31,6 +38,11 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
             })
 
             const updatedTasks = [...prevTasks, newTask];
+
+            setTimeout(() => {
+                listRef.current?.scrollToEnd({ animated: true });
+            }, 100);
+
             return updatedTasks;
         });
 
@@ -52,6 +64,7 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
                 <TouchableOpacity
                     onLongPress={drag}
                     disabled={isActive}
+                    onPress={() => onPressTask(item)}
                     style={[boardStyles.rowItem, { 
                         width: `100%`, 
                         minHeight: 35, 
@@ -77,14 +90,15 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
             <View style={styles.tasksContainer}>
                 <DraggableFlatList
                     data={tasks}
+                    ref={listRef}
                     bounces={true}
+                    style={{ height: `auto`}}
                     nestedScrollEnabled={true}
                     directionalLockEnabled={true}
                     renderItem={renderDraggableItem}
                     showsVerticalScrollIndicator={false}
                     ListEmptyComponent={<>No Tasks Yet</>}
                     keyExtractor={(item) => item.id.toString()}
-                    style={{ height: `auto`, minHeight: tasks.length * 35}}
                     onDragEnd={async (onDragEndData: any) => await onDragEnd(onDragEndData)}
                     onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                     onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
@@ -93,27 +107,25 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
                         width: `100%`,
                         height: `auto`,
                         marginHorizontal: `auto`,
-                        paddingBottom: tasks.length * 8.5,
+                        paddingBottom: tasks.length * 0.25,
                     }}
                 />
             </View>
             <View style={styles.addTaskForm}>
                 <CustomTextInput
-                    showLabel={false}
                     value={taskName}
+                    showLabel={false}
                     placeholder={`Name`}
-                    onSave={() => addTask()}
+                    endIconName={`save`}
                     onChangeText={setTaskName}
+                    endIconPress={() => addTask()}
+                    endIconDisabled={taskName == ``}
                     onBlur={() => setEditing(false)}
                     onFocus={() => setEditing(true)}
                     placeholderTextColor={colors.white}
+                    endIconStyle={{ minHeight: 35, maxHeight: 35, backgroundColor: colors.black }}
                     style={{ width: `80%`, minHeight: 35, ...globalStyles.flexRow, marginBottom: 0, }}
                 />
-                <TouchableOpacity onPress={() => addTask()} style={{ width: `20%`, minHeight: 35, backgroundColor: colors.black, ...globalStyles.flexRow, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                    <Text style={{ width: `100%`, color: colors.white, textAlign: `center` }}>
-                        Save
-                    </Text>
-                </TouchableOpacity>
             </View>
         </>
     )

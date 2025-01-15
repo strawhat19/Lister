@@ -7,7 +7,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Animated, { Layout, runOnJS } from 'react-native-reanimated';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ColumnType, ItemType, Views } from '@/shared/types/types';
-import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
+import { borderRadius, colors, globalStyles, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
@@ -250,13 +250,12 @@ export default function Column({
                                     </View>
                                 )}
                                 <View id={`${column.id}-footer`} style={{ backgroundColor: colors.transparent, paddingTop: 5, paddingVertical: 10, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
-                                    <TouchableOpacity 
-                                        onPress={() => openBottomSheet(itemForm, colors.navy)}
-                                        style={{ opacity: selected == null ? 1 : 0, backgroundColor: colors.navy, width: `92%`, padding: 1, borderRadius: borderRadius - 3 }}
-                                    >
+                                    <TouchableOpacity  onPress={() => openBottomSheet(itemForm, colors.navy)} style={{ ...titleRowStyles.addItemButton, ...globalStyles.flexRow, opacity: selected == null ? 1 : 0, justifyContent: `space-evenly` }}>
+                                        <FontAwesome name={`bars`} color={colors.lightBlue} size={20} />
                                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
                                             + Add Item
                                         </Text>
+                                        <FontAwesome name={`bars`} color={colors.lightBlue} size={20} />
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -301,5 +300,11 @@ export const titleRowStyles = StyleSheet.create({
         alignItems: `center`,
         paddingHorizontal: 10, 
         borderRadius: borderRadius - 3, 
+    },
+    addItemButton: {
+        padding: 1, 
+        width: `92%`, 
+        backgroundColor: colors.navy, 
+        borderRadius: borderRadius - 3,
     },
 })

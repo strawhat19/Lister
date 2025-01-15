@@ -1,11 +1,10 @@
 import { SharedContext } from '@/shared/shared';
 import React, { useContext, useState } from 'react';
-import { combineArraysByKey, devEnv, log } from '@/shared/variables';
-import CustomTextInput from '@/components/custom-input/custom-input';
 import { ColumnType, ItemType, Views } from '@/shared/types/types';
+import CustomTextInput from '@/components/custom-input/custom-input';
+import { combineArraysByKey, log, openCamera } from '@/shared/variables';
 import { borderRadius, colors, lightColors, randomCardColor, Text } from '@/components/theme/Themed';
 import { View, Vibration, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
-import { defaultTaskObjects } from '@/shared/database';
 
 export default function ItemForm({ }: any) {
     let { selected, editing, setEditing, closeBottomSheet, board, setBoard } = useContext<any>(SharedContext);
@@ -91,17 +90,21 @@ export default function ItemForm({ }: any) {
                             <CustomTextInput
                                 value={form.name}
                                 placeholder={`Name`}
+                                style={{ ...styles.borderedInput }}
                                 onChangeText={(text) => handleInputChange(`name`, text)}
                             />
                             <CustomTextInput
                                 value={form.summary}
                                 placeholder={`Summary`}
+                                style={{ ...styles.borderedInput }}
                                 onChangeText={(text) => handleInputChange(`summary`, text)}
                             />
                             <CustomTextInput
                                 value={form.image}
                                 endIconName={`camera`}
                                 placeholder={`Image URL`}
+                                endIconPress={() => openCamera()}
+                                style={{ ...styles.borderedInput }}
                                 onChangeText={(text) => handleInputChange(`image`, text)}
                             />
                         </> : <></>}
@@ -109,10 +112,10 @@ export default function ItemForm({ }: any) {
                             multiline
                             numberOfLines={4}
                             value={form.description}
-                            style={{ minHeight: 80 }}
                             placeholder={`Description`}
                             onFocus={() => setEditing(true)}
                             onBlur={() => setEditing(false)}
+                            style={{ ...styles.borderedInput, minHeight: 80 }}
                             onChangeText={(text) => handleInputChange(`description`, text)}
                         />
                     </View>
@@ -141,6 +144,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         fontWeight: `bold`,
     },
+    borderedInput: { borderWidth: 1, borderColor: colors.background, },
     buttonText: { fontSize: 16, textAlign: `center`, fontWeight: `bold` },
     button: { width: `100%`, backgroundColor: colors.navy, paddingVertical: 3, borderRadius: borderRadius - 5, },
 })

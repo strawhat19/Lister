@@ -1,5 +1,4 @@
 import { SharedContext } from '@/shared/shared';
-import { openCamera } from '@/shared/variables';
 import React, { useContext, useId } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { colors, globalStyles, lightColors, Text } from '../theme/Themed';
@@ -10,6 +9,7 @@ export default function CustomTextInput({
     maxLength,
     placeholder,
     onChangeText,
+    onDone = null,
     endIconName = ``,
     showLabel = true,
     multiline = false,
@@ -17,7 +17,10 @@ export default function CustomTextInput({
     onBlur = () => {},
     onSave = () => {},
     onFocus = () => {},
+    endIconStyle = null,
     style = { opactiy: 1 },
+    endIconPress = () => {},
+    endIconDisabled = false,
     placeholderTextColor = undefined,
 }: any) {
     let { selected, setEditing } = useContext<any>(SharedContext);
@@ -52,10 +55,13 @@ export default function CustomTextInput({
                     placeholder={`Enter ${placeholder}`}
                     inputAccessoryViewID={accessoryViewID}
                     placeholderTextColor={placeholderTextColor}
-                    style={multiline ? [styles.input, styles.textarea, style, inputFontColor, { width: endIconName == `` ? `100%` : `90%` }] : [styles.input, style, inputFontColor, { width: endIconName == `` ? `100%` : `90%` }]}
+                    style={[multiline ? [styles.input, styles.textarea, style, inputFontColor, { width: endIconName == `` ? `100%` : `80%` }] : [styles.input, style, inputFontColor, { width: endIconName == `` ? `100%` : `80%` }], {
+                        // borderWidth: 1,
+                        // borderColor: colors.background,
+                    }]}
                 />
                 {endIconName != `` ? (
-                    <TouchableOpacity style={styles.cameraButton} onPress={() => openCamera()}>
+                    <TouchableOpacity disabled={endIconDisabled} style={[styles.cameraButton, endIconStyle != null ? endIconStyle : {}]} onPress={() => endIconPress()}>
                         <FontAwesome name={endIconName} color={colors.white} />
                     </TouchableOpacity>
                 ) : <></>}
@@ -63,7 +69,7 @@ export default function CustomTextInput({
             <InputAccessoryView nativeID={accessoryViewID}>
                 <View style={styles.accessory}>
                     <Button title={`Cancel`} onPress={() => dismissKeyboard()} />
-                    <Button title={`Done`} onPress={() => dismissKeyboard(true)} />
+                    <Button title={`Done`} onPress={() => onDone != null ? onDone() : dismissKeyboard(true)} />
                 </View>
             </InputAccessoryView>
         </>
@@ -80,7 +86,17 @@ const styles = StyleSheet.create({
         height: `auto`,
         textAlignVertical: `top`,
     },
-    cameraButton: { backgroundColor: colors.navy, height: `100%`, width: `100%`, padding: 5, maxWidth: 30, maxHeight: 30, borderRadius: 5, ...globalStyles.flexRow, justifyContent: `center` },
+    cameraButton: { 
+        padding: 5, 
+        width: `100%`, 
+        maxHeight: 30, 
+        height: `100%`, 
+        maxWidth: `20%`, 
+        borderRadius: 5, 
+        ...globalStyles.flexRow, 
+        justifyContent: `center`, 
+        backgroundColor: colors.navy, 
+    },
     input: {
         minHeight: 30,
         width: `100%`,

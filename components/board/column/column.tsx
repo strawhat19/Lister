@@ -6,7 +6,7 @@ import { SharedContext } from '@/shared/shared';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Animated, { Layout, runOnJS } from 'react-native-reanimated';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
+import { ColumnType, ItemType, Views } from '@/shared/types/types';
 import { borderRadius, colors, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
@@ -58,7 +58,7 @@ export default function Column({
         ...column,
         name: `+ Add Item`,
         listID: column?.id,
-        type: SheetComponents.ItemForm,
+        type: Views.ItemForm,
         summary: `This is the Item Form`,
         description: `You can use this form to edit or create items`,
     })
@@ -78,7 +78,8 @@ export default function Column({
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         setDragging(false);
         let { data } = onDragEndData;
-        await setColumnData(data);
+        const updatedItems = data?.map((item, itemIndex) => ({ ...item, index: itemIndex + 1}));
+        await setColumnData(updatedItems);
     }
 
     // useEffect(() => {
@@ -182,7 +183,7 @@ export default function Column({
                                             {column?.category}
                                         </Text>
                                     ) : (
-                                        selected?.type == SheetComponents.Item ? (
+                                        selected?.type == Views.Item ? (
                                             <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: colors.red }]}>
                                                 <FontAwesome name={`trash`} color={colors.white} size={14} />
                                                 <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold` }]}>
@@ -191,7 +192,7 @@ export default function Column({
                                             </TouchableOpacity>
                                         ) : <></>
                                     )}
-                                    <Text style={[titleRowStyles.title, { flexBasis: selected?.type == SheetComponents.ItemForm ? `70%` : `50%` }]}>
+                                    <Text style={[titleRowStyles.title, { flexBasis: selected?.type == Views.ItemForm ? `70%` : `50%` }]}>
                                         {selected == null ? (
                                         `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                                 toFixedWithoutRounding(slideIndex + 1, 1)

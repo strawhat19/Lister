@@ -1,5 +1,5 @@
 import { colors } from '@/components/theme/Themed';
-import { ColumnType, ItemType, SheetComponents, TaskType } from './types/types';
+import { ColumnType, ItemType, Views, TaskType } from './types/types';
 
 export const defaultCategories = {
   To_Do: `To Do`,
@@ -14,12 +14,12 @@ export const defaultListIDs = {
 }
 
 export const defaultTaskObjects = {
-  One: new TaskType({id: `aeiou`, index: 1, name: `One`}), 
-  Two: new TaskType({id: `bedce`, index: 2, name: `Two`}), 
-  Three: new TaskType({id: `zpaom`, index: 3, name: `Three`}), 
-  Four: new TaskType({id: `ximci`, index: 4, name: `Four`}), 
-  Five: new TaskType({id: `podad`, index: 5, name: `Five`}), 
-  Six: new TaskType({id: `xmmdw`, index: 6, name: `Six`}),
+  One: new TaskType({id: `aeiou`, index: 1, name: `One`, type: Views.Task}), 
+  Two: new TaskType({id: `bedce`, index: 2, name: `Two`, type: Views.Task}), 
+  Three: new TaskType({id: `zpaom`, index: 3, name: `Three`, type: Views.Task}), 
+  Four: new TaskType({id: `ximci`, index: 4, name: `Four`, type: Views.Task}), 
+  Five: new TaskType({id: `podad`, index: 5, name: `Five`, type: Views.Task}), 
+  Six: new TaskType({id: `xmmdw`, index: 6, name: `Six`, type: Views.Task}),
 }
 
 export const defaultTasks: TaskType[] = Object.values(defaultTaskObjects);
@@ -42,7 +42,7 @@ export const itemObjects = {
     name: `Jelly Fish`,
     tasks: defaultTasks,
     fontColor: colors.white,
-    type: SheetComponents.Item,
+    type: Views.Item,
     image: defaultImages.jelly_fish,
     backgroundColor: colors.appleGreen,
     listID: defaultListIDs.listColumn_1_items,
@@ -54,7 +54,7 @@ export const itemObjects = {
     key: 2,
     tasks: defaultTasks,
     name: `Mother Nature`,
-    type: SheetComponents.Item,
+    type: Views.Item,
     image: defaultImages.hand_leaf,
     backgroundColor: colors.appleBlue,
     listID: defaultListIDs.listColumn_1_items,
@@ -66,7 +66,7 @@ export const itemObjects = {
     key: 3,
     tasks: defaultTasks,
     name: `Playing Music`,
-    type: SheetComponents.Item,
+    type: Views.Item,
     backgroundColor: colors.appleRed,
     image: defaultImages.playing_keyboard,
     listID: defaultListIDs.listColumn_2_active,
@@ -79,7 +79,7 @@ export const itemObjects = {
     name: `Festivals`,
     tasks: defaultTasks,
     fontColor: colors.dark,
-    type: SheetComponents.Item,
+    type: Views.Item,
     image: defaultImages.wind_flag,
     backgroundColor: colors.appleYellow,
     listID: defaultListIDs.listColumn_2_active,
@@ -91,7 +91,7 @@ export const itemObjects = {
     key: 5,
     tasks: defaultTasks,
     name: `Clean Energy`,
-    type: SheetComponents.Item,
+    type: Views.Item,
     image: defaultImages.wind_mills,
     backgroundColor: colors.applePurple,
     listID: defaultListIDs.listColumn_3_complete,
@@ -103,7 +103,7 @@ export const itemObjects = {
     key: 6,
     name: `Singing`,
     tasks: defaultTasks,
-    type: SheetComponents.Item,
+    type: Views.Item,
     image: defaultImages.singing_rockstar,
     backgroundColor: colors.appleGreenShade,
     listID: defaultListIDs.listColumn_3_complete,
@@ -116,7 +116,7 @@ export const itemObjects = {
     tasks: defaultTasks,
     name: `The Outside`,
     fontColor: colors.dark,
-    type: SheetComponents.Item,
+    type: Views.Item,
     image: defaultImages.wind_curtains,
     backgroundColor: colors.appleGreenMint,
     listID: defaultListIDs.listColumn_3_complete,
@@ -129,7 +129,7 @@ export const itemObjects = {
     name: `The Sky`,
     tasks: defaultTasks,
     image: defaultImages.sky,
-    type: SheetComponents.Item,
+    type: Views.Item,
     backgroundColor: colors.navy,
     listID: defaultListIDs.listColumn_3_complete,
     summary: `The sky is a vast, expansive canvas that stretches endlessly above, painted with a palette that shifts throughout the day.`,
@@ -143,7 +143,7 @@ export const defaultColumns: ColumnType[] = [
   { 
     index: 1, 
     name: `Items`, 
-    type: SheetComponents.Column,
+    type: Views.Column,
     category: defaultCategories.To_Do,
     id: defaultListIDs.listColumn_1_items,
     listID: defaultListIDs.listColumn_1_items,
@@ -152,7 +152,7 @@ export const defaultColumns: ColumnType[] = [
   { 
     index: 2, 
     name: `Active`, 
-    type: SheetComponents.Column,
+    type: Views.Column,
     category: defaultCategories.Active,
     id: defaultListIDs.listColumn_2_active,
     listID: defaultListIDs.listColumn_2_active,
@@ -161,7 +161,7 @@ export const defaultColumns: ColumnType[] = [
   { 
     index: 3, 
     name: `Complete`, 
-    type: SheetComponents.Column,
+    type: Views.Column,
     category: defaultCategories.Done,
     id: defaultListIDs.listColumn_3_complete,
     listID: defaultListIDs.listColumn_3_complete,

@@ -2,9 +2,10 @@ import { SharedContext } from '@/shared/shared';
 import React, { useContext, useState } from 'react';
 import { combineArraysByKey, devEnv, log } from '@/shared/variables';
 import CustomTextInput from '@/components/custom-input/custom-input';
-import { ColumnType, ItemType, SheetComponents } from '@/shared/types/types';
+import { ColumnType, ItemType, Views } from '@/shared/types/types';
 import { borderRadius, colors, lightColors, randomCardColor, Text } from '@/components/theme/Themed';
 import { View, Vibration, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
+import { defaultTaskObjects } from '@/shared/database';
 
 export default function ItemForm({ }: any) {
     let { selected, editing, setEditing, closeBottomSheet, board, setBoard } = useContext<any>(SharedContext);
@@ -43,13 +44,15 @@ export default function ItemForm({ }: any) {
         const newIndex = allItems?.length + 1;
 
         const newItem = new ItemType({
+            tasks: [],
             id: newIndex,
             key: newIndex,
+            index: newIndex,
+            type: Views.Item,
             name: form?.name,
             image: form?.image,
             summary: form?.summary,
             backgroundColor: newColor,
-            type: SheetComponents.Item,
             description: form?.description,
             listID: selected?.listID || selected?.id,
             ...(isLightColor && {

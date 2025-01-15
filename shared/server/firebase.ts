@@ -12,6 +12,7 @@ export enum DatabaseTableNames {
   tasks = `tasks`,
   boards = `boards`,
   columns = `columns`,
+  notifications = `notifications`,
 }
 
 const firebaseConfig = {

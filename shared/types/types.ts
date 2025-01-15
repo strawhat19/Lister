@@ -1,7 +1,7 @@
 import { colors } from '@/components/theme/Themed';
 
 export type Type = {
-    type: Types; 
+    type: Types | Views; 
 }
 
 export type DataNoID = {
@@ -39,13 +39,13 @@ export enum BoardTypes {
     Kanban = `Kanban`,
 }
 
-export enum Views {
+export enum ItemViews {
+    Tasks = `Tasks`,
     Details = `Details`,
-    Subtasks = `Subtasks`,
     Comments = `Comments`,
 }
 
-export enum SheetComponents {
+export enum Views {
     Item = `Item`,
     Task = `Task`,
     Board = `Board`,
@@ -62,6 +62,21 @@ export class ItemViewType {
     }
 }
 
+export class IDData {
+    id: any;
+    name: string;
+    index: number;
+    date: Date | string;
+    type: Views | Types;
+    uuid: string | number;
+    title: string | number;
+    currentDateTimeStamp: string;
+    currentDateTimeStampNoSpaces: string;
+    constructor(data: Partial<IDData>) {
+        Object.assign(this, data);
+    }
+}
+
 export class CustomImageType {
     alt: string;
     style?: any;
@@ -72,7 +87,6 @@ export class CustomImageType {
     height: number | string = 1260;
     className: string = `customImageClass`;
     useReactLazyLoadOnMobile: boolean = false;
-
     constructor(data: Partial<CustomImageType>) {
         Object.assign(this, data);
     }
@@ -83,7 +97,7 @@ export class BoardType {
     key?: any;
     index?: number;
     id: string | number;
-    type?: string | SheetComponents = SheetComponents.Board;
+    type?: string | Views | Types = Views.Board;
 
     // Relational
     items?: ItemType[] = [];
@@ -109,7 +123,7 @@ export class ColumnType {
     key?: any;
     index?: number;
     id: string | number;
-    type?: string | SheetComponents = SheetComponents.Column;
+    type?: string | Views | Types = Views.Column;
 
     // Relational
     items: ItemType[] = [];
@@ -135,7 +149,7 @@ export class ItemType {
     key?: any;
     index?: number;
     id: string | number;
-    type?: string | SheetComponents = SheetComponents.Item;
+    type?: string | Views | Types = Views.Item;
 
     // Relational
     tasks?: TaskType[] = [];
@@ -168,7 +182,7 @@ export class TaskType {
     key?: any;
     index?: number;
     id: string | number;
-    type?: string | SheetComponents = SheetComponents.Task;
+    type?: string | Views | Types = Views.Task;
 
     // Relational
     itemID?: number | string;

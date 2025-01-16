@@ -139,15 +139,15 @@ export default function ItemForm({ }: any) {
                                         endIconName={(form.image != `` && validImage) ? `` : `camera`}
                                     />
                                 </View>
-                                {form.image != `` ? (
-                                    <View style={{ ...boardStyles.cardImageContainer, alignItems: `center`, width: validImage ? `50%` : 0,  }}>
+                                {(form.image != ``) ? (
+                                    <View style={{ ...boardStyles.cardImageContainer, alignItems: `center`, width: validImage ? `46%` : 0, marginRight: -15 }}>
                                         <CustomImage 
                                             alt={form.name} 
                                             source={{ uri: form.image }} 
                                             onLoad={() => setValidImage(true)}
                                             onError={() => setValidImage(false)}
                                             style={{ 
-                                                ...cardedBorderRight,
+                                                borderRadius,
                                                 ...boardStyles.cardImage, 
                                                 ...(web() && { width: `fit-content` }),
                                                 minWidth: `100%`,

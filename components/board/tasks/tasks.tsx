@@ -102,7 +102,7 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
                     onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                     onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                     ListEmptyComponent={(
-                        <View style={{ flex: 1, backgroundColor: colors.black, paddingVertical: 10 }}>
+                        <View style={{ flex: 1, backgroundColor: colors.black, paddingVertical: 10, ...globalStyles.flexRow, justifyContent: `center` }}>
                             <Text style={{ fontStyle: `italic`, textAlign: `center` }}>
                                 No Tasks Yet
                             </Text>
@@ -111,9 +111,9 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
                     contentContainerStyle={{
                         gap: 3,
                         width: `100%`,
-                        height: `auto`,
                         marginHorizontal: `auto`,
                         paddingBottom: tasks.length * 0.25,
+                        height: tasks.length == 0 ? `100%` : `auto`,
                     }}
                 />
             </View>

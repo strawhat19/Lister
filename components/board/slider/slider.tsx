@@ -5,8 +5,6 @@ import { colors } from '@/components/theme/Themed';
 import SliderPagination from './pagination/pagination';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
-import { log } from '@/shared/variables';
 
 export default function Slider({ backgroundColor = colors.mainBG }: any) {
     const swiping = useRef(false);
@@ -49,12 +47,12 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
         // <PanGestureHandler onGestureEvent={(event) => log(`carousel gesture`, event)}>
             <>
                 <Carousel
-                    loop={true}
                     data={board}
                     width={width}
                     height={height}
                     mode={`parallax`}
                     ref={carouselRef}
+                    loop={board?.length > 1}
                     enabled={selected == null}
                     onProgressChange={progress}
                     pagingEnabled={selected == null}

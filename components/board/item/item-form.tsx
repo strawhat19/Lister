@@ -1,21 +1,28 @@
+import { boardStyles } from '../styles';
 import { SharedContext } from '@/shared/shared';
-import React, { useContext, useState } from 'react';
-import { boardStyles, cardedBorderRight } from '../styles';
+import { ItemType, Views } from '@/shared/types/types';
+import React, { useContext, useEffect, useState } from 'react';
 import CustomImage from '@/components/custom-image/custom-image';
-import { ColumnType, ItemType, Views } from '@/shared/types/types';
 import CustomTextInput from '@/components/custom-input/custom-input';
+import { getItemsForColumn, addItemToDatabase } from '@/shared/server/firebase';
 import { borderRadius, colors, globalStyles, lightColors, randomCardColor, Text, View } from '@/components/theme/Themed';
+import { genID, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, openCamera, web } from '@/shared/variables';
 import { Vibration, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
-import { combineArraysByKey, genID, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, openCamera, web } from '@/shared/variables';
 
 export const defaultItemForm = { name: ``, image: ``, summary: ``, description: `` };
 
 export default function ItemForm({ }: any) {
-    let { selected, editing, setEditing, closeBottomSheet, board, setBoard } = useContext<any>(SharedContext);
+    let { items, selected, editing, setEditing, closeBottomSheet, board, setBoard } = useContext<any>(SharedContext);
 
     const [formError, setFormError] = useState(true);
     const [form, setForm] = useState(defaultItemForm);
     const [validImage, setValidImage] = useState(false);
+    const [columnItems, setColumnItems] = useState<ItemType[]>([]);
+
+    useEffect(() => {
+        let itemsForColumn = getItemsForColumn(items, selected?.listID || selected?.id);
+        setColumnItems(itemsForColumn);
+    }, [items])
 
     const handleInputChange = (field: string, value: string) => {
         setForm({ ...form, [field]: value });
@@ -26,38 +33,41 @@ export default function ItemForm({ }: any) {
         setFormError(!validItemForm);
     }
 
-    const addItem = () => {
-        if (formError) {
-            log(`Error`, `All fields are required!`, true);
-            return;
-        }
-
+    const addItem = async () => {
         let lastColor = ``;
-        let newColor = randomCardColor();
-        if (selected?.items && selected?.items?.length > 0) {
-            let lastItemColor = selected?.items[selected?.items.length - 1]?.backgroundColor;
+        let newColor = await randomCardColor();
+
+        if (columnItems && columnItems?.length > 0) {
+            let lastItemColor = columnItems[columnItems.length - 1]?.backgroundColor;
             if (lastItemColor) {
                 lastColor = lastItemColor;
                 if (lastColor) {
                     if (lastColor == newColor) {
-                        newColor = randomCardColor(undefined, lastColor);
+                        newColor = await randomCardColor(undefined, lastColor);
                     }
                 }
             }
         }
 
+        // const allItems = combineArraysByKey(board, `items`);
+        // const newKey = allItems?.length + 1;
+
+        const type = Views.Item;
+        const newKey = items?.length + 1;
+        const newIndex = columnItems?.length + 1;
         const isLightColor = Object.values(lightColors).includes(newColor);
-        const allItems = combineArraysByKey(board, `items`);
-        const newIndex = allItems?.length + 1;
 
-        const { id } = genID(Views.Item, newIndex);
+        const { id, uuid, date } = await genID(type, newIndex);
 
-        const newItem = new ItemType({
+        const newItem = await new ItemType({
             id,
+            uuid,
+            type,
             tasks: [],
-            key: newIndex,
+            key: newKey,
+            created: date,
+            updated: date,
             index: newIndex,
-            type: Views.Item,
             name: form?.name,
             image: form?.image,
             summary: form?.summary,
@@ -69,23 +79,25 @@ export default function ItemForm({ }: any) {
             }),
         } as ItemType)
 
-        const updatedBoardData = board.map((list: ColumnType) => {
-            if (list.id === selected?.listID) {
-                return { 
-                    ...list, 
-                    items: [
-                        ...list.items, 
-                        newItem,
-                    ]
-                };
-            }
-            return list;
-        });
+        await addItemToDatabase(newItem);
 
-        setBoard(updatedBoardData);
-        Vibration.vibrate(1);
+        // const updatedBoardData = board.map((list: ColumnType) => {
+        //     if (list.id === selected?.listID) {
+        //         return { 
+        //             ...list, 
+        //             items: [
+        //                 ...list.items, 
+        //                 newItem,
+        //             ]
+        //         };
+        //     }
+        //     return list;
+        // });
 
-        closeBottomSheet();
+        // setBoard(updatedBoardData);
+        
+        await Vibration.vibrate(1);
+        await closeBottomSheet();
     }
 
     return (

@@ -1,7 +1,7 @@
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import { IDData, Types, Views } from '@/shared/types/types';
 import { Dimensions, Alert, Platform, Vibration } from 'react-native';
+import { IDData, ItemType, Types, Views } from '@/shared/types/types';
 
 export const COL = 5;
 export const MARGIN = 8;

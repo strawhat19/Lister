@@ -41,6 +41,7 @@ export enum BoardTypes {
 
 export enum ItemViews {
     Tasks = `Tasks`,
+    Image = `Image`,
     Details = `Details`,
     Comments = `Comments`,
 }
@@ -67,7 +68,7 @@ export class IDData {
     index: number;
     date: Date | string;
     type: Views | Types;
-    uuid: string | number;
+    uuid: string | number | any;
     title: string | number;
     currentDateTimeStamp: string;
     currentDateTimeStampNoSpaces: string;
@@ -95,7 +96,8 @@ export class BoardType {
     // Meta
     key?: any;
     index?: number;
-    id: string | number;
+    id: string | number | any;
+    uuid?: string | number | any;
     type?: string | Views | Types = Views.Board;
 
     // Relational
@@ -121,7 +123,8 @@ export class ColumnType {
     // Meta
     key?: any;
     index?: number;
-    id: string | number;
+    id: string | number | any;
+    uuid?: string | number | any;
     type?: string | Views | Types = Views.Column;
 
     // Relational
@@ -147,7 +150,8 @@ export class ItemType {
     // Meta
     key?: any;
     index?: number;
-    id: string | number;
+    id: string | number | any;
+    uuid?: string | number | any;
     type?: string | Views | Types = Views.Item;
 
     // Relational
@@ -180,7 +184,8 @@ export class TaskType {
     // Meta
     key?: any;
     index?: number;
-    id: string | number;
+    id: string | number | any;
+    uuid?: string | number | any;
     type?: string | Views | Types = Views.Task;
 
     // Relational

@@ -39,9 +39,10 @@ export const itemObjects = {
   JellyFish: new ItemType({
     id: 1,
     key: 1,
+    index: 1,
+    tasks: [],
     type: Views.Item,
     name: `Jelly Fish`,
-    tasks: defaultTasks,
     fontColor: colors.white,
     image: defaultImages.jelly_fish,
     backgroundColor: colors.appleGreen,
@@ -52,8 +53,9 @@ export const itemObjects = {
   MotherNature: new ItemType({
     id: 2,
     key: 2,
+    index: 2,
+    tasks: [],
     type: Views.Item,
-    tasks: defaultTasks,
     name: `Mother Nature`,
     image: defaultImages.hand_leaf,
     backgroundColor: colors.appleBlue,
@@ -64,6 +66,7 @@ export const itemObjects = {
   PlayingMusic: new ItemType({
     id: 3,
     key: 3,
+    index: 2,
     type: Views.Item,
     tasks: defaultTasks,
     name: `Playing Music`,
@@ -76,6 +79,7 @@ export const itemObjects = {
   Festivals: new ItemType({
     id: 4,
     key: 4,
+    index: 1,
     type: Views.Item,
     name: `Festivals`,
     tasks: defaultTasks,
@@ -89,8 +93,9 @@ export const itemObjects = {
   CleanEnergy: new ItemType({
     id: 5,
     key: 5,
+    index: 1,
+    tasks: [],
     type: Views.Item,
-    tasks: defaultTasks,
     name: `Clean Energy`,
     image: defaultImages.wind_mills,
     backgroundColor: colors.applePurple,
@@ -101,9 +106,10 @@ export const itemObjects = {
   Singing: new ItemType({
     id: 6,
     key: 6,
+    index: 3,
+    tasks: [],
     name: `Singing`,
     type: Views.Item,
-    tasks: defaultTasks,
     image: defaultImages.singing_rockstar,
     backgroundColor: colors.appleGreenShade,
     listID: defaultListIDs.listColumn_3_complete,
@@ -113,8 +119,9 @@ export const itemObjects = {
   TheOutside: new ItemType({
     id: 7,
     key: 7,
+    index: 2,
+    tasks: [],
     type: Views.Item,
-    tasks: defaultTasks,
     name: `The Outside`,
     fontColor: colors.dark,
     image: defaultImages.wind_curtains,
@@ -126,9 +133,10 @@ export const itemObjects = {
   TheSky: new ItemType({
     id: 8,
     key: 8,
+    index: 4,
     name: `The Sky`,
+    tasks: [],
     type: Views.Item,
-    tasks: defaultTasks,
     image: defaultImages.sky,
     backgroundColor: colors.navy,
     listID: defaultListIDs.listColumn_3_complete,
@@ -147,7 +155,8 @@ export const defaultColumns: ColumnType[] = [
     category: defaultCategories.To_Do,
     id: defaultListIDs.listColumn_1_items,
     listID: defaultListIDs.listColumn_1_items,
-    items: [itemObjects.JellyFish, itemObjects.MotherNature],
+    items: [],
+    // items: [itemObjects.JellyFish, itemObjects.MotherNature],
   }, 
   { 
     index: 2, 
@@ -156,7 +165,8 @@ export const defaultColumns: ColumnType[] = [
     category: defaultCategories.Active,
     id: defaultListIDs.listColumn_2_active,
     listID: defaultListIDs.listColumn_2_active,
-    items: [itemObjects.Festivals, itemObjects.PlayingMusic],
+    items: [],
+    // items: [itemObjects.Festivals, itemObjects.PlayingMusic],
   },
   { 
     index: 3, 
@@ -165,6 +175,7 @@ export const defaultColumns: ColumnType[] = [
     category: defaultCategories.Done,
     id: defaultListIDs.listColumn_3_complete,
     listID: defaultListIDs.listColumn_3_complete,
-    items: [itemObjects.CleanEnergy, itemObjects.TheOutside, itemObjects.Singing, itemObjects.TheSky],
+    items: [],
+    // items: [itemObjects.CleanEnergy, itemObjects.TheOutside, itemObjects.Singing, itemObjects.TheSky],
   },
 ]

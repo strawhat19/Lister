@@ -135,7 +135,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                 )}
 
                 {view == ItemViews.Tasks && <>
-                    <Tasks selected={selected} taskItems={selected?.tasks} />
+                    <Tasks selected={selected} />
                 </>}
             </> : <></>}
         </>

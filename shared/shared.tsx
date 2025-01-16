@@ -1,3 +1,4 @@
+import { User } from './models/User';
 import 'react-native-gesture-handler';
 import { defaultColumns } from './database';
 import { View } from '@/components/theme/Themed';
@@ -5,38 +6,34 @@ import { animationOptions, log } from './variables';
 import SlideUp from '@/components/slide-up/slide-up';
 import { useSharedValue } from 'react-native-reanimated';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { usersDatabaseCollection, db } from './server/firebase';
-import { ColumnType, ItemType, ItemViews, Views } from '@/shared/types/types';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Animated, useWindowDimensions, Vibration } from 'react-native';
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+import { itemsDatabaseCollection, db, tasksDatabaseCollection } from './server/firebase';
+import { BoardType, ColumnType, ItemType, ItemViews, TaskType } from '@/shared/types/types';
 
-import {
-  configureReanimatedLogger,
-  ReanimatedLogLevel,
-} from 'react-native-reanimated';
-
-// This is the default configuration
-configureReanimatedLogger({
-  level: ReanimatedLogLevel.error,
-  strict: false, // Reanimated runs in strict mode by default
-});
+configureReanimatedLogger({ strict: false, level: ReanimatedLogLevel.error });
 
 export const SharedContext = createContext({});
 
 export default function Shared({ children }: { children: React.ReactNode; }) {
   let [indx, setIndx] = useState(0);
-  let [user, setUser] = useState(null);
-  let [users, setUsers] = useState([]);
   let [beta, setBeta] = useState(false);
   let [blur, setBlur] = useState<any>(100);
   let [editing, setEditing] = useState(false);
-  let [view, setView] = useState(ItemViews.Details);
   let [slideIndex, setSlideIndex] = useState(0);
   let [modalOpen, setModalOpen] = useState(false);
   let [isDragging, setDragging] = useState(false);
+  let [items, setItems] = useState<ItemType[]>([]);
+  let [tasks, setTasks] = useState<TaskType[]>([]);
+  let [view, setView] = useState(ItemViews.Details);
+  let [user, setUser] = useState<User | null>(null);
+  let [users, setUsers] = useState<User[] | null>([]);
+  let [itemsLoading, setItemsLoading] = useState(false);
   let [usersLoading, setUsersLoading] = useState(false);
-  let [board, setBoard] = useState<ColumnType[]>(defaultColumns);
+  let [tasksLoading, setTasksLoading] = useState(false);
+  let [board, setBoard] = useState<BoardType | ColumnType[]>(defaultColumns);
   let [selected, setSelected] = useState<ItemType | ColumnType | null>(null);
   let [activeTopName, setActiveTopName] = useState(board[slideIndex]?.name);
 
@@ -64,7 +61,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     enterFadeBlur();
     setIndx(1);
     if (item) {
-      if (item?.type == Views.Item) log(`Item`, item);
+      // if (item?.type != Views.ItemForm) log(item?.type, item);
       if (item.name) setActiveTopName(item.name);
       if (backgroundColor) {
         item = {
@@ -102,24 +99,57 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   }
 
   useEffect(() => {    
-    // log(`initialized`);
-  //   const usersCollection = collection(db, usersDatabaseCollection);
-  //   const unsubscribeFromUserDatabase = onSnapshot(usersCollection, snapshot => {
-  //       setUsersLoading(true);
-  //       const usersFromDB: any[] = [];
-  //       snapshot.forEach((doc) => usersFromDB.push({ ...doc.data() } as any));
-  //       log(`Users Update from Firebase`, usersFromDB);
-  //       setUsers(usersFromDB);
-  //       setUsersLoading(false);
-  //     }, error => {
-  //       log(`Error getting Users from Firebase`, error);
-  //       setUsersLoading(false);
-  //     }
-  //   )
+    //   log(`initialized`);
+    //   const usersCollection = collection(db, usersDatabaseCollection);
+    //   const unsubscribeFromUserDatabase = onSnapshot(usersCollection, snapshot => {
+    //       setUsersLoading(true);
+    //       const usersFromDB: any[] = [];
+    //       snapshot.forEach((doc) => usersFromDB.push({ ...doc.data() } as any));
+    //       log(`Users Update from Firebase`, usersFromDB);
+    //       setUsers(usersFromDB);
+    //       setUsersLoading(false);
+    //     }, error => {
+    //       log(`Error getting Users from Firebase`, error);
+    //       setUsersLoading(false);
+    //     }
+    //   )
 
-  //   return () => {
-  //     unsubscribeFromUserDatabase();
-  //   }
+    //   return () => {
+    //     unsubscribeFromUserDatabase();
+    //   }
+
+    const itemsCollection = collection(db, itemsDatabaseCollection);
+    const unsubscribeFromItemsDatabase = onSnapshot(itemsCollection, snapshot => {
+        setItemsLoading(true);
+        const itemsFromDB: any[] = [];
+        snapshot.forEach((doc) => itemsFromDB.push({ ...doc.data() } as any));
+        // log(`Items Update from Firebase`, itemsFromDB);
+        setItems(itemsFromDB);
+        setItemsLoading(false);
+      }, error => {
+        log(`Error getting Items from Firebase`, error);
+        setItemsLoading(false);
+      }
+    )
+    
+    const tasksCollection = collection(db, tasksDatabaseCollection);
+    const unsubscribeFromTasksDatabase = onSnapshot(tasksCollection, snapshot => {
+        setTasksLoading(true);
+        const tasksFromDB: any[] = [];
+        snapshot.forEach((doc) => tasksFromDB.push({ ...doc.data() } as any));
+        // log(`Tasks Update from Firebase`, tasksFromDB);
+        setTasks(tasksFromDB);
+        setTasksLoading(false);
+      }, error => {
+        log(`Error getting Tasks from Firebase`, error);
+        setTasksLoading(false);
+      }
+    )
+
+    return () => {
+      unsubscribeFromItemsDatabase();
+      unsubscribeFromTasksDatabase();
+    }
   }, [])
 
   return (
@@ -139,6 +169,8 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         onSheetChange,
         board, setBoard,
         users, setUsers,
+        items, setItems,
+        tasks, setTasks,
         openBottomSheet,
         closeBottomSheet,
         editing, setEditing,
@@ -147,6 +179,8 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         isDragging, setDragging,
         modalOpen, setModalOpen,
         slideIndex, setSlideIndex,
+        tasksLoading, setTasksLoading,
+        itemsLoading, setItemsLoading,
         usersLoading, setUsersLoading,
         activeTopName, setActiveTopName,
       }}

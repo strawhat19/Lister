@@ -4,14 +4,14 @@ import { boardStyles } from '../styles';
 import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Animated, { Layout, runOnJS } from 'react-native-reanimated';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import Animated, { Layout } from 'react-native-reanimated';
 import { ColumnType, ItemType, Views } from '@/shared/types/types';
-import { borderRadius, colors, globalStyles, Text, View } from '@/components/theme/Themed';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
-import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
+import { borderRadius, colors, globalStyles, Text, View } from '@/components/theme/Themed';
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { gridSpacing, log, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+import { getItemsForColumn, deleteItemFromDatabase, updateItemIndexInDatabase } from '@/shared/server/firebase';
 
 export default function Column({ 
     column, 
@@ -22,7 +22,7 @@ export default function Column({
     backgroundColor = colors.mainBG, 
 }: ColumnType | any) {
     let { 
-        users,
+        items,
         board,
         height, 
         setBoard, 
@@ -42,7 +42,7 @@ export default function Column({
     }
 
     const [loading, setLoading] = useState(false);
-    const [items, setItems] = useState(column?.items);
+    const [columnItems, setColumnItems] = useState<ItemType[]>([]);
 
     const closeItem = () => {
         Vibration.vibrate(1);
@@ -53,6 +53,11 @@ export default function Column({
         setDragging(true);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
+
+    useEffect(() => {
+        let itemsForColumn = getItemsForColumn(items, column?.id);
+        setColumnItems(itemsForColumn);
+    }, [items])
 
     const itemForm = new ItemType({
         ...column,
@@ -73,39 +78,38 @@ export default function Column({
         )
     }
 
-    const onDragEnd = async (onDragEndData: any) => {
-        // setLoading(true);
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-        setDragging(false);
-        let { data } = onDragEndData;
-        const updatedItems = data?.map((item, itemIndex) => ({ ...item, index: itemIndex + 1}));
-        await setItems(updatedItems);
+    const onPlaceHolderIndexChange = (onPlaceHolderIndexChangeData: any) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        log(`onPlaceHolderIndexChange`, onPlaceHolderIndexChangeData);
     }
 
-    // useEffect(() => {
-    //     setLoading(false);
-    // }, [columnData])
+    const onDragEnd = async (onDragEndData: any) => {
+        await LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        await setDragging(false);
+        let { data } = await onDragEndData;
+        if (data?.length > 0) {
+            // const updatedItems = data?.map((item, itemIndex) => ({ ...item, index: itemIndex + 1}));
+            // await setColumnItems(updatedItems);
+            data.forEach((itm, itmIndex) => {
+                updateItemIndexInDatabase(itm?.id, itmIndex + 1);
+            })
+        }
+    }
 
-    useEffect(() => {
-       let thisColumn = board?.find(col => col?.id == column.id);
-       if (thisColumn) {
-        setItems(thisColumn?.items);
-       }  
-    }, [board])
-
-    const deleteItem = () => {
-        const updatedBoardData = board.map((list: ColumnType, listIndex) => {
-            let updatedIndexList = { ...list, index: listIndex + 1 };
-            if (list.id === column?.id) {
-                return { 
-                    ...updatedIndexList, 
-                    items: list.items.filter(itm => itm?.id != selected?.id)
-                }
-            }
-            return updatedIndexList;
-        });
-        setBoard(updatedBoardData);
-        closeItem();
+    const deleteItem = async () => {
+        await deleteItemFromDatabase(selected?.id);
+        // const updatedBoardData = board.map((list: ColumnType, listIndex) => {
+        //     let updatedIndexList = { ...list, index: listIndex + 1 };
+        //     if (list.id === column?.id) {
+        //         return { 
+        //             ...updatedIndexList, 
+        //             items: list.items.filter(itm => itm?.id != selected?.id)
+        //         }
+        //     }
+        //     return updatedIndexList;
+        // });
+        // setBoard(updatedBoardData);
+        await closeItem();
     }
 
     const renderDraggableItem = useCallback(
@@ -195,15 +199,15 @@ export default function Column({
                                     )}
                                     <Text style={[titleRowStyles.title, { flexBasis: selected?.type == Views.ItemForm ? `70%` : `50%` }]}>
                                         {selected == null ? (
-                                        `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
+                                            `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                                 toFixedWithoutRounding(slideIndex + 1, 1)
                                             )}`
                                         ) : activeTopName}
                                     </Text>
                                     {selected == null ? (
-                                        items && items.length > 0 ? (
+                                        columnItems && columnItems.length > 0 ? (
                                             <Text style={titleRowStyles.subtitle}>
-                                                {items?.length + ` Item(s)`}
+                                                {columnItems?.length + ` Item(s)`}
                                             </Text>
                                         ) : <>
                                             <Text style={titleRowStyles.subtitle}>
@@ -219,20 +223,20 @@ export default function Column({
                                         </TouchableOpacity>
                                     )}
                                 </View>
-                                {(!loading || items?.length > 0) ? (
+                                {(!loading || columnItems?.length > 0) ? (
                                     // <PanGestureHandler enabled={!isDragging} activeOffsetX={[-10, 10]} activeOffsetY={[-10, 10]} onGestureEvent={!isDragging ? handleGesture : null}>
                                         <DraggableFlatList
                                             bounces={true}
-                                            data={items}
+                                            data={columnItems}
                                             onDragBegin={onDragBegin}
                                             scrollEnabled={!isDragging}
                                             directionalLockEnabled={true}
                                             renderItem={renderDraggableItem}
                                             keyExtractor={(item) => item.id.toString()}
                                             onScrollBeginDrag={() => setDragging(false)}
+                                            onPlaceholderIndexChange={async (onPlaceHolderIndexChangeData) => await onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
                                             onDragEnd={async (onDragEndData) => await onDragEnd(onDragEndData)}
                                             style={{ height: `auto`, maxHeight: height - paginationHeightMargin}}
-                                            onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                                             contentContainerStyle={{
                                                 width: `100%`,
                                                 height: `auto`,
@@ -246,7 +250,7 @@ export default function Column({
                                 ) : (
                                     <View style={{ width: `100%`, backgroundColor, height: height - paginationHeightMargin, paddingTop: 35 }}>
                                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
-                                            {items?.length > 0 ? loadingMessages.zero : loadingMessages.loading}
+                                            {columnItems?.length > 0 ? loadingMessages.zero : loadingMessages.loading}
                                         </Text>
                                     </View>
                                 )}

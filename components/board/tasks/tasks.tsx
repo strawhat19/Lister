@@ -1,64 +1,84 @@
 import * as Haptics from 'expo-haptics';
 import { boardStyles } from '../styles';
 import { SharedContext } from '@/shared/shared';
-import { defaultTasks } from '@/shared/database';
 import { ItemType, TaskType, Views } from '@/shared/types/types';
 import { genID, log, maxTaskNameLength } from '@/shared/variables';
 import CustomTextInput from '@/components/custom-input/custom-input';
 import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import React, { useCallback, useContext, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
+import { addTaskToDatabase, getTasksForItem, updateTaskIndexInDatabase } from '@/shared/server/firebase';
 
-export default function Tasks({ selected, taskItems = defaultTasks }: any) {
+export default function Tasks({ selected }: any) {
     const listRef = useRef(null);
 
     let [taskName, setTaskName] = useState(``);
-    let [tasks, setTasks] = useState<TaskType[]>(taskItems);
-    let { editing, setEditing } = useContext<any>(SharedContext);
+    let [itemTasks, setItemTasks] = useState<TaskType[]>([]);
+    let { tasks, editing, setEditing } = useContext<any>(SharedContext);
 
-    const onPressTask = (item: TaskType) => {
+    const onPressTask = (task: TaskType) => {
         Vibration.vibrate(1);
-        log(`Task`, item);
+        // log(task?.type, task);
     }
+
+    useEffect(() => {
+        let tasksForItem = getTasksForItem(tasks, selected?.id);
+        setItemTasks(tasksForItem);
+    }, [tasks])
 
     const onDragEnd = async (onDragEndData: any) => {
-        const updatedTasks = onDragEndData?.data?.map((task, taskIndex) => ({ ...task, index: taskIndex + 1}));
-        await setTasks(updatedTasks);
+        let { data } = await onDragEndData;
+        if (data?.length > 0) {
+            // const updatedTasks = data?.map((task, taskIndex) => ({ ...task, index: taskIndex + 1}));
+            // await setTasks(updatedTasks);
+            data.forEach((tsk, tskIndex) => {
+                updateTaskIndexInDatabase(tsk?.id, tskIndex + 1);
+            })
+        }
     }
 
-    const addTask = () => {
-        Vibration.vibrate(1);
-
-        setTasks(prevTasks => {
+    const addTask = async () => {
+        // setItemTasks(prevTasks => {
             const type = Views.Task;
-            const newIndex = prevTasks.length + 1;
-            const { id } = genID(Views.Task, newIndex);
+            const newKey = tasks?.length + 1;
+            const newIndex = itemTasks?.length + 1;
+            // const newIndex = prevTasks.length + 1;
+            const { id, uuid, date } = await genID(type, newIndex);
 
-            const newTask = new TaskType({ 
+            const newTask = await new TaskType({ 
                 id, 
                 type,
+                uuid,
+                key: newKey,
+                created: date,
+                updated: date,
                 name: taskName, 
                 index: newIndex, 
+                itemID: selected?.id,
             })
 
-            const updatedTasks = [...prevTasks, newTask];
+            await addTaskToDatabase(newTask);
 
-            setTimeout(() => {
-                listRef.current?.scrollToEnd({ animated: true });
-            }, 150);
+            // const updatedTasks = [...prevTasks, newTask];
 
-            return updatedTasks;
-        });
+            
+            // return updatedTasks;
+            // });
+            
+        await setTaskName(``);
+        await Vibration.vibrate(1);
 
-        setTaskName(``);
+        await setTimeout(() => {
+            listRef.current?.scrollToEnd({ animated: true });
+        }, 150);
     }
 
     const renderDraggableItem = useCallback(
         ({ item, drag, isActive }: RenderItemParams<ItemType>) => {
         let index = item?.index;
         let isFirst: boolean = index == 1 ? true : false;
-        let isLast: boolean = index == selected?.tasks?.length ? true : false;
+        let isLast: boolean = index == itemTasks?.length ? true : false;
         return (
             <ScaleDecorator>
                 <TouchableOpacity
@@ -89,7 +109,7 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
         <>
             <View style={[styles.tasksContainer, { maxHeight: editing ? 225 : (selected?.image && selected?.image != `` ? 185 : 340), marginTop: editing ? 0 : 12, }]}>
                 <DraggableFlatList
-                    data={tasks}
+                    data={itemTasks}
                     ref={listRef}
                     bounces={true}
                     style={{ height: `auto` }}
@@ -112,8 +132,8 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
                         gap: 3,
                         width: `100%`,
                         marginHorizontal: `auto`,
-                        paddingBottom: tasks.length * 0.25,
-                        height: tasks.length == 0 ? `100%` : `auto`,
+                        paddingBottom: itemTasks.length * 0.25,
+                        height: itemTasks.length == 0 ? `100%` : `auto`,
                     }}
                 />
             </View>

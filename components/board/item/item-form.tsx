@@ -1,10 +1,12 @@
 import { SharedContext } from '@/shared/shared';
 import React, { useContext, useState } from 'react';
+import { boardStyles, cardedBorderRight } from '../styles';
+import CustomImage from '@/components/custom-image/custom-image';
 import { ColumnType, ItemType, Views } from '@/shared/types/types';
 import CustomTextInput from '@/components/custom-input/custom-input';
 import { borderRadius, colors, globalStyles, lightColors, randomCardColor, Text, View } from '@/components/theme/Themed';
 import { Vibration, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
-import { combineArraysByKey, genID, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, openCamera } from '@/shared/variables';
+import { combineArraysByKey, genID, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, openCamera, web } from '@/shared/variables';
 
 export const defaultItemForm = { name: ``, image: ``, summary: ``, description: `` };
 
@@ -13,6 +15,7 @@ export default function ItemForm({ }: any) {
 
     const [formError, setFormError] = useState(true);
     const [form, setForm] = useState(defaultItemForm);
+    const [validImage, setValidImage] = useState(false);
 
     const handleInputChange = (field: string, value: string) => {
         setForm({ ...form, [field]: value });
@@ -94,46 +97,65 @@ export default function ItemForm({ }: any) {
                 <View style={styles.container}>
                     <View id={`ItemFormFields`} style={styles.formFields}>
                         {!editing || (editing && form?.description?.length < 43) ? (
-                            <>
-                                <CustomTextInput
-                                    value={form.name}
-                                    placeholder={`Name`}
-                                    maxLength={maxItemNameLength}
-                                    style={{ ...styles.borderedInput }}
-                                    onCancel={() => setForm(defaultItemForm)}
-                                    doneText={formError == true ? undefined : `Add`}
-                                    onDone={formError == true ? undefined : () => addItem()}
-                                    cancelColor={formError == true ? undefined : colors.red}
-                                    doneColor={formError == true ? undefined : colors.white}
-                                    onChangeText={(text) => handleInputChange(`name`, text)}
-                                />
-                                <CustomTextInput
-                                    value={form.summary}
-                                    placeholder={`Summary`}
-                                    maxLength={maxItemSummaryLength}
-                                    style={{ ...styles.borderedInput }}
-                                    onCancel={() => setForm(defaultItemForm)}
-                                    doneText={formError == true ? undefined : `Add`}
-                                    onDone={formError == true ? undefined : () => addItem()}
-                                    cancelColor={formError == true ? undefined : colors.red}
-                                    doneColor={formError == true ? undefined : colors.white}
-                                    onChangeText={(text) => handleInputChange(`summary`, text)}
-                                />
-                                <CustomTextInput
-                                    value={form.image}
-                                    endIconName={`camera`}
-                                    placeholder={`Image URL`}
-                                    endIconStyle={{ maxWidth: 42 }}
-                                    endIconPress={() => openCamera()}
-                                    style={{ ...styles.borderedInput }}
-                                    onCancel={() => setForm(defaultItemForm)}
-                                    doneText={formError == true ? undefined : `Add`}
-                                    onDone={formError == true ? undefined : () => addItem()}
-                                    cancelColor={formError == true ? undefined : colors.red}
-                                    doneColor={formError == true ? undefined : colors.white}
-                                    onChangeText={(text) => handleInputChange(`image`, text)}
-                                />
-                            </>
+                            <View style={{ ...globalStyles.flexRow, gap: 15 }}>
+                                <View style={{ flex: 1, maxWidth: (form.image != `` && validImage) ? `50%` : `100%` }}>
+                                    <CustomTextInput
+                                        value={form.name}
+                                        placeholder={`Name`}
+                                        maxLength={maxItemNameLength}
+                                        style={{ ...styles.borderedInput }}
+                                        onCancel={() => setForm(defaultItemForm)}
+                                        doneText={formError == true ? undefined : `Add`}
+                                        onDone={formError == true ? undefined : () => addItem()}
+                                        cancelColor={formError == true ? undefined : colors.red}
+                                        doneColor={formError == true ? undefined : colors.white}
+                                        onChangeText={(text) => handleInputChange(`name`, text)}
+                                    />
+                                    <CustomTextInput
+                                        value={form.summary}
+                                        placeholder={`Summary`}
+                                        maxLength={maxItemSummaryLength}
+                                        style={{ ...styles.borderedInput }}
+                                        onCancel={() => setForm(defaultItemForm)}
+                                        doneText={formError == true ? undefined : `Add`}
+                                        onDone={formError == true ? undefined : () => addItem()}
+                                        cancelColor={formError == true ? undefined : colors.red}
+                                        doneColor={formError == true ? undefined : colors.white}
+                                        onChangeText={(text) => handleInputChange(`summary`, text)}
+                                    />
+                                    <CustomTextInput
+                                        value={form.image}
+                                        placeholder={`Image URL`}
+                                        endIconColor={colors.white}
+                                        endIconPress={() => openCamera()}
+                                        style={{ ...styles.borderedInput }}
+                                        onCancel={() => setForm(defaultItemForm)}
+                                        doneText={formError == true ? undefined : `Add`}
+                                        endIconStyle={{ maxWidth: 42, color: colors.white }}
+                                        onDone={formError == true ? undefined : () => addItem()}
+                                        cancelColor={formError == true ? undefined : colors.red}
+                                        doneColor={formError == true ? undefined : colors.white}
+                                        onChangeText={(text) => handleInputChange(`image`, text)}
+                                        endIconName={(form.image != `` && validImage) ? `` : `camera`}
+                                    />
+                                </View>
+                                {form.image != `` ? (
+                                    <View style={{ ...boardStyles.cardImageContainer, alignItems: `center`, width: validImage ? `50%` : 0,  }}>
+                                        <CustomImage 
+                                            alt={form.name} 
+                                            source={{ uri: form.image }} 
+                                            onLoad={() => setValidImage(true)}
+                                            onError={() => setValidImage(false)}
+                                            style={{ 
+                                                ...cardedBorderRight,
+                                                ...boardStyles.cardImage, 
+                                                ...(web() && { width: `fit-content` }),
+                                                minWidth: `100%`,
+                                            }} 
+                                        />
+                                    </View>
+                                ) : <></>}
+                            </View>
                         ) : <></>}
                         <CustomTextInput
                             multiline

@@ -60,7 +60,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                     alignItems: `center`,
                     paddingTop: selected?.type == Views.Item && selected?.image ? 0 : 5,
                     backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
-                    height: (editing && selected?.type == Views.Item) ? 0 : ((web() || selected?.type == Views.ItemForm) ? 500 : selected?.image ? 280 : `auto`), 
+                    height: (editing && selected?.type == Views.Item) ? 0 : ((web() || selected?.type == Views.ItemForm) ? 500 : selected?.image ? 280 : 120), 
                 }}
             >
                 {selected?.type == Views.ItemForm ? <>
@@ -68,14 +68,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                 </> : <></>}
                 {(!editing && selected?.type == Views.Item) ? <>
                     {(selected?.image && selected?.image != ``) ? (
-                        <View 
-                            id={`itemImage_${selected.id}`}
-                            style={{ 
-                                ...boardStyles.cardImageContainer, 
-                                alignItems: `center`,
-                                minWidth: `50%`,
-                            }}
-                        >
+                        <View  id={`itemImage_${selected.id}`} style={{ ...boardStyles.cardImageContainer, alignItems: `center`, minWidth: `50%`, }}>
                             <CustomImage 
                                 alt={selected.name} 
                                 source={{ uri: selected.image }} 
@@ -88,7 +81,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             />
                         </View>
                     ) : <></>}
-                    <View id={`itemTitle_${selected.id}`} style={{ ...boardStyles.cardRight, gap: 0, paddingVertical: 0, alignItems: `flex-start`, display: `flex`, flexDirection: `column`, justifyContent: `flex-start`, marginTop: -170 }}>
+                    <View id={`itemTitle_${selected.id}`} style={{ ...boardStyles.cardRight, height: `100%`, minHeight: `100%`, maxHeight: `100%`, gap: 0, paddingVertical: 0, alignItems: `center`, justifyContent: `center`, }}>
                         <CustomTextInput
                             value={name}
                             multiline={true}
@@ -96,7 +89,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             placeholder={`Name`}
                             onChangeText={setName}
                             maxLength={maxItemNameLength}
-                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 21, minHeight: 30, }}
+                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 21, minHeight: 30, maxHeight: 30, }}
                         />
 
                         <CustomTextInput
@@ -124,7 +117,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                         <CustomTextInput
                             multiline={true}
                             showLabel={false}
-                            numberOfLines={999}
+                            numberOfLines={15}
                             value={description}
                             placeholder={`Description`}
                             onChangeText={setDescription}
@@ -134,8 +127,8 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             style={{ 
                                 ...itemFontStyles, 
                                 ...styles.itemInput,
-                                minHeight: maxItemDescriptionHeight, 
                                 fontSize: 16, 
+                                minHeight: maxItemDescriptionHeight, 
                             }}
                         />
                     </ScrollView>

@@ -1,9 +1,9 @@
 import * as Haptics from 'expo-haptics';
 import { boardStyles } from '../styles';
-import { genID, log, maxTaskNameLength } from '@/shared/variables';
 import { SharedContext } from '@/shared/shared';
 import { defaultTasks } from '@/shared/database';
 import { ItemType, TaskType, Views } from '@/shared/types/types';
+import { genID, log, maxTaskNameLength } from '@/shared/variables';
 import CustomTextInput from '@/components/custom-input/custom-input';
 import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import React, { useCallback, useContext, useRef, useState } from 'react';
@@ -14,8 +14,8 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
     const listRef = useRef(null);
 
     let [taskName, setTaskName] = useState(``);
-    let { setEditing } = useContext<any>(SharedContext);
     let [tasks, setTasks] = useState<TaskType[]>(taskItems);
+    let { editing, setEditing } = useContext<any>(SharedContext);
 
     const onPressTask = (item: TaskType) => {
         Vibration.vibrate(1);
@@ -87,12 +87,12 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
 
     return (
         <>
-            <View style={styles.tasksContainer}>
+            <View style={[styles.tasksContainer, { maxHeight: editing ? 225 : (selected?.image && selected?.image != `` ? 185 : 340), marginTop: editing ? 0 : 12, }]}>
                 <DraggableFlatList
                     data={tasks}
                     ref={listRef}
                     bounces={true}
-                    style={{ height: `auto`}}
+                    style={{ height: `auto` }}
                     nestedScrollEnabled={true}
                     directionalLockEnabled={true}
                     renderItem={renderDraggableItem}
@@ -148,8 +148,6 @@ const styles = StyleSheet.create({
     tasksContainer: { 
         flex: 1,
         width: `100%`,
-        marginTop: 12,
-        maxHeight: 185,
         overflow: `hidden`,
         position: `relative`, 
         borderRadius: taskBorderRadius,

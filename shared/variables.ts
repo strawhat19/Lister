@@ -8,7 +8,7 @@ export const MARGIN = 8;
 export const maxItemNameLength = 13;
 export const maxTaskNameLength = 42;
 export const maxItemSummaryLength = 125;
-export const maxItemDescriptionLength = 9999;
+export const maxItemDescriptionLength = 250;
 export const SIZE = Dimensions.get(`window`).width / COL - MARGIN;
 
 export const web = () => Platform.OS == `web`;

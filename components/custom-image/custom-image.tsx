@@ -2,6 +2,7 @@ import { Image, Platform } from 'react-native';
 import { defaultImages } from '@/shared/database';
 import { CustomImageType } from '@/shared/types/types';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { log } from '@/shared/variables';
 
 export default function CustomImage({
     style,
@@ -9,6 +10,8 @@ export default function CustomImage({
     width = 750,
     height = 1260,
     effect = `blur`,
+    onLoad = () => {},
+    onError = () => {},
     id = `customImage`,
     useReactLazyLoadOnMobile = false,
     className = `customImageClassName`,
@@ -25,13 +28,15 @@ export default function CustomImage({
                 width={width}
                 height={height} 
                 effect={effect} 
+                onLoad={onLoad}
+                onError={onError}
                 className={className} 
             />
         ) : (
             Object.values(defaultImages).includes(src) ? (
-                <Image id={id} alt={alt} source={src} style={style} />
+                <Image id={id} alt={alt} source={src} style={style} onLoad={onLoad} onError={onError} />
             ) : (
-                <Image id={id} alt={alt} src={src} source={src} style={style} />
+                <Image id={id} alt={alt} src={src} source={src} style={style} onLoad={onLoad} onError={onError} />
             )
         )
     )

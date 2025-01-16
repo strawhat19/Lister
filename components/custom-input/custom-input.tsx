@@ -2,7 +2,7 @@ import { SharedContext } from '@/shared/shared';
 import React, { useContext, useId } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { colors, globalStyles, lightColors, Text } from '../theme/Themed';
-import { View, Button, Keyboard, TextInput, StyleSheet, InputAccessoryView, TouchableOpacity } from 'react-native';
+import { View, Keyboard, TextInput, StyleSheet, InputAccessoryView, TouchableOpacity } from 'react-native';
 
 export default function CustomTextInput({
     value,
@@ -52,7 +52,7 @@ export default function CustomTextInput({
                     {placeholder}
                 </Text>
             )}
-            <View style={{ width: `100%`, display: `flex`, flexDirection: `row`, gap: 5, borderColor: colors.transparent, borderWidth: 1, maxHeight: 55 }}>
+            <View style={{ width: `100%`, display: `flex`, flexDirection: `row`, gap: 5, borderColor: colors.transparent, borderWidth: 0 }}>
                 <TextInput
                     value={value}
                     onBlur={onBlur}

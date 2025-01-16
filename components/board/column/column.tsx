@@ -3,10 +3,11 @@ import { BlurView } from 'expo-blur';
 import { boardStyles } from '../styles';
 import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
+import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Animated, { Layout } from 'react-native-reanimated';
 import { ColumnType, ItemType, Views } from '@/shared/types/types';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { borderRadius, colors, globalStyles, Text, View } from '@/components/theme/Themed';
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
@@ -53,6 +54,11 @@ export default function Column({
         setDragging(true);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
+    
+    const onPlaceHolderIndexChange = (onPlaceHolderIndexChangeData: any) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        log(`onPlaceHolderIndexChange`, onPlaceHolderIndexChangeData);
+    }
 
     useEffect(() => {
         let itemsForColumn = getItemsForColumn(items, column?.id);
@@ -68,19 +74,17 @@ export default function Column({
         description: `You can use this form to edit or create items`,
     })
 
-    const deleteItemWithConfirmation = () => {
+    const deleteItemWithConfirmation = (itemID: string = selected?.id) => {
         Vibration.vibrate(1);
         Alert.alert(
             `Delete Item`,
             `Are you sure you want to delete this item?`,
-            [{ text: `Cancel`, style: `cancel` }, { text: `Delete`, style: `destructive`, onPress: () => deleteItem() }],
+            [
+                { text: `Cancel`, style: `cancel` }, 
+                { text: `Delete`, style: `destructive`, onPress: () => deleteItem(itemID) }
+            ],
             { cancelable: true },
         )
-    }
-
-    const onPlaceHolderIndexChange = (onPlaceHolderIndexChangeData: any) => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        log(`onPlaceHolderIndexChange`, onPlaceHolderIndexChangeData);
     }
 
     const onDragEnd = async (onDragEndData: any) => {
@@ -96,8 +100,8 @@ export default function Column({
         }
     }
 
-    const deleteItem = async () => {
-        await deleteItemFromDatabase(selected?.id);
+    const deleteItem = async (itemID: string = selected?.id) => {
+        await deleteItemFromDatabase(itemID);
         // const updatedBoardData = board.map((list: ColumnType, listIndex) => {
         //     let updatedIndexList = { ...list, index: listIndex + 1 };
         //     if (list.id === column?.id) {
@@ -114,18 +118,45 @@ export default function Column({
 
     const renderDraggableItem = useCallback(
         ({ item, drag, isActive, getIndex }: RenderItemParams<ItemType>) => {
+
+        const swipeableRef = useRef<Swipeable>(null);
+
+        const handleRightSwipe = (itemID: string = selected?.id) => {
+            swipeableRef.current?.close();
+            deleteItemWithConfirmation(itemID);
+        };
+        
+        const renderRightActions = () => (
+            <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8 }]}>
+                <Text style={titleRowStyles.actionText}>
+                    Delete
+                </Text>
+            </View>
+        );
+
         return (
             <Animated.View layout={Layout.springify()}>
-                <Item
-                    item={item}
-                    drag={drag}
-                    getIndex={getIndex}
-                    isActive={isActive}
-                    fadeAnim={fadeAnim}
-                    openBottomSheet={openBottomSheet}
-                    closeBottomSheet={closeBottomSheet}
-                    keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
-                />
+                <Swipeable
+                    friction={1}
+                    ref={swipeableRef}
+                    overshootLeft={false}
+                    overshootRight={false}
+                    renderRightActions={renderRightActions}
+                    // renderLeftActions={renderLeftActions}
+                    // onSwipeableLeftOpen={handleLeftSwipe}
+                    onSwipeableRightOpen={() => handleRightSwipe(item?.id)}
+                >
+                    <Item
+                        item={item}
+                        drag={drag}
+                        getIndex={getIndex}
+                        isActive={isActive}
+                        fadeAnim={fadeAnim}
+                        openBottomSheet={openBottomSheet}
+                        closeBottomSheet={closeBottomSheet}
+                        keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
+                    />
+                </Swipeable>
             </Animated.View>
         )
     }, [])
@@ -311,5 +342,25 @@ export const titleRowStyles = StyleSheet.create({
         width: `92%`, 
         backgroundColor: colors.navy, 
         borderRadius: borderRadius - 3,
+    },
+    itemText: {
+        fontSize: 18,
+    },
+    leftAction: {
+        flex: 1,
+        justifyContent: `center`,
+        backgroundColor: colors.appleBlue,
+    },
+    rightAction: {
+        alignItems: `flex-end`,
+        justifyContent: `center`,
+        backgroundColor: colors.red,
+    },
+    actionText: {
+        padding: 20,
+        fontSize: 16,
+        fontWeight: `bold`,
+        fontStyle: `italic`,
+        color: colors.white,
     },
 })

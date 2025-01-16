@@ -26,6 +26,7 @@ export const defaultTasks: TaskType[] = Object.values(defaultTaskObjects);
 
 export const defaultImages = {
   sky: require('@/assets/images/hq/sky.jpg'),
+  chameleon: require('@/assets/images/hq/chameleon.png'),
   hand_leaf:  require('@/assets/images/hq/nature_hand_leaf.jpg'),
   wind_curtains:  require('@/assets/images/hq/wind_curtains.jpeg'),
   jelly_fish:  require('@/assets/images/hq/nature_jelly_fish.jpeg'),

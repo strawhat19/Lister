@@ -102,7 +102,7 @@ export const deleteItemFromDatabase = async (itemID: string, cascade: boolean = 
       const taskDeletionPromises = tasksQuery.docs.map(taskDoc => deleteDoc(taskDoc.ref));
       await Promise.all(taskDeletionPromises);
     }
-    const itemRef = doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
+    const itemRef = await doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
     await deleteDoc(itemRef);
   } catch (error) {
     log(`Error Deleting Item ${itemID}`, error);
@@ -111,7 +111,7 @@ export const deleteItemFromDatabase = async (itemID: string, cascade: boolean = 
 
 export const deleteTaskFromDatabase = async (taskID: string) => {
   try {
-    const taskRef = doc(db, tasksDatabaseCollection, taskID).withConverter(taskConverter);
+    const taskRef = await doc(db, tasksDatabaseCollection, taskID).withConverter(taskConverter);
     await deleteDoc(taskRef);
   } catch (error) {
     log(`Error Deleting Task ${taskID}`, error);
@@ -120,7 +120,7 @@ export const deleteTaskFromDatabase = async (taskID: string) => {
 
 export const updateItemIndexInDatabase = async (itemID: string, newIndex: any, key: string = `index`) => {
   try {
-    const itemRef = doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
+    const itemRef = await doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
     await updateDoc(itemRef, { [key]: newIndex });
   } catch (error) {
     log(`Error Updating Item ${itemID} ${capWords(key)}`, error);
@@ -129,7 +129,7 @@ export const updateItemIndexInDatabase = async (itemID: string, newIndex: any, k
 
 export const updateTaskIndexInDatabase = async (taskID: string, newIndex: any, key: string = `index`) => {
   try {
-    const taskRef = doc(db, tasksDatabaseCollection, taskID).withConverter(taskConverter);
+    const taskRef = await doc(db, tasksDatabaseCollection, taskID).withConverter(taskConverter);
     await updateDoc(taskRef, { [key]: newIndex });
   } catch (error) {
     log(`Error Updating Task ${taskID} ${capWords(key)}`, error);

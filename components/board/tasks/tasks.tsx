@@ -1,14 +1,16 @@
 import * as Haptics from 'expo-haptics';
 import { boardStyles } from '../styles';
 import { SharedContext } from '@/shared/shared';
+import { titleRowStyles } from '../column/column';
+import { Swipeable } from 'react-native-gesture-handler';
 import { ItemType, TaskType, Views } from '@/shared/types/types';
 import { genID, log, maxTaskNameLength } from '@/shared/variables';
 import CustomTextInput from '@/components/custom-input/custom-input';
-import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { addTaskToDatabase, getTasksForItem, updateTaskIndexInDatabase } from '@/shared/server/firebase';
+import { addTaskToDatabase, deleteTaskFromDatabase, getTasksForItem, updateTaskIndexInDatabase } from '@/shared/server/firebase';
+import { colors, globalStyles, taskBorderRadius, Text, View, borderRadius } from '@/components/theme/Themed';
 
 export default function Tasks({ selected }: any) {
     const listRef = useRef(null);
@@ -77,30 +79,72 @@ export default function Tasks({ selected }: any) {
     const renderDraggableItem = useCallback(
         ({ item, drag, isActive }: RenderItemParams<ItemType>) => {
         let index = item?.index;
+        const swipeableRef = useRef<Swipeable>(null);
         let isFirst: boolean = index == 1 ? true : false;
         let isLast: boolean = index == itemTasks?.length ? true : false;
+
+        const handleRightSwipe = (taskID: string = item?.id) => {
+            swipeableRef.current?.close();
+            deleteTaskWithConfirmation(taskID);
+        };
+
+        const deleteTaskWithConfirmation = (taskID: string = item?.id) => {
+            Vibration.vibrate(1);
+            Alert.alert(
+                `Delete Task`,
+                `Are you sure you want to delete this task?`,
+                [
+                    { text: `Cancel`, style: `cancel` }, 
+                    { text: `Delete`, style: `destructive`, onPress: async () => {
+                        await deleteTaskFromDatabase(taskID);
+                        await Vibration.vibrate(1);
+                    } }
+                ],
+                { cancelable: true },
+            )
+        }
+        
+        const renderRightActions = () => (
+            <View style={[titleRowStyles.rightAction, { borderRadius: taskBorderRadius, marginLeft: 8 }]}>
+                <Text style={[titleRowStyles.actionText, { padding: 0, fontSize: 16, paddingHorizontal: 10 }]}>
+                    Delete
+                </Text>
+            </View>
+        );
+
         return (
             <ScaleDecorator>
-                <TouchableOpacity
-                    onLongPress={drag}
-                    disabled={isActive}
-                    onPress={() => onPressTask(item)}
-                    style={[boardStyles.rowItem, { 
-                        width: `100%`, 
-                        minHeight: 35, 
-                        backgroundColor: colors.black,
-                        borderTopLeftRadius: isFirst ? taskBorderRadius : 0, 
-                        borderTopRightRadius: isFirst ? taskBorderRadius : 0, 
-                        borderBottomLeftRadius: isLast ? taskBorderRadius : 0, 
-                        borderBottomRightRadius: isLast ? taskBorderRadius : 0, 
-                    }]}
-                >
-                    <View style={{width: `100%`, backgroundColor: colors.transparent}}>
-                        <Text style={{ textAlign: `left`, paddingLeft: 35 }}>
-                            {index}. {item?.name}
-                        </Text>
-                    </View>
-                </TouchableOpacity>
+                <Swipeable
+                    friction={1}
+                    ref={swipeableRef}
+                    overshootLeft={false}
+                    overshootRight={false}
+                    renderRightActions={renderRightActions}
+                    // renderLeftActions={renderLeftActions}
+                    // onSwipeableLeftOpen={handleLeftSwipe}
+                    onSwipeableRightOpen={() => handleRightSwipe(item?.id)}
+                >    
+                    <TouchableOpacity
+                        onLongPress={drag}
+                        disabled={isActive}
+                        onPress={() => onPressTask(item)}
+                        style={[boardStyles.rowItem, { 
+                            width: `100%`, 
+                            minHeight: 35, 
+                            backgroundColor: colors.black,
+                            borderTopLeftRadius: isFirst ? taskBorderRadius : 0, 
+                            borderTopRightRadius: isFirst ? taskBorderRadius : 0, 
+                            borderBottomLeftRadius: isLast ? taskBorderRadius : 0, 
+                            borderBottomRightRadius: isLast ? taskBorderRadius : 0, 
+                        }]}
+                    >
+                        <View style={{width: `100%`, backgroundColor: colors.transparent}}>
+                            <Text style={{ textAlign: `left`, paddingLeft: 35, fontWeight: `bold`, fontStyle: `italic` }}>
+                                {index}. {item?.name}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                </Swipeable>
             </ScaleDecorator>
         )
     }, [])

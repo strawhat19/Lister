@@ -6,7 +6,7 @@ import SlideUp from '@/components/slide-up/slide-up';
 import { useSharedValue } from 'react-native-reanimated';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { usersDatabaseCollection, db } from './server/firebase';
-import { ColumnType, ItemType, ItemViews } from '@/shared/types/types';
+import { ColumnType, ItemType, ItemViews, Views } from '@/shared/types/types';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Animated, useWindowDimensions, Vibration } from 'react-native';
@@ -64,7 +64,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     enterFadeBlur();
     setIndx(1);
     if (item) {
-      log(`Item`, item);
+      if (item?.type == Views.Item) log(`Item`, item);
       if (item.name) setActiveTopName(item.name);
       if (backgroundColor) {
         item = {

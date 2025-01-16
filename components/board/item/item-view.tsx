@@ -32,7 +32,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
 
     return (
         <>
-            {selected?.type == Views.Item ? (
+            {(!editing && selected?.type == Views.Item) ? (
                 <View style={{ gap: 0, display: `flex`, flexDirection: `row`, alignItems: `center`, justifyContent: `space-between`, backgroundColor: colors.transparent, width: `100%`, height: 30, marginTop: -15, marginBottom: 10, borderRadius: 8, overflow: `hidden` }}>
                     <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Details)} style={[boardStyles.rowItem, { height: `100%`, flexBasis: `32.5%`, backgroundColor: view == ItemViews.Details ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
                         <Text>

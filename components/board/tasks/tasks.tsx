@@ -22,6 +22,11 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
         log(`Task`, item);
     }
 
+    const onDragEnd = async (onDragEndData: any) => {
+        const updatedTasks = onDragEndData?.data?.map((task, taskIndex) => ({ ...task, index: taskIndex + 1}));
+        await setTasks(updatedTasks);
+    }
+
     const addTask = () => {
         Vibration.vibrate(1);
 
@@ -47,11 +52,6 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
         });
 
         setTaskName(``);
-    }
-
-    const onDragEnd = async (onDragEndData: any) => {
-        const updatedTasks = onDragEndData?.data?.map((task, taskIndex) => ({ ...task, index: taskIndex + 1}));
-        await setTasks(updatedTasks);
     }
 
     const renderDraggableItem = useCallback(
@@ -97,11 +97,17 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
                     directionalLockEnabled={true}
                     renderItem={renderDraggableItem}
                     showsVerticalScrollIndicator={false}
-                    ListEmptyComponent={<>No Tasks Yet</>}
                     keyExtractor={(item) => item.id.toString()}
                     onDragEnd={async (onDragEndData: any) => await onDragEnd(onDragEndData)}
                     onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                     onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                    ListEmptyComponent={(
+                        <View style={{ flex: 1, backgroundColor: colors.black, paddingVertical: 10 }}>
+                            <Text style={{ fontStyle: `italic`, textAlign: `center` }}>
+                                No Tasks Yet
+                            </Text>
+                        </View>
+                    )}
                     contentContainerStyle={{
                         gap: 3,
                         width: `100%`,
@@ -117,15 +123,18 @@ export default function Tasks({ selected, taskItems = defaultTasks }: any) {
                     showLabel={false}
                     placeholder={`Name`}
                     endIconName={`save`}
-                    onDone={() => addTask()}
                     onChangeText={setTaskName}
                     maxLength={maxTaskNameLength}
                     endIconPress={() => addTask()}
-                    endIconDisabled={taskName == ``}
+                    onCancel={() => setTaskName(``)}
                     onBlur={() => setEditing(false)}
                     onFocus={() => setEditing(true)}
+                    // endIconDisabled={taskName == ``}
+                    extraStyle={{ color: colors.white }}
                     doneText={taskName == `` ? `Done` : `Add`}
+                    onDone={taskName == `` ? null : () => addTask()}
                     doneColor={taskName == `` ? colors.disabledFont : colors.white}
+                    cancelColor={taskName == `` ? colors.disabledFont : colors.red}
                     endIconColor={taskName == `` ? colors.disabledFont : colors.white}
                     endIconStyle={{ minHeight: 35, maxHeight: 35, backgroundColor: colors.black }}
                     style={{ width: `80%`, minHeight: 35, ...globalStyles.flexRow, marginBottom: 0, }}

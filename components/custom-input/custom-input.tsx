@@ -26,6 +26,7 @@ export default function CustomTextInput({
     style = { opactiy: 1 },
     endIconPress = () => {},
     endIconDisabled = false,
+    extraStyle = { opactiy: 1 },
     doneColor = colors.disabledFont,
     cancelColor = colors.disabledFont,
     endIconColor = colors.disabledFont,
@@ -37,7 +38,8 @@ export default function CustomTextInput({
     const accessoryViewID = `inputAccessoryView-${generatedID}`;
     const inputFontColor = { color: Object.values(lightColors).includes(selected?.backgroundColor) ? colors.dark : colors.white };
 
-    const dismissKeyboard = (saveProgress: boolean = false) => {
+    const dismissKeyboard = (saveProgress: boolean = false, onAction = undefined) => {
+        if (onAction != undefined) onAction();
         if (saveProgress) onSave();
         Keyboard.dismiss();
         setEditing(false);
@@ -63,7 +65,7 @@ export default function CustomTextInput({
                     placeholder={`Enter ${placeholder}`}
                     inputAccessoryViewID={accessoryViewID}
                     placeholderTextColor={placeholderTextColor}
-                    style={[multiline ? [styles.input, styles.textarea, style, inputFontColor, { width: endIconName == `` ? `100%` : `85%` }] : [styles.input, style, inputFontColor, { width: endIconName == `` ? `100%` : `85%` }], {
+                    style={[multiline ? [styles.input, styles.textarea, style, inputFontColor, { width: endIconName == `` ? `100%` : `85%` }, extraStyle] : [styles.input, style, inputFontColor, { width: endIconName == `` ? `100%` : `85%` }, extraStyle], {
                         // borderWidth: 1,
                         // borderColor: colors.white,
                     }]}
@@ -76,12 +78,12 @@ export default function CustomTextInput({
             </View>
             <InputAccessoryView nativeID={accessoryViewID}>
                 <View style={styles.accessory}>
-                    <TouchableOpacity style={{ paddingVertical: 6, paddingHorizontal: 20, flex: 1 }} onPress={() => onCancel != null ? onCancel() : dismissKeyboard()}>
+                    <TouchableOpacity style={{ paddingVertical: 7, paddingHorizontal: 20, flex: 1 }} onPress={() => dismissKeyboard(undefined, onCancel)}>
                         <Text style={{ fontSize: 16, color: cancelColor }}>
                             {cancelText}
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ paddingVertical: 6, paddingHorizontal: 20, flex: 1 }} onPress={() => onDone != null ? onDone() : dismissKeyboard(true)}>
+                    <TouchableOpacity disabled={endIconDisabled} style={{ paddingVertical: 7, paddingHorizontal: 20, flex: 1 }} onPress={() => onDone != null ? onDone() : dismissKeyboard(true)}>
                         <Text style={{ fontSize: 16, color: doneColor, textAlign: `right` }}>
                             {doneText}
                         </Text>

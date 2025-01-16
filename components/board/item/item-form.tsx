@@ -6,19 +6,24 @@ import { borderRadius, colors, globalStyles, lightColors, randomCardColor, Text,
 import { Vibration, StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 import { combineArraysByKey, genID, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, openCamera } from '@/shared/variables';
 
+export const defaultItemForm = { name: ``, image: ``, summary: ``, description: `` };
+
 export default function ItemForm({ }: any) {
     let { selected, editing, setEditing, closeBottomSheet, board, setBoard } = useContext<any>(SharedContext);
 
     const [formError, setFormError] = useState(true);
-    const [form, setForm] = useState({ name: ``, image: ``, summary: ``, description: `` });
+    const [form, setForm] = useState(defaultItemForm);
 
     const handleInputChange = (field: string, value: string) => {
         setForm({ ...form, [field]: value });
-        let formError = !form.name || !form.summary;
-        setFormError(formError);
+        let validFormValue = (fieldValue) => typeof fieldValue == `string` && fieldValue != `` && fieldValue.length > 0;
+        let validName = validFormValue(form.name);
+        let validSummary = validFormValue(form.summary);
+        let validItemForm = validName && validSummary;
+        setFormError(!validItemForm);
     }
 
-    const handleSubmit = () => {
+    const addItem = () => {
         if (formError) {
             log(`Error`, `All fields are required!`, true);
             return;
@@ -95,6 +100,11 @@ export default function ItemForm({ }: any) {
                                     placeholder={`Name`}
                                     maxLength={maxItemNameLength}
                                     style={{ ...styles.borderedInput }}
+                                    onCancel={() => setForm(defaultItemForm)}
+                                    doneText={formError == true ? undefined : `Add`}
+                                    onDone={formError == true ? undefined : () => addItem()}
+                                    cancelColor={formError == true ? undefined : colors.red}
+                                    doneColor={formError == true ? undefined : colors.white}
                                     onChangeText={(text) => handleInputChange(`name`, text)}
                                 />
                                 <CustomTextInput
@@ -102,6 +112,11 @@ export default function ItemForm({ }: any) {
                                     placeholder={`Summary`}
                                     maxLength={maxItemSummaryLength}
                                     style={{ ...styles.borderedInput }}
+                                    onCancel={() => setForm(defaultItemForm)}
+                                    doneText={formError == true ? undefined : `Add`}
+                                    onDone={formError == true ? undefined : () => addItem()}
+                                    cancelColor={formError == true ? undefined : colors.red}
+                                    doneColor={formError == true ? undefined : colors.white}
                                     onChangeText={(text) => handleInputChange(`summary`, text)}
                                 />
                                 <CustomTextInput
@@ -111,6 +126,11 @@ export default function ItemForm({ }: any) {
                                     endIconStyle={{ maxWidth: 42 }}
                                     endIconPress={() => openCamera()}
                                     style={{ ...styles.borderedInput }}
+                                    onCancel={() => setForm(defaultItemForm)}
+                                    doneText={formError == true ? undefined : `Add`}
+                                    onDone={formError == true ? undefined : () => addItem()}
+                                    cancelColor={formError == true ? undefined : colors.red}
+                                    doneColor={formError == true ? undefined : colors.white}
                                     onChangeText={(text) => handleInputChange(`image`, text)}
                                 />
                             </>
@@ -123,12 +143,17 @@ export default function ItemForm({ }: any) {
                             onFocus={() => setEditing(true)}
                             onBlur={() => setEditing(false)}
                             maxLength={maxItemDescriptionLength}
+                            onCancel={() => setForm(defaultItemForm)}
+                            doneText={formError == true ? undefined : `Add`}
                             style={{ ...styles.borderedInput, minHeight: 50 }}
+                            onDone={formError == true ? undefined : () => addItem()}
+                            cancelColor={formError == true ? undefined : colors.red}
+                            doneColor={formError == true ? undefined : colors.white}
                             onChangeText={(text) => handleInputChange(`description`, text)}
                         />
                     </View>
-                    <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={formError}>
-                        <Text style={[styles.buttonText, { opacity: formError ? 0.5 : 1 }]}>
+                    <TouchableOpacity style={styles.button} onPress={addItem} disabled={formError}>
+                        <Text style={[styles.buttonText, { opacity: formError == true ? 0.5 : 1 }]}>
                             Save
                         </Text>
                     </TouchableOpacity>

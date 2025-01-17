@@ -159,27 +159,27 @@ export const deleteTaskFromDatabase = async (taskID: string) => {
   }
 }
 
-export const updateItemFieldsInDatabase = async (itemID: string, updates: { [key: string]: any }) => {
+export const updateItemFieldsInDatabase = async (itemID: string, updates: { [key: string]: any }, vibrate = true, logResult = true) => {
   const now = new Date().toLocaleString(`en-US`);
   const fields = { ...updates, updated: now };
   try {
     const itemRef = await doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
-    await Vibration.vibrate(1);
+    if (vibrate) await Vibration.vibrate(1);
     await updateDoc(itemRef, fields);
-    log(`Successfully Updated Item Fields`, fields);
+    if (logResult) log(`Successfully Updated Item Fields`, fields);
   } catch (error) {
     log(`Error Updating Item Fields`, { error, fields });
   }
 };
 
-export const updateTaskFieldsInDatabase = async (taskID: string, updates: { [key: string]: any }, vibrate = true) => {
+export const updateTaskFieldsInDatabase = async (taskID: string, updates: { [key: string]: any }, vibrate = true, logResult = true) => {
   const now = new Date().toLocaleString(`en-US`);
   const fields = { ...updates, updated: now };
   try {
     const taskRef = await doc(db, tasksDatabaseCollection, taskID).withConverter(taskConverter);
     if (vibrate) await Vibration.vibrate(1);
     await updateDoc(taskRef, fields);
-    log(`Successfully Updated Task Fields`, fields);
+    if (logResult) log(`Successfully Updated Task Fields`, fields);
   } catch (error) {
     log(`Error Updating Task Fields`, { error, fields });
   }

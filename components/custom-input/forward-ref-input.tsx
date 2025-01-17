@@ -1,10 +1,41 @@
 import { SharedContext } from '@/shared/shared';
-import React, { useContext, useId } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { colors, globalStyles, isLightColor, Text } from '../theme/Themed';
-import { View, Keyboard, TextInput, StyleSheet, InputAccessoryView, TouchableOpacity } from 'react-native';
+import React, { forwardRef, useContext, useId } from 'react';
+import { colors, globalStyles, isLightColor, Text, View } from '../theme/Themed';
+import { Keyboard, TextInput, StyleSheet, InputAccessoryView, TouchableOpacity } from 'react-native';
 
-export default function CustomTextInput({
+declare global {
+    interface ForwardRefInputProps {
+        value: string;
+        maxLength?: number;
+        placeholder?: string;
+        onChangeText?: (text: string) => void;
+        onDone?: () => void;
+        width?: string | number | any;
+        onCancel?: () => void;
+        endIconSize?: number;
+        endIconName?: string | any;
+        showLabel?: boolean;
+        multiline?: boolean;
+        numberOfLines?: number;
+        doneText?: string;
+        onBlur?: () => void;
+        onSave?: () => void;
+        onFocus?: () => void;
+        endIconStyle?: object | null;
+        cancelText?: string;
+        style?: object | any;
+        endIconPress?: () => void;
+        endIconDisabled?: boolean;
+        extraStyle?: object;
+        doneColor?: string;
+        cancelColor?: string;
+        endIconColor?: string;
+        placeholderTextColor?: string;
+      }
+}
+
+const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
     value,
     maxLength,
     placeholder,
@@ -26,12 +57,12 @@ export default function CustomTextInput({
     style = { opactiy: 1 },
     endIconPress = () => {},
     endIconDisabled = false,
-    extraStyle = { opactiy: 1 },
     doneColor = colors.disabledFont,
     cancelColor = colors.disabledFont,
     endIconColor = colors.disabledFont,
     placeholderTextColor = colors.disabledFont,
-}: ForwardRefInputProps) {
+    extraStyle = { backgroundColor: colors.transparent },
+}, ref) => {
     let { selected, setEditing } = useContext<any>(SharedContext);
 
     const generatedID = useId();
@@ -54,6 +85,7 @@ export default function CustomTextInput({
             )}
             <View style={{ width: `100%`, display: `flex`, flexDirection: `row`, gap: 5, borderColor: colors.transparent, borderWidth: 0 }}>
                 <TextInput
+                    ref={ref}
                     value={value}
                     onBlur={onBlur}
                     onFocus={onFocus}
@@ -92,7 +124,7 @@ export default function CustomTextInput({
             </InputAccessoryView>
         </View>
     )
-}
+})
 
 const styles = StyleSheet.create({
     label: {
@@ -137,3 +169,5 @@ const styles = StyleSheet.create({
         justifyContent: `space-between`,
     },
 })
+
+export default ForwardRefInput;

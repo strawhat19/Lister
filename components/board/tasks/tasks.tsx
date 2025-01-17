@@ -4,26 +4,28 @@ import { SharedContext } from '@/shared/shared';
 import { titleRowStyles } from '../column/column';
 import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { delayBeforeScrollingDown, genID, maxTaskNameLength } from '@/shared/variables';
 import { ItemType, TaskType, Views } from '@/shared/types/types';
 import CustomTextInput from '@/components/custom-input/custom-input';
 import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { delayBeforeScrollingDown, genID, maxTaskNameLength } from '@/shared/variables';
 import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { addTaskToDatabase, deleteTaskFromDatabase, getTasksForItem, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
+import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 
 export default function Tasks({ selected }: any) {
     const listRef = useRef(null);
+    const inputRef = useRef(null);
 
     let [taskName, setTaskName] = useState(``);
     let [itemTasks, setItemTasks] = useState<TaskType[]>([]);
+    let [taskToEdit, setTaskToEdit] = useState<TaskType | null>(null);
     let { tasks, editing, setEditing } = useContext<any>(SharedContext);
 
     const onPressTask = (task: TaskType) => {
         Vibration.vibrate(1);
-        editTaskWithConfirmation(task);
-        // log(task?.type, task);
+        onEditTask(task);
     }
 
     useEffect(() => {
@@ -33,11 +35,10 @@ export default function Tasks({ selected }: any) {
 
     const onDragEnd = async (onDragEndData: any) => {
         let { data } = await onDragEndData;
+        await setItemTasks(data);
         if (data?.length > 0) {
-            // const updatedTasks = data?.map((task, taskIndex) => ({ ...task, index: taskIndex + 1}));
-            // await setTasks(updatedTasks);
-            data.forEach((tsk, tskIndex) => {
-                updateTaskFieldsInDatabase(tsk?.id, { index: tskIndex + 1});
+            await data.forEach((tsk, tskIndex) => {
+                updateTaskFieldsInDatabase(tsk?.id, { index: tskIndex + 1}, true, false);
             })
         }
     }
@@ -55,25 +56,19 @@ export default function Tasks({ selected }: any) {
         )
     }
 
-    const editTaskWithConfirmation = async (task) => {
+    const editTask = async () => {
+        await setTaskName(``);
+        await setEditing(true);
+        await setTaskToEdit(null);
+        updateTaskFieldsInDatabase(taskToEdit?.id, { name: taskName });
+    }
+
+    const onEditTask = async (task) => {
         await Vibration.vibrate(1);
         await setEditing(true);
-        await Alert.prompt(
-            `Edit Task`,
-            ``,
-            async (value: string) => {
-                await Vibration.vibrate(1);
-                await setEditing(false);
-                await updateTaskFieldsInDatabase(task?.id, { name: value }, false);
-            },
-            undefined,
-            task?.name,
-            undefined,
-            { cancelable: true, onDismiss: async () => {
-                await Vibration.vibrate(1)
-                await setEditing(false);
-            } }
-        )
+        await setTaskToEdit(task);
+        await setTaskName(task?.name);
+        await inputRef.current?.focus();
     }
 
     const addTask = async () => {
@@ -126,7 +121,8 @@ export default function Tasks({ selected }: any) {
 
         const handleLeftSwipe = (task = item) => {
             swipeableRef.current?.close();
-            editTaskWithConfirmation(task);
+            Vibration.vibrate(1);
+            updateTaskFieldsInDatabase(task?.id, { complete: !task.complete } as Partial<TaskType>);
         };
         
         const renderRightActions = () => (
@@ -136,8 +132,8 @@ export default function Tasks({ selected }: any) {
         );
         
         const renderLeftActions = () => (
-            <View style={[titleRowStyles.leftAction, { backgroundColor: colors.appleBlue, borderRadius: taskBorderRadius - 3, marginRight: 3 }]}>
-                <FontAwesome name={`bars`} color={colors.white} size={18} style={{ paddingHorizontal: 15 }} />
+            <View style={[titleRowStyles.leftAction, { backgroundColor: colors.appleGreen, borderRadius: taskBorderRadius - 3, marginRight: 3 }]}>
+                <FontAwesome name={`check`} color={colors.white} size={18} style={{ paddingHorizontal: 15 }} />
             </View>
         );
 
@@ -161,16 +157,24 @@ export default function Tasks({ selected }: any) {
                         style={[boardStyles.rowItem, { 
                             width: `100%`, 
                             minHeight: 35, 
-                            backgroundColor: colors.black,
                             borderTopLeftRadius: isFirst ? taskBorderRadius : 0, 
                             borderTopRightRadius: isFirst ? taskBorderRadius : 0, 
                             borderBottomLeftRadius: isLast ? taskBorderRadius : 0, 
                             borderBottomRightRadius: isLast ? taskBorderRadius : 0, 
+                            backgroundColor: item?.complete ? colors.white : colors.black,
                         }]}
                     >
-                        <View style={{width: `100%`, backgroundColor: colors.transparent}}>
-                            <Text style={{ textAlign: `left`, paddingLeft: 55, fontWeight: `bold`, fontStyle: `italic` }}>
-                                {getIndex() + 1}. {item?.name}
+                        <View style={{width: `100%`, backgroundColor: colors.transparent, ...globalStyles.flexRow, gap: 15, paddingLeft: 15}}>
+                            <FontAwesome 
+                                size={18} 
+                                name={item?.complete ? `check` : `circle-o`} 
+                                color={item?.complete ? colors.appleGreen : colors.white} 
+                            />
+                            <Text style={{ textAlign: `center`, fontWeight: `bold`, fontStyle: `italic`, color: item?.complete ? colors.white : colors.black, backgroundColor: item?.complete ? colors.black : colors.white, width: 20, height: 20, borderRadius: `100%`, paddingTop: 1.5 }}>
+                                {getIndex() + 1}
+                            </Text>
+                            <Text style={{ textAlign: `left`, fontWeight: `bold`, fontStyle: `italic`, color: item?.complete ? colors.black : colors.white, textDecorationLine: item?.complete ? `line-through` : `none` }}>
+                                {item?.name}
                             </Text>
                         </View>
                     </TouchableOpacity>
@@ -182,54 +186,56 @@ export default function Tasks({ selected }: any) {
     return (
         <>
             <View style={[styles.tasksContainer, { maxHeight: editing ? 225 : (selected?.image && selected?.image != `` ? 185 : 340), marginTop: editing ? 0 : 12, }]}>
-                <DraggableFlatList
-                    ref={listRef}
-                    bounces={true}
-                    data={itemTasks}
-                    style={{ height: `auto` }}
-                    nestedScrollEnabled={true}
-                    directionalLockEnabled={true}
-                    renderItem={renderDraggableItem}
-                    showsVerticalScrollIndicator={false}
-                    keyExtractor={(item) => item.id.toString()}
-                    onDragEnd={async (onDragEndData: any) => await onDragEnd(onDragEndData)}
-                    onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                    onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                    ListEmptyComponent={(
-                        <View style={{ flex: 1, backgroundColor: colors.black, paddingVertical: 10, ...globalStyles.flexRow, justifyContent: `center` }}>
-                            <Text style={{ fontStyle: `italic`, textAlign: `center` }}>
-                                No Tasks Yet
-                            </Text>
-                        </View>
-                    )}
-                    contentContainerStyle={{
-                        gap: 3,
-                        width: `100%`,
-                        marginHorizontal: `auto`,
-                        paddingBottom: itemTasks.length * 0.25,
-                        height: itemTasks.length == 0 ? `100%` : `auto`,
-                    }}
-                />
+                {itemTasks.length > 0 ? (
+                    <DraggableFlatList
+                        ref={listRef}
+                        bounces={true}
+                        data={itemTasks}
+                        style={{ height: `auto` }}
+                        nestedScrollEnabled={true}
+                        directionalLockEnabled={true}
+                        renderItem={renderDraggableItem}
+                        showsVerticalScrollIndicator={false}
+                        keyExtractor={(item) => item.id.toString()}
+                        onDragEnd={async (onDragEndData: any) => await onDragEnd(onDragEndData)}
+                        onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                        onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                        contentContainerStyle={{
+                            gap: 3,
+                            width: `100%`,
+                            marginHorizontal: `auto`,
+                            paddingBottom: itemTasks.length * 0.25,
+                            height: itemTasks.length == 0 ? `100%` : `auto`,
+                        }}
+                    />
+                ) : (
+                    <View style={{ flex: 1, backgroundColor: colors.black, paddingVertical: 10, ...globalStyles.flexRow, justifyContent: `center` }}>
+                        <Text style={{ fontStyle: `italic`, textAlign: `center` }}>
+                            No Tasks Yet
+                        </Text>
+                    </View>
+                )}
             </View>
             <View style={globalStyles.singleLineInput}>
-                <CustomTextInput
+                <ForwardRefInput
+                    ref={inputRef}
                     value={taskName}
                     showLabel={false}
                     placeholder={`Name`}
                     endIconName={`save`}
                     onChangeText={setTaskName}
                     maxLength={maxTaskNameLength}
-                    endIconPress={() => addTask()}
                     onCancel={() => setTaskName(``)}
                     onBlur={() => setEditing(false)}
                     onFocus={() => setEditing(true)}
                     extraStyle={{ color: colors.white }}
-                    doneText={taskName == `` ? `Done` : `Add`}
-                    onDone={taskName == `` ? null : () => addTask()}
                     doneColor={taskName == `` ? colors.disabledFont : colors.white}
                     cancelColor={taskName == `` ? colors.disabledFont : colors.red}
+                    endIconPress={() => taskToEdit == null ? addTask() : editTask()}
                     endIconColor={taskName == `` ? colors.disabledFont : colors.white}
+                    doneText={taskName == `` ? `Done` : taskToEdit == null ? `Add` : `Save`}
                     endIconStyle={{ minHeight: 35, maxHeight: 35, backgroundColor: colors.black }}
+                    onDone={taskName == `` ? null : () => taskToEdit == null ? addTask() : editTask()}
                     style={{ width: `80%`, minHeight: 35, ...globalStyles.flexRow, marginBottom: 0, }}
                 />
             </View>

@@ -8,7 +8,7 @@ export const MARGIN = 8;
 export const maxItemNameLength = 13;
 export const maxTaskNameLength = 28;
 export const maxItemSummaryLength = 125;
-export const delayBeforeScrollingDown = 150;
+export const delayBeforeScrollingDown = 175;
 export const maxItemDescriptionLength = 250;
 export const SIZE = Dimensions.get(`window`).width / COL - MARGIN;
 
@@ -16,13 +16,16 @@ export const web = () => Platform.OS == `web`;
 export const mobile = () => Platform.OS != `web`;
 
 export const gridSpacing = 15;
+export const scrollSensitivity = 10;
 export const animationDuration = 300;
 export const paginationHeightMargin = 200;
 export const cardImageWidth = web() ? `25%` : `33%`;
 
 export const log = (string: string, data?: any, alert = false) => {
   if (alert == true && Platform.OS != `web`) Alert.alert(string);
-  if (data) devEnv && console.log(string, JSON.stringify(data, null, 2));
+  if (data) devEnv && console.log(string, ((typeof data == `object` && Object.keys(data).length > 0) || Array.isArray(data) ? (
+    JSON.stringify(data, null, 2)
+  ) : data));
   else devEnv && console.log(string);
 }
 

@@ -6,16 +6,21 @@ import { ItemType } from '@/shared/types/types';
 import CustomImage from '@/components/custom-image/custom-image';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { Text, View, borderRadius, colors, itemCardHeight, itemSimplifiedCardHeight, lightColors } from '@/components/theme/Themed';
+import { Text, View, borderRadius, colors, isLightColor, itemCardHeight, itemSimplifiedCardHeight } from '@/components/theme/Themed';
 
-export default function Item({ item, drag, isActive, getIndex, isLast }: any | RenderItemParams<ItemType>) {
+export default function Item({ 
+    item, 
+    drag = undefined, 
+    isActive = undefined, 
+    getIndex = undefined, isLast 
+}: any | RenderItemParams<ItemType>) {
     let { selected, fadeAnim, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
 
     return (
         <ScaleDecorator activeScale={1.01}>
             <TouchableOpacity
                 onLongPress={drag}
-                disabled={isActive}
+                disabled={isActive != undefined ? isActive : false}
                 onPress={() => selected != null ? closeBottomSheet() : openBottomSheet(item)}
                 style={[boardStyles.rowItem, { position: `relative`, padding: 0, marginBottom: isLast == true ? 1 : 0 }]}
             >
@@ -38,15 +43,15 @@ export default function Item({ item, drag, isActive, getIndex, isLast }: any | R
                         ) : <View style={{ width: 15 }}></View>}
                         <View style={[boardStyles.cardRight, { gap: 10, position: `relative`, paddingVertical: (isValid(item?.summary) || isValid(item?.image)) ? 30 : 10 }]}>
                             <View style={[styles.indexBadge, { display: `flex`, justifyContent: `center`, alignItems: `center` }]}>
-                                <Text style={{ ...boardStyles.cardTitle, color: Object.values(lightColors).includes(item?.backgroundColor) ? colors.dark : colors.white, fontSize: 16 }}>
-                                    {getIndex() + 1}
+                                <Text style={{ ...boardStyles.cardTitle, color: isLightColor(item?.backgroundColor) ? colors.dark : colors.white, fontSize: 16 }}>
+                                    {getIndex != undefined ? getIndex() + 1 : item?.index}
                                 </Text>
                             </View>
-                            <Text style={{ ...boardStyles.cardTitle, color: Object.values(lightColors).includes(item?.backgroundColor) ? colors.dark : colors.white, overflowY: `visible` }}>
+                            <Text style={{ ...boardStyles.cardTitle, color: isLightColor(item?.backgroundColor) ? colors.dark : colors.white, overflowY: `visible` }}>
                                 {item?.name}
                             </Text>
                             {isValid(item?.summary) ? (
-                                <Text numberOfLines={3} ellipsizeMode={`tail`} style={{ ...boardStyles.cardDescription, color: Object.values(lightColors).includes(item?.backgroundColor) ? colors.dark : colors.white, maxWidth: `90%` }}>
+                                <Text numberOfLines={3} ellipsizeMode={`tail`} style={{ ...boardStyles.cardDescription, color: isLightColor(item?.backgroundColor) ? colors.dark : colors.white, maxWidth: `90%` }}>
                                     {item?.summary}
                                 </Text>
                             ) : <></>}

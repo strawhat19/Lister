@@ -28,7 +28,9 @@ export const lightColors = {
 export const cardColors = {
   ...lightColors,
   red: `rgba(255, 0, 0, 1)`,
+  blue: `rgba(0, 0, 255, 1)`,
   navy: `rgba(4, 57, 123, 1)`,
+  tomato: `rgba(255, 99, 71, 1)`,
   light: `rgba(47, 149, 220, 1)`,
   appleBlue: `rgba(0, 122, 255, 1)`,
   lightBlue: `rgba(47, 149, 220, 1)`,
@@ -52,6 +54,8 @@ export const colors = {
   blackGlass: (alpha) => `rgba(0, 0, 0, ${alpha})`,
   defaultTextInputPlaceholderFontColor: `rgba(136, 136, 136, 1)`,
 }
+
+export const isLightColor = (colorString) => Object.values(lightColors).includes(colorString);
 
 export const randomCardColor = (colorsObject = cardColors, previousColor?: string) => {
   const colorValues = Object.values(colorsObject);

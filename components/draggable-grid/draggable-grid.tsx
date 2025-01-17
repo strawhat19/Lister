@@ -3,8 +3,8 @@ import * as Haptics from 'expo-haptics';
 import DraggableItem from './draggable-item';
 import { colors, Text } from '../theme/Themed';
 import { MARGIN, SIZE } from '@/shared/variables';
+import { generateUniqueItems } from '@/shared/variables';
 import { useSharedValue } from 'react-native-reanimated';
-import { generateUniqueItems, mobile } from '@/shared/variables';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -18,22 +18,17 @@ export default function DraggableGrid() {
         Object.assign({}, ...items.map((item, idx) => ({[idx]: idx}))),
     );
 
-    const onDragEndTouch = () => {
-        if (mobile()) {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        }
-    }
-
     return (
         <SafeAreaProvider style={styles.container}>
-            <GestureHandlerRootView style={styles.container}>
-                <SafeAreaView style={styles.container}>
-                    <View id={`dragAndDropGrid`} style={styles.wrapper}>
+            <GestureHandlerRootView>
+                <SafeAreaView>
+                    <View id={`dragAndDropGrid`}>
                         {items.map((item, idx) => (
                             <TouchableOpacity 
                                 key={idx}    
                                 activeOpacity={0.5}
-                                onPress={() =>  onDragEndTouch()}
+                                onPress={() =>  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                                onLongPress={() =>  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                             >
                                 <DraggableItem index={idx} positions={positions}>
                                     <View id={`draggableItem-${item.id}`} style={[styles.item, { backgroundColor: getBGPatternColor(idx) }]}>
@@ -58,13 +53,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       width: `100%`,
-      backgroundColor: `black`,
-    },
-    wrapper: {
-        padding: 0,
-        width: `100%`,
-        flexWrap: `wrap`,
-        flexDirection: `column`,
+      backgroundColor: colors.black,
     },
     item: {
         width: SIZE,

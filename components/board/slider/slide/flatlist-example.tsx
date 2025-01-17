@@ -1,6 +1,8 @@
-import { log } from '@/shared/variables';
+import * as Haptics from 'expo-haptics';
+import { colors } from '@/components/theme/Themed';
 import React, { useCallback, useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, useAnimatedReaction } from 'react-native-reanimated';
 import DraggableFlatList, { ScaleDecorator, ShadowDecorator, OpacityDecorator, RenderItemParams, } from 'react-native-draggable-flatlist';
 
 export function getColor(i: number, numItems: number = 25) {
@@ -26,14 +28,30 @@ export type Item = ReturnType<typeof mapIndexToData>;
 
 export default function FlatListExample() {
   const [items, setItems] = useState(initialData);
-
-  const onDragEnd = async (onDragEndData: any) => {
-    let { data: dragEndData } = await onDragEndData;
-    await setItems(dragEndData);
-  }
+  const positions = useSharedValue(
+    Object.assign({}, ...items.map((_, idx) => ({ [idx]: idx })))
+  );
 
   const renderItem = useCallback(
     ({ item, drag, isActive }: RenderItemParams<Item>) => {
+
+      const animatedStyle: any = useAnimatedStyle(() => ({
+        transform: [
+          { scale: withTiming(isActive ? 1.1 : 1, { duration: 150 }) },
+          { translateY: withTiming(isActive ? -10 : 0, { duration: 150 }) },
+        ],
+      } as any));
+
+      useAnimatedReaction(
+        () => positions.value[item.key],
+        (newIndex) => {
+          if (newIndex !== undefined) {
+            positions.value[item.key] = newIndex;
+          }
+        },
+        []
+      );
+
       return (
         <ShadowDecorator>
           <ScaleDecorator>
@@ -44,10 +62,14 @@ export default function FlatListExample() {
                 disabled={isActive}
                 style={[
                   styles.rowItem,
-                  { backgroundColor: isActive ? "blue" : item.backgroundColor },
+                  { backgroundColor: isActive ? colors.blue : item.backgroundColor },
                 ]}
               >
-                <Text style={styles.text}>{item.text}</Text>
+                <Animated.View style={[animatedStyle]}>
+                  <Text style={styles.text}>
+                    {item.text}
+                  </Text>
+                </Animated.View>
               </TouchableOpacity>
             </OpacityDecorator>
           </ScaleDecorator>
@@ -62,10 +84,9 @@ export default function FlatListExample() {
       data={items}
       renderItem={renderItem}
       keyExtractor={(item) => item.key}
-      onDragEnd={async (onDragEndData) => await onDragEnd(onDragEndData)}
-      renderPlaceholder={() => (
-        <View style={{ flex: 1, backgroundColor: `tomato` }} />
-      )}
+      onDragEnd={({ data }) => setItems(data)}
+      renderPlaceholder={() => <View style={{ flex: 1, backgroundColor: colors.tomato }} />}
+      onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
     />
   );
 }

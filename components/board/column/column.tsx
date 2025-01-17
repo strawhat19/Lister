@@ -18,7 +18,6 @@ import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, l
 export default function Column({ 
     column, 
     active, 
-    carouselRef,
     swipeCarousel,
     animatedAdjacent, 
     blurIntensity = 0, 
@@ -67,6 +66,7 @@ export default function Column({
     useEffect(() => {
         let itemsForColumn = getItemsForColumn(items, column?.id);
         setColumnItems(itemsForColumn);
+        scrollToEnd();
     }, [items])
 
     const onCancel = async () => {
@@ -78,16 +78,12 @@ export default function Column({
     const onFocus = async () => {
         await Vibration.vibrate(1);
         await setAddingItem(true);
-        await setTimeout(() => {
-            listRef.current?.scrollToEnd({ animated: true });
-        }, delayBeforeScrollingDown);
+        await scrollToEnd();
     }
 
     const addItem = async () => {
         await setItemName(``);
-        await setTimeout(() => {
-            listRef.current?.scrollToEnd({ animated: true });
-        }, delayBeforeScrollingDown);
+        await scrollToEnd();
         await createItem(columnItems, column.id, itemName, items, closeBottomSheet);
     }
 
@@ -95,6 +91,12 @@ export default function Column({
         await setColumnItems(prevItems => prevItems.filter(itm => itm.id != itemID));
         await closeBottomSheet();
         await deleteItemFromDatabase(itemID);
+    }
+
+    const scrollToEnd = async (columnRef = listRef) => {
+        await setTimeout(() => {
+            columnRef.current?.scrollToEnd({ animated: true });
+        }, delayBeforeScrollingDown);
     }
 
     // const itemForm = new ItemType({
@@ -135,26 +137,19 @@ export default function Column({
         await setColumnItems(data);
         if (data?.length > 0) {
             data.forEach((itm, itmIndex) => {
-                updateItemFieldsInDatabase(itm?.id, { index: itmIndex + 1 });
+                updateItemFieldsInDatabase(itm?.id, { index: itmIndex + 1 }, true, false);
             })
         }
     }
 
-    const scrollToEnd = async () => {
-        await setTimeout(() => {
-            listRef.current?.scrollToEnd({ animated: true });
-        }, delayBeforeScrollingDown);
-    }
-
-    const renderDraggableItem = useCallback(
-        ({ item, drag, isActive, getIndex }: RenderItemParams<ItemType>) => {
+    const renderDraggableItem = useCallback((dragItemParams: RenderItemParams<ItemType> | any) => {
+        let { item, drag, isActive, getIndex } = dragItemParams;
 
         const swipeableRef = useRef<Swipeable>(null);
         const { items: itemsFromDatabase } = useContext<any>(SharedContext);
      
         const handleSwipe = async (itm: ItemType, direction: Directions) => {
             swipeableRef.current?.close();
-            carouselRef
             swipeCarousel(direction);
             
             const nextIndex = column.index + (-1 * direction);
@@ -167,8 +162,8 @@ export default function Column({
             let highestColumnIndex = await findHighestNumberInArrayByKey(itemsForNextColumn, `index`);
             if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
 
-            updateItemFieldsInDatabase(itm?.id, { listID: nextListID, index: newIndex });
-            scrollToEnd();
+            await updateItemFieldsInDatabase(itm?.id, { listID: nextListID, index: newIndex });
+            // await scrollToEnd();
         };
         
         const renderRightActions = () => (
@@ -314,11 +309,11 @@ export default function Column({
                                             onDragBegin={onDragBegin}
                                             scrollEnabled={!isDragging}
                                             directionalLockEnabled={true}
-                                            renderItem={renderDraggableItem}
                                             keyExtractor={(item) => item.id.toString()}
                                             onScrollBeginDrag={() => setDragging(false)}
-                                            onDragEnd={async (onDragEndData) => await onDragEnd(onDragEndData)}
-                                            onPlaceholderIndexChange={async (onPlaceHolderIndexChangeData) => await onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
+                                            onDragEnd={(onDragEndData) => onDragEnd(onDragEndData)}
+                                            renderItem={(onDragItem: RenderItemParams<ItemType>) => renderDraggableItem(onDragItem)}
+                                            onPlaceholderIndexChange={(onPlaceHolderIndexChangeData) => onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
                                             style={{ 
                                                 height: `auto`, 
                                                 maxHeight: addingItem ? ((height - paginationHeightMargin) - 155) : height - paginationHeightMargin, 
@@ -350,7 +345,7 @@ export default function Column({
                                             <FontAwesome name={`bars`} color={colors.lightBlue} size={20} />
                                         </TouchableOpacity>
                                     ) : ( */}
-                                        <View style={[globalStyles.singleLineInput, titleRowStyles.addItemButton, { marginTop: 0, justifyContent: `center`, marginHorizontal: `auto` }]}>
+                                        <View style={[globalStyles.singleLineInput, titleRowStyles.addItemButton, { marginTop: 0, justifyContent: `center`, marginHorizontal: `auto`, opacity: selected == null ? 1 : 0 }]}>
                                             <CustomTextInput
                                                 width={`100%`}
                                                 value={itemName}

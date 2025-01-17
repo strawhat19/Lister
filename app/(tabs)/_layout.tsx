@@ -32,9 +32,21 @@ export default function TabLayout({ backgroundColor = colors.mainBG }) {
       <Tabs.Screen
         name={`index`}
         options={{
-          title: `Boards`,
+          title: `Kanban`,
           headerShown: false,
-          tabBarIcon: ({ color }) => <FontAwesome name={`home`} color={color} size={18} />,
+          tabBarIcon: ({ color }) => <FontAwesome name={`id-card`} color={color} size={18} />,
+        }}
+      />
+      <Tabs.Screen
+        name={`notifications`}
+        options={{
+          title: `Notifications`,
+          headerTitleStyle: {
+            fontSize: 20,
+            color: 'white',
+            fontWeight: 'bold',
+          },
+          tabBarIcon: ({ color }) => <FontAwesome name={`bell`} color={color} size={18} />,
         }}
       />
       <Tabs.Screen

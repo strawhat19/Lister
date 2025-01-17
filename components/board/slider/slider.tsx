@@ -1,6 +1,6 @@
 import Column from '../column/column';
 import { SharedContext } from '@/shared/shared';
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useMemo, useRef } from 'react';
 import { colors } from '@/components/theme/Themed';
 import SliderPagination from './pagination/pagination';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
@@ -22,6 +22,13 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
         openBottomSheet, 
         closeBottomSheet, 
     } = useContext<any>(SharedContext);
+
+    const columnRefs = useMemo(() => {
+        return boardColumns.reduce((acc, col) => {
+            acc[col.id] = React.createRef();
+            return acc;
+        }, {});
+    }, [boardColumns]);      
 
     useDerivedValue(() => {
         const absoluteProgress = progress.value;
@@ -78,8 +85,10 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
                                         column={column}
                                         height={height}
                                         fadeAnim={fadeAnim}
+                                        columnRefs={columnRefs}
                                         carouselRef={carouselRef}
                                         swipeCarousel={swipeCarousel}
+                                        columnRef={columnRefs[column.id]}
                                         openBottomSheet={openBottomSheet}
                                         closeBottomSheet={closeBottomSheet}
                                         active={(slideIndex + 1) == column.index}

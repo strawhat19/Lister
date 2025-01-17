@@ -146,7 +146,7 @@ export class ColumnType {
     complete?: boolean = false;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
-    backgroundColor?: keyof typeof colors | string = colors.background;
+    backgroundColor?: keyof typeof colors | string = colors.listsBG;
 
     constructor(data: Partial<ColumnType>) {
         Object.assign(this, data);

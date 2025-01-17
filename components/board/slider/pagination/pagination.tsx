@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
 import { colors, View } from '@/components/theme/Themed';
-import { paginationHeightMargin } from '@/shared/variables';
 import { Pagination } from 'react-native-reanimated-carousel';
+import { paginationHeightMargin, paginationSize } from '@/shared/variables';
 
 export default function SliderPagination({ carouselRef }: any) {
     let { selected, progress, boardColumns } = useContext<any>(SharedContext);
@@ -15,15 +15,22 @@ export default function SliderPagination({ carouselRef }: any) {
     }
 
     return (
-        <View style={{ flex: 1, opacity: selected == null ? 1 : 0, backgroundColor: colors.transparent, width: `100%`, marginTop: -1 * (paginationHeightMargin - 127), pointerEvents: `none` }}>
+        <View style={{ 
+            flex: 1, 
+            width: `100%`, 
+            pointerEvents: `none`, 
+            opacity: selected == null ? 1 : 0, 
+            backgroundColor: colors.transparent, 
+            marginTop: -1 * (paginationHeightMargin - 127), 
+        }}>
             <Pagination.Basic
-                size={8}
                 data={boardColumns}
                 progress={progress}
+                size={paginationSize}
                 onPress={onPressPagination}
-                containerStyle={{ gap: 10, }}
-                activeDotStyle={{ backgroundColor: `#ffffff` }}
-                dotStyle={{ backgroundColor: `rgba(255, 255, 255, 0.5)`, borderRadius: 40 }}
+                containerStyle={{ gap: 10 }}
+                activeDotStyle={{ backgroundColor: colors.activeColor }}
+                dotStyle={{ backgroundColor: colors.inactiveColor, borderRadius: 40 }}
             />
         </View>
     )

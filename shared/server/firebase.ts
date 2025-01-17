@@ -2,7 +2,7 @@ import { User } from '../models/User';
 import { Vibration } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { BoardTypes, ItemType, TaskType, Views } from '../types/types';
-import { colors, isLightColor, lightColors, randomCardColor } from '@/components/theme/Themed';
+import { colors, findColorKey, isLightColor, lightColors, randomCardColor } from '@/components/theme/Themed';
 import { defaultBoardID, findHighestNumberInArrayByKey, genID, isValid, log } from '../variables';
 import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from 'firebase/firestore';
 
@@ -87,7 +87,7 @@ export const addUserToDatabase = async (usr: User) => {
     await Vibration.vibrate(1);
     const userReference = await doc(db, usersDatabaseCollection, usr?.id).withConverter(userConverter);
     await setDoc(userReference, usr as User);
-    log(`Added User ${usr?.name} to Database ${usersDatabaseCollection}`, usr);
+    log(`Added User "${usr?.name}" to Database`);
   } catch (error) {
     log(`Error Adding User to Database ${usersDatabaseCollection}`, error);
   }
@@ -98,7 +98,7 @@ export const addItemToDatabase = async (itm: ItemType) => {
     await Vibration.vibrate(1);
     const itemReference = await doc(db, itemsDatabaseCollection, itm?.id).withConverter(itemConverter);
     await setDoc(itemReference, itm as ItemType);
-    log(`Added Item ${itm?.name} to Database ${itemsDatabaseCollection}`, itm);
+    log(`Added Item "${itm?.name}" to Database`);
   } catch (error) {
     log(`Error Adding Item to Database ${itemsDatabaseCollection}`, error);
   }
@@ -109,7 +109,7 @@ export const addTaskToDatabase = async (tsk: TaskType) => {
     await Vibration.vibrate(1);
     const taskReference = await doc(db, tasksDatabaseCollection, tsk?.id).withConverter(taskConverter);
     await setDoc(taskReference, tsk as TaskType);
-    log(`Added Task ${tsk?.name} to Database ${tasksDatabaseCollection}`, tsk);
+    log(`Added Task "${tsk?.name}" to Database`);
   } catch (error) {
     log(`Error Adding Task to Database ${tasksDatabaseCollection}`, error);
   }
@@ -131,7 +131,7 @@ export const deleteItemFromDatabase = async (itemID: string, cascade: boolean = 
       );
       const taskDeletionPromises = tasksQuery.docs.map(taskDoc => deleteDoc(taskDoc.ref));
       await Promise.all(taskDeletionPromises);
-      log(`Deleted All Item's Associated Tasks from ${tasksDatabaseCollection}`, tasksQuery.docs.map(doc => doc.data().name));
+      log(`Deleted All Item's Associated Tasks from Database`, tasksQuery.docs.map(doc => doc.data().name));
     }
 
     const itemRef = await doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
@@ -139,7 +139,7 @@ export const deleteItemFromDatabase = async (itemID: string, cascade: boolean = 
     const deletedItem = deletedItemSnapshot.exists() ? deletedItemSnapshot.data() : null;
     await deleteDoc(itemRef);
 
-    log(`Deleted Item ${deletedItem?.name} from Database ${itemsDatabaseCollection}`, deletedItem);
+    log(`Deleted Item "${deletedItem?.name}" from Database`);
   } catch (error) {
     log(`Error Deleting Item from Database ${itemsDatabaseCollection}`, error);
   }
@@ -153,7 +153,7 @@ export const deleteTaskFromDatabase = async (taskID: string) => {
     const deletedTask = deletedTaskSnapshot.exists() ? deletedTaskSnapshot.data() : null;
     await deleteDoc(taskRef);
 
-    log(`Deleted Task ${deletedTask?.name} from Database ${tasksDatabaseCollection}`, deletedTask);
+    log(`Deleted Task "${deletedTask?.name}" from Database`);
   } catch (error) {
     log(`Error Deleting Task ${taskID}  from Database ${tasksDatabaseCollection}`, error);
   }
@@ -166,7 +166,7 @@ export const updateItemFieldsInDatabase = async (itemID: string, updates: { [key
     const itemRef = await doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
     if (vibrate) await Vibration.vibrate(1);
     await updateDoc(itemRef, fields);
-    if (logResult) log(`Successfully Updated Item Fields`, fields);
+    if (logResult) log(`Item Fields Updated in Database`);
   } catch (error) {
     log(`Error Updating Item Fields`, { error, fields });
   }
@@ -179,14 +179,46 @@ export const updateTaskFieldsInDatabase = async (taskID: string, updates: { [key
     const taskRef = await doc(db, tasksDatabaseCollection, taskID).withConverter(taskConverter);
     if (vibrate) await Vibration.vibrate(1);
     await updateDoc(taskRef, fields);
-    if (logResult) log(`Successfully Updated Task Fields`, fields);
+    if (logResult) log(`Task Fields Updated in Database`, fields);
   } catch (error) {
     log(`Error Updating Task Fields`, { error, fields });
   }
 };
 
 export const prepareTaskForDatabase = async (tsk: TaskType, tasks: TaskType[], itemID: string) => {
+  let tasksForItem = getTasksForItem(tasks, itemID);
 
+  let type = Views.Task;
+  let newKey = tasks?.length + 1;
+  let newIndex = tasksForItem?.length + 1;
+
+  let highestKey = await findHighestNumberInArrayByKey(tasks, `key`);
+  let highestIndex = await findHighestNumberInArrayByKey(tasks, `index`);
+  let highestColumnIndex = await findHighestNumberInArrayByKey(tasksForItem, `index`);
+
+  const maxHighest = Math.max(highestKey ?? -Infinity, highestIndex ?? -Infinity);
+
+  if (maxHighest >= newKey) newKey = maxHighest + 1;
+  if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
+
+  const { id, uuid, date } = await genID(type, newIndex);
+
+  const preparedTask = await new TaskType({ 
+    ...tsk,
+    id, 
+    type,
+    uuid,
+    key: newKey,
+    created: date,
+    updated: date,
+    index: newIndex, 
+    boardID: defaultBoardID,
+    // name: taskName, 
+    // itemID: selected?.id,
+    // listID: selected?.listID,
+  })
+
+  return preparedTask;
 }
 
 export const prepareItemForDatabase = async (itm: ItemType, items: ItemType[], listID: string) => {
@@ -247,9 +279,8 @@ export const createItem = async (columnItems, listID: string, name, items, close
       tasks: [],
       boardID: defaultBoardID,
       backgroundColor: newColor,
-      ...(isLightBGColor && {
-        fontColor: colors.dark,
-      }),
+      ...(isLightBGColor && { fontColor: colors.dark, }),
+      summary: `Color: ${findColorKey(newColor, colors)}`,
     } as ItemType);
 
     const newItem = await prepareItemForDatabase(itemToAdd, items, listID);

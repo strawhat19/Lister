@@ -2,23 +2,27 @@ import { Tabs } from 'expo-router';
 import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
 import { colors } from '@/components/theme/Themed';
+import { tabBarIconSize } from '@/shared/variables';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useClientOnlyValue } from '@/components/theme/useClientOnlyValue';
 
 export default function TabLayout({ backgroundColor = colors.mainBG }) {
-  let { selected } = useContext<any>(SharedContext);
+  const { selected } = useContext<any>(SharedContext);
+
   return (
     <Tabs
       screenOptions={{
+        tabBarActiveTintColor: colors.activeColor,
         headerShown: useClientOnlyValue(false, true),
-        tabBarIconStyle: { opacity: selected == null ? 1 : 0 },
-        tabBarInactiveTintColor: selected == null ? `white` : `black`,
-        tabBarActiveTintColor: selected == null ? colors.appleBlue : `black`,
-        tabBarLabelStyle: { fontWeight: 700, opacity: selected == null ? 1 : 0 },
-        headerStyle: {
-          elevation: 0, // Remove shadow on Android
-          shadowOpacity: 0, // Remove shadow on iOS
-          backgroundColor, // Fully transparent background
+        tabBarInactiveTintColor: colors.inactiveColor,
+        headerStyle: { 
+          elevation: 0, 
+          backgroundColor, 
+          shadowOpacity: 0, 
+        },
+        tabBarLabelStyle: { 
+          fontWeight: `bold`, 
+          opacity: selected == null ? 1 : 0, 
         },
         tabBarStyle: {
           paddingTop: 5,
@@ -34,43 +38,36 @@ export default function TabLayout({ backgroundColor = colors.mainBG }) {
         options={{
           title: `Kanban`,
           headerShown: false,
-          tabBarIcon: ({ color }) => <FontAwesome name={`id-card`} color={color} size={18} />,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name={`id-card`} size={tabBarIconSize} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name={`notifications`}
-        options={{
-          title: `Notifications`,
-          headerTitleStyle: {
-            fontSize: 20,
-            color: 'white',
-            fontWeight: 'bold',
-          },
-          tabBarIcon: ({ color }) => <FontAwesome name={`bell`} color={color} size={18} />,
+        options={{ 
+          title: `Notifications`, 
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name={`bell`} size={tabBarIconSize} color={color} />
+          ), 
         }}
       />
       <Tabs.Screen
         name={`settings`}
-        options={{
-          title: `Settings`,
-          headerTitleStyle: {
-            fontSize: 20,
-            color: 'white',
-            fontWeight: 'bold',
-          },
-          tabBarIcon: ({ color }) => <FontAwesome name={`cog`} color={color} size={18} />,
+        options={{ 
+          title: `Settings`, 
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name={`cog`} size={tabBarIconSize} color={color} />
+          ), 
         }}
       />
       <Tabs.Screen
-        name={`profile`}
-        options={{
-          title: `Profile`,
-          headerTitleStyle: {
-            fontSize: 20,
-            color: 'white',
-            fontWeight: 'bold',
-          },
-          tabBarIcon: ({ color }) => <FontAwesome name={`user`} color={color} size={15} />,
+        name={`profile`} 
+        options={{ 
+          title: `Profile`, 
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name={`user`} size={tabBarIconSize} color={color} />
+          ), 
         }}
       />
     </Tabs>

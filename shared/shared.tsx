@@ -2,7 +2,7 @@ import { User } from './models/User';
 import 'react-native-gesture-handler';
 import { defaultColumns } from './database';
 import { View } from '@/components/theme/Themed';
-import { animationOptions, log } from './variables';
+import { animationOptions, log, useDatabase } from './variables';
 import SlideUp from '@/components/slide-up/slide-up';
 import { useSharedValue } from 'react-native-reanimated';
 import { collection, onSnapshot } from 'firebase/firestore';
@@ -100,37 +100,39 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   }
 
   useEffect(() => {    
-    const itemsCollection = collection(db, itemsDatabaseCollection);
-    const unsubscribeFromItemsDatabase = onSnapshot(itemsCollection, snapshot => {
-        setItemsLoading(true);
-        const itemsFromDB: any[] = [];
-        snapshot.forEach((doc) => itemsFromDB.push({ ...doc.data() } as any));
-        setItems(itemsFromDB);
-        setItemsLoading(false);
-        log(`${itemsFromDB.length} Item(s) from Database`);
-      }, error => {
-        setItemsLoading(false);
-        log(`Error on Get Item(s) from Database`, error);
-      }
-    )
-    
-    const tasksCollection = collection(db, tasksDatabaseCollection);
-    const unsubscribeFromTasksDatabase = onSnapshot(tasksCollection, snapshot => {
-        setTasksLoading(true);
-        const tasksFromDB: any[] = [];
-        snapshot.forEach((doc) => tasksFromDB.push({ ...doc.data() } as any));
-        setTasks(tasksFromDB);
-        setTasksLoading(false);
-        log(`${tasksFromDB.length} Task(s) from Database`);
-      }, error => {
-        setTasksLoading(false);
-        log(`Error on Get Task(s) from Database`, error);
-      }
-    )
+    if (useDatabase) {
+      const itemsCollection = collection(db, itemsDatabaseCollection);
+      const unsubscribeFromItemsDatabase = onSnapshot(itemsCollection, snapshot => {
+          setItemsLoading(true);
+          const itemsFromDB: any[] = [];
+          snapshot.forEach((doc) => itemsFromDB.push({ ...doc.data() } as any));
+          setItems(itemsFromDB);
+          setItemsLoading(false);
+          log(`${itemsFromDB.length} Item(s) from Database`);
+        }, error => {
+          setItemsLoading(false);
+          log(`Error on Get Item(s) from Database`, error);
+        }
+      )
+      
+      const tasksCollection = collection(db, tasksDatabaseCollection);
+      const unsubscribeFromTasksDatabase = onSnapshot(tasksCollection, snapshot => {
+          setTasksLoading(true);
+          const tasksFromDB: any[] = [];
+          snapshot.forEach((doc) => tasksFromDB.push({ ...doc.data() } as any));
+          setTasks(tasksFromDB);
+          setTasksLoading(false);
+          log(`${tasksFromDB.length} Task(s) from Database`);
+        }, error => {
+          setTasksLoading(false);
+          log(`Error on Get Task(s) from Database`, error);
+        }
+      )
 
-    return () => {
-      unsubscribeFromItemsDatabase();
-      unsubscribeFromTasksDatabase();
+      return () => {
+        unsubscribeFromItemsDatabase();
+        unsubscribeFromTasksDatabase();
+      }
     }
   }, [])
 
@@ -170,12 +172,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
       <GestureHandlerRootView>
         <View style={{ flex: 1, width: `100%` }}>
           {children}
-          {/* <SlideUp 
-            indx={indx} 
-            onSheetChange={onSheetChange} 
-            closeBottomSheet={closeBottomSheet} 
-            blurBGContainerOpacity={blurBGContainerOpacity}
-          /> */}
+          {/* <SlideUp /> */}
         </View>
       </GestureHandlerRootView>
     </SharedContext.Provider>

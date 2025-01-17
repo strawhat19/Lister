@@ -27,6 +27,7 @@ declare global {
         style?: object | any;
         endIconPress?: () => void;
         endIconDisabled?: boolean;
+        doneDisabled?: boolean;
         extraStyle?: object;
         doneColor?: string;
         cancelColor?: string;
@@ -53,6 +54,7 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
     onSave = () => {},
     onFocus = () => {},
     endIconStyle = null,
+    doneDisabled = false,
     cancelText = `Cancel`,
     style = { opactiy: 1 },
     endIconPress = () => {},
@@ -115,7 +117,7 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
                             {cancelText}
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity disabled={endIconDisabled} style={{ paddingVertical: 7, paddingHorizontal: 20, flex: 1 }} onPress={() => onDone != null ? onDone() : dismissKeyboard(true)}>
+                    <TouchableOpacity disabled={doneDisabled} style={{ paddingVertical: 7, paddingHorizontal: 20, flex: 1 }} onPress={() => onDone != null ? onDone() : dismissKeyboard(true)}>
                         <Text style={{ fontSize: 16, color: doneColor, textAlign: `right` }}>
                             {doneText}
                         </Text>

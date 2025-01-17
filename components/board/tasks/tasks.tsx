@@ -9,9 +9,9 @@ import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
+import { delayBeforeScrollingDown, genID, itemHeight, maxTaskNameLength } from '@/shared/variables';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { defaultBoardID, delayBeforeScrollingDown, genID, maxTaskNameLength } from '@/shared/variables';
-import { addTaskToDatabase, deleteTaskFromDatabase, getTasksForItem, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
+import { addTaskToDatabase, deleteTaskFromDatabase, getTasksForItem, prepareTaskForDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
 
 export default function Tasks({ selected }: any) {
     const listRef = useRef(null);
@@ -71,37 +71,14 @@ export default function Tasks({ selected }: any) {
     }
 
     const addTask = async () => {
+        const taskToAdd = new TaskType({
+            name: taskName, 
+            itemID: selected?.id,
+            listID: selected?.listID,
+        });
         await setTaskName(``);
-        
-        // setItemTasks(prevTasks => {
-            const type = Views.Task;
-            const newKey = tasks?.length + 1;
-            const newIndex = itemTasks?.length + 1;
-            // const newIndex = prevTasks.length + 1;
-            const { id, uuid, date } = await genID(type, newIndex);
-
-            const newTask = await new TaskType({ 
-                id, 
-                type,
-                uuid,
-                key: newKey,
-                created: date,
-                updated: date,
-                name: taskName, 
-                index: newIndex, 
-                itemID: selected?.id,
-                boardID: defaultBoardID,
-                listID: selected?.listID,
-            })
-
-            await addTaskToDatabase(newTask);
-
-            // const updatedTasks = [...prevTasks, newTask];
-
-            
-            // return updatedTasks;
-            // });
-            
+        const newTask = await prepareTaskForDatabase(taskToAdd, tasks, selected?.id);
+        await addTaskToDatabase(newTask);
         await setTimeout(() => {
             listRef.current?.scrollToEnd({ animated: true });
         }, delayBeforeScrollingDown);
@@ -157,7 +134,7 @@ export default function Tasks({ selected }: any) {
                         onPress={() => onPressTask(taskItem)}
                         style={[boardStyles.rowItem, { 
                             width: `100%`, 
-                            minHeight: 35, 
+                            minHeight: itemHeight, 
                             borderTopLeftRadius: isFirst ? taskBorderRadius : 0, 
                             borderTopRightRadius: isFirst ? taskBorderRadius : 0, 
                             borderBottomLeftRadius: isLast ? taskBorderRadius : 0, 
@@ -235,9 +212,9 @@ export default function Tasks({ selected }: any) {
                     endIconPress={() => taskToEdit == null ? addTask() : editTask()}
                     endIconColor={taskName == `` ? colors.disabledFont : colors.white}
                     doneText={taskName == `` ? `Done` : taskToEdit == null ? `Add` : `Save`}
-                    endIconStyle={{ minHeight: 35, maxHeight: 35, backgroundColor: colors.black }}
+                    endIconStyle={{ minHeight: itemHeight, maxHeight: itemHeight, backgroundColor: colors.black }}
                     onDone={taskName == `` ? null : () => taskToEdit == null ? addTask() : editTask()}
-                    style={{ width: `80%`, minHeight: 35, ...globalStyles.flexRow, marginBottom: 0, }}
+                    style={{ width: `80%`, minHeight: itemHeight, ...globalStyles.flexRow, marginBottom: 0, }}
                 />
             </View>
         </>

@@ -14,7 +14,7 @@ export default function SlideUp({ maxHeight = `90%`, backgroundColor = colors.ma
 
     const [blur,] = useState<any>(0);
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const [snapPoints, setSnapPoints] = useState([`1%`, maxHeight]);
+    const [snapPoints, ] = useState([`1%`, maxHeight]);
 
     return (
         <>

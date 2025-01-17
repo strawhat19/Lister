@@ -22,6 +22,7 @@ export default function CustomTextInput({
     onSave = () => {},
     onFocus = () => {},
     endIconStyle = null,
+    doneDisabled = false,
     cancelText = `Cancel`,
     style = { opactiy: 1 },
     endIconPress = () => {},
@@ -83,7 +84,7 @@ export default function CustomTextInput({
                             {cancelText}
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity disabled={endIconDisabled} style={{ paddingVertical: 7, paddingHorizontal: 20, flex: 1 }} onPress={() => onDone != null ? onDone() : dismissKeyboard(true)}>
+                    <TouchableOpacity disabled={doneDisabled} style={{ paddingVertical: 7, paddingHorizontal: 20, flex: 1 }} onPress={() => onDone != null ? onDone() : dismissKeyboard(true)}>
                         <Text style={{ fontSize: 16, color: doneColor, textAlign: `right` }}>
                             {doneText}
                         </Text>

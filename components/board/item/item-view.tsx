@@ -143,7 +143,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
 }
 
 const styles = StyleSheet.create({
-    borderedInput: { borderWidth: 1, borderColor: colors.background, },
+    borderedInput: { borderWidth: 1, borderColor: colors.listsBG, },
     itemInput: { 
         ...boardStyles.cardTitle, 
         backgroundColor: colors.transparent, 

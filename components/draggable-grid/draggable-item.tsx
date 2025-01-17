@@ -1,10 +1,8 @@
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { getOrder, getPosition, log, MARGIN } from '@/shared/variables';
+import { getOrder, getPosition, MARGIN } from '@/shared/variables';
 import Animated, { runOnJS, useAnimatedGestureHandler, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-
-let bumps = 0;
 
 export default function DraggableItem({ children, positions, index }: any) {
   const position = getPosition(positions?.value[index]);
@@ -34,8 +32,6 @@ export default function DraggableItem({ children, positions, index }: any) {
       }
     },
     onActive: (evt, ctx: any) => {
-      bumps = bumps + 1;
-
       translateX.value = ctx.startX + evt.translationX;
       translateY.value = ctx.startY + evt.translationY;
 

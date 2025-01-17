@@ -8,10 +8,10 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import React, { useContext, useRef, useState } from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
+import { deleteItemFromDatabase } from '@/shared/server/firebase';
 import { colors, View, globalStyles, isLightColor, Text } from '../theme/Themed';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { cancelAnimation, runOnJS, scrollTo, useAnimatedGestureHandler, useAnimatedReaction, useAnimatedRef, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { deleteItemFromDatabase } from '@/shared/server/firebase';
 
 function clamp(value, lowerBound, upperBound) {
   'worklet';
@@ -152,13 +152,13 @@ function MovableItem({
 
   const renderRightActions = () => (
     <View style={[titleRowStyles.rightAction, { borderRadius: 0, marginLeft: 0, backgroundColor: colors.red }]}>
-      <FontAwesome name={`trash`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
+      <FontAwesome name={`trash`} color={colors.white} size={22} style={{ paddingHorizontal: itemHeight }} />
     </View>
 );
 
   const renderLeftActions = () => (
     <View style={[titleRowStyles.leftAction, { borderRadius: 0, marginRight: 0, backgroundColor: colors.red }]}>
-      <FontAwesome name={`trash`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
+      <FontAwesome name={`trash`} color={colors.white} size={22} style={{ paddingHorizontal: itemHeight }} />
     </View>
   );
 

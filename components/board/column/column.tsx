@@ -10,10 +10,10 @@ import CustomTextInput from '@/components/custom-input/custom-input';
 import { ColumnType, Directions, ItemType, Views } from '@/shared/types/types';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
-import { borderRadius, colors, globalStyles, Text, View } from '@/components/theme/Themed';
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
+import { borderRadius, colors, globalStyles, isLightColor, Text, View } from '@/components/theme/Themed';
 import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem } from '@/shared/server/firebase';
-import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, log, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export default function Column({ 
     column, 
@@ -44,8 +44,8 @@ export default function Column({
         zero: `No Items Yet`,
     }
 
+    const [loading,] = useState(false);
     const [itemName, setItemName] = useState(``);
-    const [loading, setLoading] = useState(false);
     const [addingItem, setAddingItem] = useState(false);
     const [columnItems, setColumnItems] = useState<ItemType[]>([]);
 
@@ -99,24 +99,6 @@ export default function Column({
         }, delayBeforeScrollingDown);
     }
 
-    // const itemForm = new ItemType({
-    //     ...column,
-    //     name: `+ Add Item`,
-    //     listID: column?.id,
-    //     type: Views.ItemForm,
-    //     summary: `This is the Item Form`,
-    //     description: `You can use this form to edit or create items`,
-    // })
-
-    // const onAddItem = async (openItemForm: boolean = false) => {
-    //     if (openItemForm) {
-    //         openBottomSheet(itemForm, colors.navy);
-    //     } else {
-    //         await Vibration.vibrate(1);
-    //         await setAddingItem(true);
-    //     }
-    // }
-
     const deleteItemWithConfirmation = (itemID: string = selected?.id) => {
         Vibration.vibrate(1);
         Alert.alert(
@@ -163,18 +145,17 @@ export default function Column({
             if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
 
             await updateItemFieldsInDatabase(itm?.id, { listID: nextListID, index: newIndex });
-            // await scrollToEnd();
         };
         
         const renderRightActions = () => (
             <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8 }]}>
-                <FontAwesome name={`chevron-left`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
+                <FontAwesome name={`chevron-left`} color={colors.white} size={22} style={{ paddingHorizontal: itemHeight }} />
             </View>
         );
         
         const renderLeftActions = () => (
             <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8 }]}>
-                <FontAwesome name={`chevron-right`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
+                <FontAwesome name={`chevron-right`} color={colors.white} size={22} style={{ paddingHorizontal: itemHeight }} />
             </View>
         );
 
@@ -207,27 +188,6 @@ export default function Column({
         )
     }, [])
 
-    // const handleGesture = (event: any) => {
-    //     'worklet';
-
-    //     log(`gesture`);
-
-    //     if (isDragging) return; // Skip if dragging or swiping is locked
-
-    //     const sensitivity = 20; // Adjust sensitivity for horizontal swipe
-    //     const { translationX, translationY, velocityX } = event.nativeEvent;
-
-    //     // Determine if the gesture is primarily horizontal
-    //     const isHorizontalSwipe =
-    //         Math.abs(translationX) > Math.abs(translationY) && // Horizontal motion dominates
-    //         Math.abs(translationX) > sensitivity && // Sufficient horizontal movement
-    //         Math.abs(velocityX) > sensitivity; // Sufficient horizontal velocity
-
-    //     if (isHorizontalSwipe) {
-    //         runOnJS(swipeCarousel)(translationX); // Trigger swipeCarousel with translationX
-    //     }
-    // }
-
     return (
         <>
             {/* <GestureHandlerRootView> */}
@@ -235,13 +195,6 @@ export default function Column({
                     {/* <> */}
                         <View id={`column_${column?.id}`} style={[
                             {  
-                                // top: 0,
-                                // left: 0,
-                                // zIndex: -1,
-                                // height: `100%`,
-                                // position: `absolute`,
-                                // pointerEvents: `auto`,
-
                                 width: `100%`,
                                 paddingTop: 5,
                                 marginTop: 15,
@@ -257,11 +210,11 @@ export default function Column({
                                 width: `95%`, 
                                 borderRadius: 12, 
                                 marginHorizontal: `auto`, 
-                                backgroundColor: selected == null ? colors.background : colors.black, 
+                                backgroundColor: selected == null ? colors.listsBG : colors.transparent, 
                             }}>
                                 <View style={[titleRowStyles.titleRow, { paddingVertical: 7 }]}>
                                     {selected == null && column?.category && column?.category?.length > 0 ? (
-                                        <Text style={titleRowStyles.subtitle}>
+                                        <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
                                             {column?.category}
                                         </Text>
                                     ) : (
@@ -274,7 +227,7 @@ export default function Column({
                                             </TouchableOpacity>
                                         ) : <></>
                                     )}
-                                    <Text style={[titleRowStyles.title, { flexBasis: selected?.type == Views.ItemForm ? `70%` : `50%` }]}>
+                                    <Text style={[titleRowStyles.title, titleRowStyles.fontColor, { flexBasis: selected?.type == Views.ItemForm ? `70%` : `50%` }]}>
                                         {selected == null ? (
                                             `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                                 toFixedWithoutRounding(slideIndex + 1, 1)
@@ -283,11 +236,11 @@ export default function Column({
                                     </Text>
                                     {selected == null ? (
                                         columnItems && columnItems.length > 0 ? (
-                                            <Text style={titleRowStyles.subtitle}>
+                                            <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
                                                 {columnItems?.length + ` Item(s)`}
                                             </Text>
                                         ) : <>
-                                            <Text style={titleRowStyles.subtitle}>
+                                            <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
                                                 0 Item(s)
                                             </Text>
                                         </>
@@ -329,7 +282,7 @@ export default function Column({
                                         />
                                     // </PanGestureHandler>
                                 ) : (
-                                    <View style={{ width: `100%`, backgroundColor, height: height - paginationHeightMargin, paddingTop: 35 }}>
+                                    <View style={{ width: `100%`, backgroundColor, height: height - paginationHeightMargin, paddingTop: itemHeight }}>
                                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
                                             {columnItems?.length > 0 ? loadingMessages.zero : loadingMessages.loading}
                                         </Text>
@@ -350,22 +303,31 @@ export default function Column({
                                                 width={`100%`}
                                                 value={itemName}
                                                 showLabel={false}
-                                                placeholder={`Name`}
                                                 endIconName={`save`}
+                                                placeholder={`Item Name`}
                                                 onFocus={() => onFocus()}
                                                 onChangeText={setItemName}
                                                 onCancel={() => onCancel()}
                                                 maxLength={maxItemNameLength}
                                                 endIconPress={() => addItem()}
+                                                endIconDisabled={itemName == ``}
                                                 onBlur={() => setAddingItem(false)}
                                                 doneText={itemName == `` ? `Done` : `Add`}
-                                                onDone={itemName == `` ? null : () => addItem()}
-                                                doneColor={itemName == `` ? colors.disabledFont : colors.white}
-                                                cancelColor={itemName == `` ? colors.disabledFont : colors.red}
+                                                cancelColor={itemName == `` ? colors.white : colors.error}
+                                                doneColor={itemName == `` ? colors.white : colors.activeColor}
                                                 endIconColor={itemName == `` ? colors.disabledFont : colors.white}
-                                                style={{ minHeight: 35, ...globalStyles.flexRow, marginBottom: 0, }}
-                                                endIconStyle={{ minHeight: 35, maxHeight: 35, backgroundColor: colors.navy }}
-                                                extraStyle={{ color: colors.white, width: `83%`, backgroundColor: colors.navy }}
+                                                onDone={itemName == `` ? () => onCancel() : () => addItem()}
+                                                extraStyle={{ color: colors.white, width: `83%`, backgroundColor: colors.black }}
+                                                style={{ 
+                                                    minHeight: itemHeight, 
+                                                    marginBottom: 0, 
+                                                    ...globalStyles.flexRow, 
+                                                }}
+                                                endIconStyle={{ 
+                                                    minHeight: itemHeight, 
+                                                    maxHeight: itemHeight, 
+                                                    backgroundColor: itemName == `` ? colors.black : colors.activeColor, 
+                                                }}
                                             />
                                         </View>
                                     {/* )} */}
@@ -437,5 +399,9 @@ export const titleRowStyles = StyleSheet.create({
         fontWeight: `bold`,
         fontStyle: `italic`,
         color: colors.white,
+    },
+    fontColor: { 
+        fontWeight: `bold`,
+        color: isLightColor(colors.listsBG) ? colors.darkFont : colors.lightFont, 
     },
 })

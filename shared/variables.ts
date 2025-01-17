@@ -1,13 +1,14 @@
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
+import { IDData, Types, Views } from '@/shared/types/types';
 import { Dimensions, Alert, Platform, Vibration } from 'react-native';
-import { IDData, ItemType, Types, Views } from '@/shared/types/types';
 
 export const COL = 5;
 export const MARGIN = 8;
 export const maxItemNameLength = 13;
-export const maxTaskNameLength = 42;
+export const maxTaskNameLength = 28;
 export const maxItemSummaryLength = 125;
+export const delayBeforeScrollingDown = 150;
 export const maxItemDescriptionLength = 250;
 export const SIZE = Dimensions.get(`window`).width / COL - MARGIN;
 
@@ -160,6 +161,22 @@ export const countPropertiesInObject = (obj: any) => {
   return count;
 }
 
+export const isValid = (item) => {
+  if (typeof item == `string`) {
+    let isInvalidString = !item || item == `` || item.trim() == `` || item == undefined || item == null;
+    return !isInvalidString;
+  } else if (typeof item == `number`) {
+    let isInvalidNumber = isNaN(item) || item == undefined || item == null;
+    return !isInvalidNumber;
+  } else if (typeof item == `object` && item != undefined && item != null) {
+    let isInvalidObject = Object.keys(item).length == 0 || item == undefined || item == null;
+    return !isInvalidObject;
+  } else {
+    let isUndefined = item == undefined || item == null;
+    return !isUndefined;
+  }
+}
+
 export const openCamera = async () => {
   Vibration.vibrate(1);
   const permission = await ImagePicker.requestCameraPermissionsAsync();
@@ -195,6 +212,25 @@ export const genID = (type: Types | Views = Types.Data, index = 1): IDData => {
     currentDateTimeStamp,
     currentDateTimeStampNoSpaces,
   }) as IDData
+}
+
+export const findHighestNumberInArrayByKey = async ( arrayOfObjects: any[], key: string ): Promise<number | null> => {
+  try {
+    const filteredNumbers = arrayOfObjects
+      .map(obj => obj[key])
+      .filter(value => typeof value === `number`);
+
+    if (filteredNumbers.length === 0) {
+      // log(`No valid numbers found for key '${key}'`);
+      return 0;
+    }
+
+    const highestNumber = Math.max(...filteredNumbers);
+    return highestNumber;
+  } catch (error) {
+    log(`Error while finding the highest number for key '${key}'`, error);
+    return 0;
+  }
 }
 
 export const formatDate = (date: any, specificPortion?: any) => {

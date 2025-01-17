@@ -16,6 +16,7 @@ import { BoardType, ColumnType, ItemType, ItemViews, TaskType } from '@/shared/t
 configureReanimatedLogger({ strict: false, level: ReanimatedLogLevel.error });
 
 export const SharedContext = createContext({});
+export const defaultItemView = ItemViews.Tasks;
 
 export default function Shared({ children }: { children: React.ReactNode; }) {
   let [indx, setIndx] = useState(0);
@@ -25,17 +26,17 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [slideIndex, setSlideIndex] = useState(0);
   let [modalOpen, setModalOpen] = useState(false);
   let [isDragging, setDragging] = useState(false);
+  let [view, setView] = useState(defaultItemView);
   let [items, setItems] = useState<ItemType[]>([]);
   let [tasks, setTasks] = useState<TaskType[]>([]);
-  let [view, setView] = useState(ItemViews.Details);
   let [user, setUser] = useState<User | null>(null);
   let [users, setUsers] = useState<User[] | null>([]);
   let [itemsLoading, setItemsLoading] = useState(false);
   let [usersLoading, setUsersLoading] = useState(false);
   let [tasksLoading, setTasksLoading] = useState(false);
-  let [board, setBoard] = useState<BoardType | ColumnType[]>(defaultColumns);
   let [selected, setSelected] = useState<ItemType | ColumnType | null>(null);
-  let [activeTopName, setActiveTopName] = useState(board[slideIndex]?.name);
+  let [boardColumns, setBoardColumns] = useState<BoardType | ColumnType[]>(defaultColumns);
+  let [activeTopName, setActiveTopName] = useState(boardColumns[slideIndex]?.name);
 
   const progress = useSharedValue<number>(0);
   const { width, height } = useWindowDimensions();
@@ -47,12 +48,12 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     exitFadeBlur();
     setEditing(false);
     setSelected(null);
-    setView(ItemViews.Details);
+    setView(defaultItemView);
   }
 
   const onSheetChange = (index?: any) => {
     if (index === 0) {
-      setActiveTopName(board[slideIndex]?.name);
+      setActiveTopName(boardColumns[slideIndex]?.name);
       closeBottomSheet();
     }
   }
@@ -123,9 +124,9 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         setItemsLoading(true);
         const itemsFromDB: any[] = [];
         snapshot.forEach((doc) => itemsFromDB.push({ ...doc.data() } as any));
-        // log(`Items Update from Firebase`, itemsFromDB);
         setItems(itemsFromDB);
         setItemsLoading(false);
+        // log(`Items from Firebase`, itemsFromDB);
       }, error => {
         log(`Error getting Items from Firebase`, error);
         setItemsLoading(false);
@@ -137,7 +138,6 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         setTasksLoading(true);
         const tasksFromDB: any[] = [];
         snapshot.forEach((doc) => tasksFromDB.push({ ...doc.data() } as any));
-        // log(`Tasks Update from Firebase`, tasksFromDB);
         setTasks(tasksFromDB);
         setTasksLoading(false);
       }, error => {
@@ -167,7 +167,6 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         indx, setIndx,
         blur, setBlur,
         onSheetChange,
-        board, setBoard,
         users, setUsers,
         items, setItems,
         tasks, setTasks,
@@ -179,6 +178,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         isDragging, setDragging,
         modalOpen, setModalOpen,
         slideIndex, setSlideIndex,
+        boardColumns, setBoardColumns,
         tasksLoading, setTasksLoading,
         itemsLoading, setItemsLoading,
         usersLoading, setUsersLoading,

@@ -23,6 +23,11 @@ export enum Themes {
     Light = `light`,
 }
 
+export enum Directions {
+    Left = 1,
+    Right = -1,
+}
+
 export enum Orientations {
     Portrait = `Portrait`,
     Landscape = `Landscape`,
@@ -109,6 +114,7 @@ export class BoardType {
     // Data
     name: string;
     creator?: string = ``;
+    complete?: boolean = false;
     boardType?: BoardTypes = BoardTypes.Kanban;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
@@ -137,6 +143,7 @@ export class ColumnType {
     name: string;
     category: string;
     creator?: string = ``;
+    complete?: boolean = false;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
     backgroundColor?: keyof typeof colors | string = colors.background;
@@ -167,6 +174,7 @@ export class ItemType {
     summary: string = ``;
     creator?: string = ``;
     description: string = ``;
+    complete?: boolean = false;
     orientation?: Orientations = Orientations.Portrait;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
@@ -196,6 +204,7 @@ export class TaskType {
     // Data
     name: string = ``;
     creator?: string = ``;
+    complete?: boolean = false;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
     backgroundColor?: keyof typeof colors | string = colors.black;

@@ -12,13 +12,12 @@ import { Text as DefaultText, View as DefaultView } from 'react-native';
 export const borderRadius = 10;
 export const itemCardHeight = 150;
 export const taskBorderRadius = 8;
+export const itemSimplifiedCardHeight = 71.3;
 
 // Colors
 export const lightColors = {
   ccc: `rgba(204, 204, 204, 1)`,
-  light: `rgba(47, 149, 220, 1)`,
   white: `rgba(255, 255, 255, 1)`,
-  lightBlue: `rgba(47, 149, 220, 1)`,
   appleMint: `rgba(174, 230, 216, 1)`,
   appleYellow: `rgba(255, 204, 0, 1)`,
   appleGolden: `rgba(255, 215, 0, 1)`,
@@ -30,7 +29,9 @@ export const cardColors = {
   ...lightColors,
   red: `rgba(255, 0, 0, 1)`,
   navy: `rgba(4, 57, 123, 1)`,
+  light: `rgba(47, 149, 220, 1)`,
   appleBlue: `rgba(0, 122, 255, 1)`,
+  lightBlue: `rgba(47, 149, 220, 1)`,
   applePurple: `rgba(88, 86, 214, 1)`,
   appleGreen: `rgba(52, 199, 89, 1)`,
   appleGreenShade: `rgba(0, 125, 27, 1)`,
@@ -68,8 +69,23 @@ export type ViewProps = ThemeProps & DefaultView[`props`];
 
 export const globalStyles = StyleSheet.create({
   flexRow: {
-    display: `flex`, flexDirection: `row`, alignItems: `center`,
-  }
+    display: `flex`, 
+    flexDirection: `row`, 
+    alignItems: `center`,
+  },
+  singleLineInput: { 
+    width: `100%`,
+    maxHeight: 35,
+    marginTop: 12,
+    overflow: `hidden`,
+    position: `relative`,
+    borderRadius: taskBorderRadius,
+    backgroundColor: colors.transparent,
+    display: `flex`, 
+    flexDirection: `row`, 
+    alignItems: `center`,
+    gap: 5, 
+},
 })
 
 export const defaultTabStyles = {

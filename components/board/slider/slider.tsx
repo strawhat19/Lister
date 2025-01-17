@@ -11,13 +11,13 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
     const carouselRef = useRef<ICarouselInstance>(null);
     const scrollOffsetValue = useSharedValue<number>(0);
     let { 
-        board,
         width, 
         height,
         selected,
         progress, 
         fadeAnim, 
         slideIndex, 
+        boardColumns,
         setSlideIndex,
         openBottomSheet, 
         closeBottomSheet, 
@@ -47,14 +47,14 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
         // <PanGestureHandler onGestureEvent={(event) => log(`carousel gesture`, event)}>
             <>
                 <Carousel
-                    data={board}
                     width={width}
                     height={height}
-                    mode={`parallax`}
                     ref={carouselRef}
-                    loop={board?.length > 1}
+                    mode={`parallax`}
+                    data={boardColumns}
                     enabled={selected == null}
                     onProgressChange={progress}
+                    loop={boardColumns?.length > 1}
                     pagingEnabled={selected == null}
                     style={{ 
                         // top: 0,
@@ -78,6 +78,7 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
                                         column={column}
                                         height={height}
                                         fadeAnim={fadeAnim}
+                                        carouselRef={carouselRef}
                                         swipeCarousel={swipeCarousel}
                                         openBottomSheet={openBottomSheet}
                                         closeBottomSheet={closeBottomSheet}

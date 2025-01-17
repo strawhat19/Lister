@@ -3,14 +3,15 @@ import { boardStyles } from '../styles';
 import { SharedContext } from '@/shared/shared';
 import { titleRowStyles } from '../column/column';
 import { Swipeable } from 'react-native-gesture-handler';
-import { genID, maxTaskNameLength } from '@/shared/variables';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { delayBeforeScrollingDown, genID, maxTaskNameLength } from '@/shared/variables';
 import { ItemType, TaskType, Views } from '@/shared/types/types';
 import CustomTextInput from '@/components/custom-input/custom-input';
 import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { addTaskToDatabase, deleteTaskFromDatabase, getTasksForItem, updateTaskFieldInDatabase } from '@/shared/server/firebase';
+import { addTaskToDatabase, deleteTaskFromDatabase, getTasksForItem, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
 
 export default function Tasks({ selected }: any) {
     const listRef = useRef(null);
@@ -21,6 +22,7 @@ export default function Tasks({ selected }: any) {
 
     const onPressTask = (task: TaskType) => {
         Vibration.vibrate(1);
+        editTaskWithConfirmation(task);
         // log(task?.type, task);
     }
 
@@ -35,12 +37,48 @@ export default function Tasks({ selected }: any) {
             // const updatedTasks = data?.map((task, taskIndex) => ({ ...task, index: taskIndex + 1}));
             // await setTasks(updatedTasks);
             data.forEach((tsk, tskIndex) => {
-                updateTaskFieldInDatabase(tsk?.id, tskIndex + 1);
+                updateTaskFieldsInDatabase(tsk?.id, { index: tskIndex + 1});
             })
         }
     }
 
+    const deleteTaskWithConfirmation = (taskID: string) => {
+        Vibration.vibrate(1);
+        Alert.alert(
+            `Delete Task`,
+            `Are you sure you want to delete this task?`,
+            [
+                { text: `Cancel`, style: `cancel`, onPress: async () => await Vibration.vibrate(1) }, 
+                { text: `Delete`, style: `destructive`, onPress: async () => await deleteTaskFromDatabase(taskID) }
+            ],
+            { cancelable: true, onDismiss: async () => await Vibration.vibrate(1) },
+        )
+    }
+
+    const editTaskWithConfirmation = async (task) => {
+        await Vibration.vibrate(1);
+        await setEditing(true);
+        await Alert.prompt(
+            `Edit Task`,
+            ``,
+            async (value: string) => {
+                await Vibration.vibrate(1);
+                await setEditing(false);
+                await updateTaskFieldsInDatabase(task?.id, { name: value }, false);
+            },
+            undefined,
+            task?.name,
+            undefined,
+            { cancelable: true, onDismiss: async () => {
+                await Vibration.vibrate(1)
+                await setEditing(false);
+            } }
+        )
+    }
+
     const addTask = async () => {
+        await setTaskName(``);
+        
         // setItemTasks(prevTasks => {
             const type = Views.Task;
             const newKey = tasks?.length + 1;
@@ -68,16 +106,14 @@ export default function Tasks({ selected }: any) {
             // return updatedTasks;
             // });
             
-        await setTaskName(``);
-        await Vibration.vibrate(1);
-
         await setTimeout(() => {
             listRef.current?.scrollToEnd({ animated: true });
-        }, 150);
+        }, delayBeforeScrollingDown);
     }
 
     const renderDraggableItem = useCallback(
-        ({ item, drag, isActive }: RenderItemParams<ItemType>) => {
+        ({ item, drag, isActive, getIndex }: RenderItemParams<ItemType>) => {
+
         let index = item?.index;
         const swipeableRef = useRef<Swipeable>(null);
         let isFirst: boolean = index == 1 ? true : false;
@@ -88,27 +124,20 @@ export default function Tasks({ selected }: any) {
             deleteTaskWithConfirmation(taskID);
         };
 
-        const deleteTaskWithConfirmation = (taskID: string = item?.id) => {
-            Vibration.vibrate(1);
-            Alert.alert(
-                `Delete Task`,
-                `Are you sure you want to delete this task?`,
-                [
-                    { text: `Cancel`, style: `cancel` }, 
-                    { text: `Delete`, style: `destructive`, onPress: async () => {
-                        await deleteTaskFromDatabase(taskID);
-                        await Vibration.vibrate(1);
-                    } }
-                ],
-                { cancelable: true },
-            )
-        }
+        const handleLeftSwipe = (task = item) => {
+            swipeableRef.current?.close();
+            editTaskWithConfirmation(task);
+        };
         
         const renderRightActions = () => (
-            <View style={[titleRowStyles.rightAction, { borderRadius: taskBorderRadius, marginLeft: 8 }]}>
-                <Text style={[titleRowStyles.actionText, { padding: 0, fontSize: 16, paddingHorizontal: 10 }]}>
-                    Delete
-                </Text>
+            <View style={[titleRowStyles.rightAction, { backgroundColor: colors.red, borderRadius: taskBorderRadius - 3, marginLeft: 3 }]}>
+                <FontAwesome name={`trash`} color={colors.white} size={18} style={{ paddingHorizontal: 15 }} />
+            </View>
+        );
+        
+        const renderLeftActions = () => (
+            <View style={[titleRowStyles.leftAction, { backgroundColor: colors.appleBlue, borderRadius: taskBorderRadius - 3, marginRight: 3 }]}>
+                <FontAwesome name={`bars`} color={colors.white} size={18} style={{ paddingHorizontal: 15 }} />
             </View>
         );
 
@@ -119,10 +148,11 @@ export default function Tasks({ selected }: any) {
                     ref={swipeableRef}
                     overshootLeft={false}
                     overshootRight={false}
+                    renderLeftActions={renderLeftActions}
                     renderRightActions={renderRightActions}
-                    // renderLeftActions={renderLeftActions}
-                    // onSwipeableLeftOpen={handleLeftSwipe}
+                    onSwipeableLeftOpen={() => handleLeftSwipe(item)}
                     onSwipeableRightOpen={() => handleRightSwipe(item?.id)}
+                    onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 >    
                     <TouchableOpacity
                         onLongPress={drag}
@@ -139,8 +169,8 @@ export default function Tasks({ selected }: any) {
                         }]}
                     >
                         <View style={{width: `100%`, backgroundColor: colors.transparent}}>
-                            <Text style={{ textAlign: `left`, paddingLeft: 35, fontWeight: `bold`, fontStyle: `italic` }}>
-                                {index}. {item?.name}
+                            <Text style={{ textAlign: `left`, paddingLeft: 55, fontWeight: `bold`, fontStyle: `italic` }}>
+                                {getIndex() + 1}. {item?.name}
                             </Text>
                         </View>
                     </TouchableOpacity>
@@ -153,9 +183,9 @@ export default function Tasks({ selected }: any) {
         <>
             <View style={[styles.tasksContainer, { maxHeight: editing ? 225 : (selected?.image && selected?.image != `` ? 185 : 340), marginTop: editing ? 0 : 12, }]}>
                 <DraggableFlatList
-                    data={itemTasks}
                     ref={listRef}
                     bounces={true}
+                    data={itemTasks}
                     style={{ height: `auto` }}
                     nestedScrollEnabled={true}
                     directionalLockEnabled={true}
@@ -181,7 +211,7 @@ export default function Tasks({ selected }: any) {
                     }}
                 />
             </View>
-            <View style={styles.addTaskForm}>
+            <View style={globalStyles.singleLineInput}>
                 <CustomTextInput
                     value={taskName}
                     showLabel={false}
@@ -193,7 +223,6 @@ export default function Tasks({ selected }: any) {
                     onCancel={() => setTaskName(``)}
                     onBlur={() => setEditing(false)}
                     onFocus={() => setEditing(true)}
-                    // endIconDisabled={taskName == ``}
                     extraStyle={{ color: colors.white }}
                     doneText={taskName == `` ? `Done` : `Add`}
                     onDone={taskName == `` ? null : () => addTask()}
@@ -216,16 +245,5 @@ const styles = StyleSheet.create({
         position: `relative`, 
         borderRadius: taskBorderRadius,
         backgroundColor: colors.transparent,
-    },
-    addTaskForm: { 
-        width: `100%`,
-        maxHeight: 35,
-        marginTop: 12,
-        overflow: `hidden`,
-        position: `relative`,
-        borderRadius: taskBorderRadius,
-        backgroundColor: colors.transparent,
-        ...globalStyles.flexRow,
-        gap: 5, 
     },
 })

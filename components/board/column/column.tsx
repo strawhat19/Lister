@@ -6,17 +6,19 @@ import { SharedContext } from '@/shared/shared';
 import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Animated, { Layout } from 'react-native-reanimated';
-import { ColumnType, ItemType, Views } from '@/shared/types/types';
+import CustomTextInput from '@/components/custom-input/custom-input';
+import { ColumnType, Directions, ItemType, Views } from '@/shared/types/types';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { borderRadius, colors, globalStyles, Text, View } from '@/components/theme/Themed';
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { genID, gridSpacing, log, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
-import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldInDatabase, addItemToDatabase } from '@/shared/server/firebase';
+import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem } from '@/shared/server/firebase';
+import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, log, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export default function Column({ 
     column, 
     active, 
+    carouselRef,
     swipeCarousel,
     animatedAdjacent, 
     blurIntensity = 0, 
@@ -24,40 +26,42 @@ export default function Column({
 }: ColumnType | any) {
     let { 
         items,
-        board,
         height, 
-        setBoard, 
         selected,
         fadeAnim, 
         isDragging,
         slideIndex,
         setDragging, 
+        boardColumns,
         activeTopName,
         openBottomSheet, 
         closeBottomSheet, 
     } = useContext<any>(SharedContext);
+
+    const listRef = useRef(null);
 
     const loadingMessages = {
         loading: `Loading`,
         zero: `No Items Yet`,
     }
 
+    const [itemName, setItemName] = useState(``);
     const [loading, setLoading] = useState(false);
+    const [addingItem, setAddingItem] = useState(false);
     const [columnItems, setColumnItems] = useState<ItemType[]>([]);
 
+    const onPlaceHolderIndexChange = (onPlaceHolderIndexChangeData: any) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
+    
     const closeItem = () => {
         Vibration.vibrate(1);
         closeBottomSheet();
     }
-
+    
     const onDragBegin = () => {
         setDragging(true);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    }
-    
-    const onPlaceHolderIndexChange = (onPlaceHolderIndexChangeData: any) => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        // log(`onPlaceHolderIndexChange`, onPlaceHolderIndexChangeData);
     }
 
     useEffect(() => {
@@ -65,20 +69,51 @@ export default function Column({
         setColumnItems(itemsForColumn);
     }, [items])
 
-    const deleteItem = async (itemID: string = selected?.id) => {
-        await setColumnItems(prevItems => prevItems.filter(itm => itm.id != itemID));
-        await deleteItemFromDatabase(itemID);
-        await closeItem();
+    const onCancel = async () => {
+        await Vibration.vibrate(1);
+        await setItemName(``);
+        await setAddingItem(false);
     }
 
-    const itemForm = new ItemType({
-        ...column,
-        name: `+ Add Item`,
-        listID: column?.id,
-        type: Views.ItemForm,
-        summary: `This is the Item Form`,
-        description: `You can use this form to edit or create items`,
-    })
+    const onFocus = async () => {
+        await Vibration.vibrate(1);
+        await setAddingItem(true);
+        await setTimeout(() => {
+            listRef.current?.scrollToEnd({ animated: true });
+        }, delayBeforeScrollingDown);
+    }
+
+    const addItem = async () => {
+        await setItemName(``);
+        await setTimeout(() => {
+            listRef.current?.scrollToEnd({ animated: true });
+        }, delayBeforeScrollingDown);
+        await createItem(columnItems, column.id, itemName, items, closeBottomSheet);
+    }
+
+    const deleteItem = async (itemID: string = selected?.id) => {
+        await setColumnItems(prevItems => prevItems.filter(itm => itm.id != itemID));
+        await closeBottomSheet();
+        await deleteItemFromDatabase(itemID);
+    }
+
+    // const itemForm = new ItemType({
+    //     ...column,
+    //     name: `+ Add Item`,
+    //     listID: column?.id,
+    //     type: Views.ItemForm,
+    //     summary: `This is the Item Form`,
+    //     description: `You can use this form to edit or create items`,
+    // })
+
+    // const onAddItem = async (openItemForm: boolean = false) => {
+    //     if (openItemForm) {
+    //         openBottomSheet(itemForm, colors.navy);
+    //     } else {
+    //         await Vibration.vibrate(1);
+    //         await setAddingItem(true);
+    //     }
+    // }
 
     const deleteItemWithConfirmation = (itemID: string = selected?.id) => {
         Vibration.vibrate(1);
@@ -100,76 +135,65 @@ export default function Column({
         await setColumnItems(data);
         if (data?.length > 0) {
             data.forEach((itm, itmIndex) => {
-                updateItemFieldInDatabase(itm?.id, itmIndex + 1);
+                updateItemFieldsInDatabase(itm?.id, { index: itmIndex + 1 });
             })
         }
+    }
+
+    const scrollToEnd = async () => {
+        await setTimeout(() => {
+            listRef.current?.scrollToEnd({ animated: true });
+        }, delayBeforeScrollingDown);
     }
 
     const renderDraggableItem = useCallback(
         ({ item, drag, isActive, getIndex }: RenderItemParams<ItemType>) => {
 
         const swipeableRef = useRef<Swipeable>(null);
-
-        const handleRightSwipe = (itemID: string = selected?.id) => {
-            swipeableRef.current?.close();
-            deleteItemWithConfirmation(itemID);
-        };
+        const { items: itemsFromDatabase } = useContext<any>(SharedContext);
      
-        const handleLeftSwipe = async (itm: ItemType, direction = -1) => {
+        const handleSwipe = async (itm: ItemType, direction: Directions) => {
             swipeableRef.current?.close();
+            carouselRef
             swipeCarousel(direction);
-
-            const nextColIndex = column.index + 1 > 3 ? 1 : column.index + 1;
-            const nextColumn = board?.find(col => col.index == nextColIndex);
+            
+            const nextIndex = column.index + (-1 * direction);
+            const nextColIndex = nextIndex > boardColumns?.length ? 1 : nextIndex < 1 ? boardColumns?.length : nextIndex;
+            const nextColumn = boardColumns?.find(col => col.index == nextColIndex);
             const nextListID = nextColumn?.id;
 
-            updateItemFieldInDatabase(itm?.id, nextListID, `listID`);
+            let itemsForNextColumn = getItemsForColumn(itemsFromDatabase, nextListID);
+            let newIndex = itemsForNextColumn?.length + 1;
+            let highestColumnIndex = await findHighestNumberInArrayByKey(itemsForNextColumn, `index`);
+            if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
 
-            // const type = Views.Item;
-            // const newKey = items?.length + 1;
-            // const itemsForNextColumn = getItemsForColumn(items, nextListID);
-            // const newIndex = itemsForNextColumn.length + 1;
-
-            // const { id, uuid, date } = await genID(type, newIndex);
-
-            // const clonedItem = await new ItemType({
-            //     ...itm,
-            //     id,
-            //     uuid,
-            //     type,
-            //     key: newKey,
-            //     created: date,
-            //     updated: date,
-            //     index: newIndex,
-            //     listID: nextListID,
-            // } as ItemType);
-
-            // await addItemToDatabase(clonedItem);
+            updateItemFieldsInDatabase(itm?.id, { listID: nextListID, index: newIndex });
+            scrollToEnd();
         };
         
         const renderRightActions = () => (
             <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8 }]}>
-                <FontAwesome name={`trash`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
+                <FontAwesome name={`chevron-left`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
             </View>
         );
         
         const renderLeftActions = () => (
             <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8 }]}>
-                <FontAwesome name={`arrow-right`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
+                <FontAwesome name={`chevron-right`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
             </View>
         );
 
         return (
             <Animated.View layout={Layout.springify()}>
                 <Swipeable
-                    friction={1}
+                    friction={2}
                     ref={swipeableRef}
                     overshootLeft={false}
                     overshootRight={false}
                     renderLeftActions={renderLeftActions}
                     renderRightActions={renderRightActions}
-                    onSwipeableLeftOpen={() => handleLeftSwipe(item)}
-                    onSwipeableRightOpen={() => handleRightSwipe(item?.id)}
+                    onSwipeableRightOpen={() => handleSwipe(item, Directions.Left)}
+                    onSwipeableLeftOpen={() => handleSwipe(item, Directions.Right)}
                     onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 >
                     <Item
@@ -180,6 +204,7 @@ export default function Column({
                         fadeAnim={fadeAnim}
                         openBottomSheet={openBottomSheet}
                         closeBottomSheet={closeBottomSheet}
+                        isLast={getIndex() == columnItems.length - 1}
                         keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
                     />
                 </Swipeable>
@@ -283,6 +308,7 @@ export default function Column({
                                 {(!loading || columnItems?.length > 0) ? (
                                     // <PanGestureHandler enabled={!isDragging} activeOffsetX={[-10, 10]} activeOffsetY={[-10, 10]} onGestureEvent={!isDragging ? handleGesture : null}>
                                         <DraggableFlatList
+                                            ref={listRef}
                                             bounces={true}
                                             data={columnItems}
                                             onDragBegin={onDragBegin}
@@ -292,8 +318,11 @@ export default function Column({
                                             keyExtractor={(item) => item.id.toString()}
                                             onScrollBeginDrag={() => setDragging(false)}
                                             onDragEnd={async (onDragEndData) => await onDragEnd(onDragEndData)}
-                                            style={{ height: `auto`, maxHeight: height - paginationHeightMargin}}
                                             onPlaceholderIndexChange={async (onPlaceHolderIndexChangeData) => await onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
+                                            style={{ 
+                                                height: `auto`, 
+                                                maxHeight: addingItem ? ((height - paginationHeightMargin) - 155) : height - paginationHeightMargin, 
+                                            }}
                                             contentContainerStyle={{
                                                 width: `100%`,
                                                 height: `auto`,
@@ -311,14 +340,40 @@ export default function Column({
                                         </Text>
                                     </View>
                                 )}
-                                <View id={`${column.id}-footer`} style={{ backgroundColor: colors.transparent, paddingTop: 5, paddingVertical: 10, width: `100%`, alignItems: `center`, justifyContent: `space-between`, display: `flex`, gap: 5 }}>
-                                    <TouchableOpacity  onPress={() => openBottomSheet(itemForm, colors.navy)} style={{ ...titleRowStyles.addItemButton, ...globalStyles.flexRow, opacity: selected == null ? 1 : 0, justifyContent: `space-around` }}>
-                                        <FontAwesome name={`bars`} color={colors.lightBlue} size={20} />
-                                        <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
-                                            + Add Item
-                                        </Text>
-                                        <FontAwesome name={`bars`} color={colors.lightBlue} size={20} />
-                                    </TouchableOpacity>
+                                <View id={`${column.id}-footer`} style={{ backgroundColor: colors.transparent, paddingTop: 5, paddingVertical: 10, width: `100%`, alignItems: `center`, justifyContent: `center`, display: `flex`, gap: 5 }}>
+                                    {/* {!addingItem ? (
+                                        <TouchableOpacity onPress={() => onAddItem()} style={{ ...titleRowStyles.addItemButton, ...globalStyles.flexRow, backgroundColor: colors.navy, opacity: selected == null ? 1 : 0, justifyContent: `space-around` }}>
+                                            <FontAwesome name={`bars`} color={colors.lightBlue} size={20} />
+                                            <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
+                                                + Add Item
+                                            </Text>
+                                            <FontAwesome name={`bars`} color={colors.lightBlue} size={20} />
+                                        </TouchableOpacity>
+                                    ) : ( */}
+                                        <View style={[globalStyles.singleLineInput, titleRowStyles.addItemButton, { marginTop: 0, justifyContent: `center`, marginHorizontal: `auto` }]}>
+                                            <CustomTextInput
+                                                width={`100%`}
+                                                value={itemName}
+                                                showLabel={false}
+                                                placeholder={`Name`}
+                                                endIconName={`save`}
+                                                onFocus={() => onFocus()}
+                                                onChangeText={setItemName}
+                                                onCancel={() => onCancel()}
+                                                maxLength={maxItemNameLength}
+                                                endIconPress={() => addItem()}
+                                                onBlur={() => setAddingItem(false)}
+                                                doneText={itemName == `` ? `Done` : `Add`}
+                                                onDone={itemName == `` ? null : () => addItem()}
+                                                doneColor={itemName == `` ? colors.disabledFont : colors.white}
+                                                cancelColor={itemName == `` ? colors.disabledFont : colors.red}
+                                                endIconColor={itemName == `` ? colors.disabledFont : colors.white}
+                                                style={{ minHeight: 35, ...globalStyles.flexRow, marginBottom: 0, }}
+                                                endIconStyle={{ minHeight: 35, maxHeight: 35, backgroundColor: colors.navy }}
+                                                extraStyle={{ color: colors.white, width: `83%`, backgroundColor: colors.navy }}
+                                            />
+                                        </View>
+                                    {/* )} */}
                                 </View>
                             </View>
                         </View>
@@ -366,7 +421,6 @@ export const titleRowStyles = StyleSheet.create({
     addItemButton: {
         padding: 1, 
         width: `92%`, 
-        backgroundColor: colors.navy, 
         borderRadius: borderRadius - 3,
     },
     itemText: {
@@ -375,12 +429,12 @@ export const titleRowStyles = StyleSheet.create({
     leftAction: {
         alignItems: `flex-end`,
         justifyContent: `center`,
-        backgroundColor: colors.appleBlue,
+        backgroundColor: colors.navy,
     },
     rightAction: {
         alignItems: `flex-end`,
         justifyContent: `center`,
-        backgroundColor: colors.red,
+        backgroundColor: colors.navy,
     },
     actionText: {
         padding: 20,

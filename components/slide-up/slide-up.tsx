@@ -9,12 +9,12 @@ import { SharedContext } from '@/shared/shared';
 import React, { useContext, useRef, useState } from 'react';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
-export default function SlideUp({ backgroundColor = colors.mainBG }: any) {
+export default function SlideUp({ maxHeight = `90%`, backgroundColor = colors.mainBG }: any) {
     let { indx, selected, onSheetChange, closeBottomSheet, blurBGContainerOpacity } = useContext<any>(SharedContext);
 
     const [blur,] = useState<any>(0);
-    const [snapPoints] = useState([`1%`, `90%`]);
     const bottomSheetRef = useRef<BottomSheet>(null);
+    const [snapPoints, setSnapPoints] = useState([`1%`, maxHeight]);
 
     return (
         <>

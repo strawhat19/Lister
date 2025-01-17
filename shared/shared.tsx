@@ -62,7 +62,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     enterFadeBlur();
     setIndx(1);
     if (item) {
-      // if (item?.type != Views.ItemForm) log(item?.type, item);
+      log(`Opened Details for ${item?.type} that says "${item?.name}"`);
       if (item.name) setActiveTopName(item.name);
       if (backgroundColor) {
         item = {
@@ -100,25 +100,6 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   }
 
   useEffect(() => {    
-    //   log(`initialized`);
-    //   const usersCollection = collection(db, usersDatabaseCollection);
-    //   const unsubscribeFromUserDatabase = onSnapshot(usersCollection, snapshot => {
-    //       setUsersLoading(true);
-    //       const usersFromDB: any[] = [];
-    //       snapshot.forEach((doc) => usersFromDB.push({ ...doc.data() } as any));
-    //       log(`Users Update from Firebase`, usersFromDB);
-    //       setUsers(usersFromDB);
-    //       setUsersLoading(false);
-    //     }, error => {
-    //       log(`Error getting Users from Firebase`, error);
-    //       setUsersLoading(false);
-    //     }
-    //   )
-
-    //   return () => {
-    //     unsubscribeFromUserDatabase();
-    //   }
-
     const itemsCollection = collection(db, itemsDatabaseCollection);
     const unsubscribeFromItemsDatabase = onSnapshot(itemsCollection, snapshot => {
         setItemsLoading(true);
@@ -126,10 +107,10 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         snapshot.forEach((doc) => itemsFromDB.push({ ...doc.data() } as any));
         setItems(itemsFromDB);
         setItemsLoading(false);
-        // log(`Items from Firebase`, itemsFromDB);
+        log(`${itemsFromDB.length} Item(s) from Database`);
       }, error => {
-        log(`Error getting Items from Firebase`, error);
         setItemsLoading(false);
+        log(`Error on Get Item(s) from Database`, error);
       }
     )
     
@@ -140,9 +121,10 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         snapshot.forEach((doc) => tasksFromDB.push({ ...doc.data() } as any));
         setTasks(tasksFromDB);
         setTasksLoading(false);
+        log(`${tasksFromDB.length} Task(s) from Database`);
       }, error => {
-        log(`Error getting Tasks from Firebase`, error);
         setTasksLoading(false);
+        log(`Error on Get Task(s) from Database`, error);
       }
     )
 
@@ -188,12 +170,12 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
       <GestureHandlerRootView>
         <View style={{ flex: 1, width: `100%` }}>
           {children}
-          <SlideUp 
+          {/* <SlideUp 
             indx={indx} 
             onSheetChange={onSheetChange} 
             closeBottomSheet={closeBottomSheet} 
             blurBGContainerOpacity={blurBGContainerOpacity}
-          />
+          /> */}
         </View>
       </GestureHandlerRootView>
     </SharedContext.Provider>

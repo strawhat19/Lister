@@ -34,9 +34,9 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
         <>
             {(!editing && selected?.type == Views.Item) ? (
                 <View style={{ gap: 0, display: `flex`, flexDirection: `row`, alignItems: `center`, justifyContent: `space-between`, backgroundColor: colors.transparent, width: `100%`, height: 30, marginTop: -15, marginBottom: 10, borderRadius: 8, overflow: `hidden` }}>
-                    <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Details)} style={[boardStyles.rowItem, { height: `100%`, flexBasis: `32.5%`, backgroundColor: view == ItemViews.Details ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
+                    <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Summary)} style={[boardStyles.rowItem, { height: `100%`, flexBasis: `32.5%`, backgroundColor: view == ItemViews.Summary ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
                         <Text>
-                            {ItemViews.Details}
+                            {ItemViews.Summary}
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Tasks)} style={[boardStyles.rowItem, { height: `100%`, flexBasis: `32.5%`, backgroundColor: view == ItemViews.Tasks ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
@@ -107,7 +107,7 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
             </Animated.View>
 
             {selected?.type == Views.Item ? <>
-                {view == ItemViews.Details && (
+                {view == ItemViews.Summary && (
                     <ScrollView 
                         nestedScrollEnabled={true}
                         id={`itemDetails_${selected.id}`}

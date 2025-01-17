@@ -152,20 +152,20 @@ function MovableItem({
 
   const renderRightActions = () => (
     <View style={[titleRowStyles.rightAction, { borderRadius: 0, marginLeft: 0, backgroundColor: colors.red }]}>
-        <FontAwesome name={`trash`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
+      <FontAwesome name={`trash`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
     </View>
 );
 
   const renderLeftActions = () => (
     <View style={[titleRowStyles.leftAction, { borderRadius: 0, marginRight: 0, backgroundColor: colors.red }]}>
-        <FontAwesome name={`trash`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
+      <FontAwesome name={`trash`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
     </View>
   );
 
     const deleteItem = async (itemID: string = selected?.id) => {
-        await setItems(prevItems => prevItems.filter(itm => itm.id != itemID));
-        await closeBottomSheet();
-        await deleteItemFromDatabase(itemID);
+      await setItems(prevItems => prevItems.filter(itm => itm.id != itemID));
+      await closeBottomSheet();
+      await deleteItemFromDatabase(itemID);
     }
 
   return (
@@ -174,15 +174,15 @@ function MovableItem({
         <PanGestureHandler onGestureEvent={gestureHandler}>
           <Animated.View style={{ maxWidth: `auto` }}>
             <Swipeable
-                friction={2}
-                ref={swipeableRef}
-                overshootLeft={false}
-                overshootRight={false}
-                renderLeftActions={renderLeftActions}
-                renderRightActions={renderRightActions}
-                onSwipeableLeftOpen={() => deleteItem(itm?.id)}
-                onSwipeableRightOpen={() => deleteItem(itm?.id)}
-                onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+              friction={2}
+              ref={swipeableRef}
+              overshootLeft={false}
+              overshootRight={false}
+              renderLeftActions={renderLeftActions}
+              renderRightActions={renderRightActions}
+              onSwipeableLeftOpen={() => deleteItem(itm?.id)}
+              onSwipeableRightOpen={() => deleteItem(itm?.id)}
+              onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
             >
                 {/* <Item
                     item={itm}

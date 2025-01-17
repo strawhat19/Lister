@@ -1,23 +1,23 @@
 import { capWords } from '../variables';
 
 export enum Providers { 
-    Google = `Google` ,
-    Firebase = `Firebase`, 
+  Google = `Google` ,
+  Firebase = `Firebase`, 
 }
 
 export enum UserTypes { 
-    Real = `Real` ,
-    Simulated = `Simulated`, 
+  Real = `Real` ,
+  Simulated = `Simulated`, 
 }
 
 export enum Roles {
-    Guest = `Guest`,
-    Subscriber = `Subscriber`,
-    Editor = `Editor`,
-    Moderator = `Moderator`,
-    Administrator = `Administrator`,
-    Developer = `Developer`,
-    Owner = `Owner`,
+  Guest = `Guest`,
+  Subscriber = `Subscriber`,
+  Editor = `Editor`,
+  Moderator = `Moderator`,
+  Administrator = `Administrator`,
+  Developer = `Developer`,
+  Owner = `Owner`,
 }
 
 export class Role {
@@ -45,6 +45,7 @@ export class User {
   index?: number = 1;
   uuid?: string = ``;
   email?: string = ``;
+  userID?: string = ``;
   name: string = Roles.Subscriber;
 
   created?: string | Date = ``;

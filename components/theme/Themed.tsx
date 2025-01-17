@@ -1,11 +1,6 @@
-/**
- * Learn more about Light and Dark modes:
- * https://docs.expo.io/guides/color-schemes/
-*/
-
-import { Platform, StyleSheet } from 'react-native';
 import { useColorScheme } from './useColorScheme';
 import { ThemeProps } from '@/shared/types/types';
+import { Platform, StyleSheet } from 'react-native';
 import { Text as DefaultText, View as DefaultView } from 'react-native';
 
 // Sizing & Spacing
@@ -25,8 +20,13 @@ export const lightColors = {
   appleGreenMint: `rgba(170, 240, 209, 1)`,
 }
 
+export const bestCardColors = {
+  appleGreenMint: lightColors.appleGreenMint,
+}
+
 export const cardColors = {
   ...lightColors,
+  ...bestCardColors,
   red: `rgba(255, 0, 0, 1)`,
   blue: `rgba(0, 0, 255, 1)`,
   navy: `rgba(4, 57, 123, 1)`,
@@ -78,17 +78,17 @@ export const globalStyles = StyleSheet.create({
     alignItems: `center`,
   },
   singleLineInput: { 
+    gap: 5, 
     width: `100%`,
     maxHeight: 35,
     marginTop: 12,
+    display: `flex`, 
     overflow: `hidden`,
+    flexDirection: `row`, 
+    alignItems: `center`,
     position: `relative`,
     borderRadius: taskBorderRadius,
     backgroundColor: colors.transparent,
-    display: `flex`, 
-    flexDirection: `row`, 
-    alignItems: `center`,
-    gap: 5, 
 },
 })
 

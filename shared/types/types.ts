@@ -47,7 +47,7 @@ export enum BoardTypes {
 export enum ItemViews {
     Tasks = `Tasks`,
     Image = `Image`,
-    Details = `Details`,
+    Summary = `Summary`,
     Comments = `Comments`,
 }
 
@@ -62,7 +62,6 @@ export enum Views {
 export class ItemViewType {
     selected: ItemType | null;
     backgroundColor?: keyof typeof colors | string = `appleBlue`;
-
     constructor(data: Partial<ItemViewType>) {
         Object.assign(this, data);
     }
@@ -108,6 +107,7 @@ export class BoardType {
     // Relational
     items?: ItemType[] = [];
     columns?: ColumnType[] = [];
+    userID!: string | number | any;
     listIDs?: string[] | number[] = [];
     itemIDs?: string[] | number[] = [];
 
@@ -136,7 +136,7 @@ export class ColumnType {
     // Relational
     items: ItemType[] = [];
     listID?: string | number;
-    boardID?: string | number;
+    boardID!: string | number;
     itemIDs?: string[] | number[] = [];
 
     // Data
@@ -197,7 +197,7 @@ export class TaskType {
     type?: string | Views | Types = Views.Task;
 
     // Relational
-    itemID?: number | string;
+    itemID!: number | string;
     listID?: number | string;
     boardID?: number | string;
 

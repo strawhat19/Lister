@@ -1,8 +1,10 @@
 import * as Haptics from 'expo-haptics';
-import { Vibration } from 'react-native';
+import { Platform } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { getOrder, getPosition, MARGIN } from '@/shared/variables';
-import Animated, { useAnimatedGestureHandler, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { getOrder, getPosition, log, MARGIN } from '@/shared/variables';
+import Animated, { runOnJS, useAnimatedGestureHandler, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+
+let bumps = 0;
 
 export default function DraggableItem({ children, positions, index }: any) {
   const position = getPosition(positions?.value[index]);
@@ -25,8 +27,15 @@ export default function DraggableItem({ children, positions, index }: any) {
       ctx.startX = translateX.value;
       ctx.startY = translateY.value;
       isGestureActive.value = true;
+      if (Platform.OS === `ios`) {
+        runOnJS(Haptics.impactAsync)(
+          Haptics.ImpactFeedbackStyle.Heavy
+        );
+      }
     },
     onActive: (evt, ctx: any) => {
+      bumps = bumps + 1;
+
       translateX.value = ctx.startX + evt.translationX;
       translateY.value = ctx.startY + evt.translationY;
 
@@ -37,14 +46,14 @@ export default function DraggableItem({ children, positions, index }: any) {
           key => positions?.value[key] === newOrder,
         )
         if (idToSwap) {
-          let simulateVibrate = false;
           const newPostions = JSON.parse(JSON.stringify(positions?.value));
           newPostions[index] = newOrder;
           newPostions[idToSwap] = oldOrder;
           positions.value = newPostions;
-          if (simulateVibrate) {
-            Vibration.vibrate(1);
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+          if (Platform.OS === `ios`) {
+            runOnJS(Haptics.impactAsync)(
+              Haptics.ImpactFeedbackStyle.Heavy
+            );
           }
         }
       }
@@ -53,9 +62,19 @@ export default function DraggableItem({ children, positions, index }: any) {
       const destination = getPosition(positions?.value[index]);
       translateX.value = withTiming(destination.x);
       translateY.value = withTiming(destination.y);
+      if (Platform.OS === `ios`) {
+        runOnJS(Haptics.impactAsync)(
+          Haptics.ImpactFeedbackStyle.Heavy
+        );
+      }
     },
     onFinish: () => {
       isGestureActive.value = false;
+      if (Platform.OS === `ios`) {
+        runOnJS(Haptics.impactAsync)(
+          Haptics.ImpactFeedbackStyle.Heavy
+        );
+      }
     },
   });
 

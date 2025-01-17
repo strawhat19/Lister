@@ -1,8 +1,8 @@
 import Column from '../column/column';
 import { SharedContext } from '@/shared/shared';
-import React, { useContext, useMemo, useRef } from 'react';
 import { colors } from '@/components/theme/Themed';
 import SliderPagination from './pagination/pagination';
+import React, { useContext, useMemo, useRef } from 'react';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 

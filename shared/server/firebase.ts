@@ -2,8 +2,8 @@ import { User } from '../models/User';
 import { Vibration } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { BoardTypes, ItemType, TaskType, Views } from '../types/types';
-import { colors, lightColors, randomCardColor } from '@/components/theme/Themed';
-import { findHighestNumberInArrayByKey, genID, isValid, log } from '../variables';
+import { colors, isLightColor, lightColors, randomCardColor } from '@/components/theme/Themed';
+import { defaultBoardID, findHighestNumberInArrayByKey, genID, isValid, log } from '../variables';
 import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from 'firebase/firestore';
 
 export enum Environments {
@@ -185,6 +185,10 @@ export const updateTaskFieldsInDatabase = async (taskID: string, updates: { [key
   }
 };
 
+export const prepareTaskForDatabase = async (tsk: TaskType, tasks: TaskType[], itemID: string) => {
+
+}
+
 export const prepareItemForDatabase = async (itm: ItemType, items: ItemType[], listID: string) => {
   let itemsForColumn = getItemsForColumn(items, listID);
 
@@ -213,7 +217,6 @@ export const prepareItemForDatabase = async (itm: ItemType, items: ItemType[], l
     created: date,
     updated: date,
     index: newIndex,
-    boardID: `3_Column_${BoardTypes.Kanban}`,
   } as ItemType);
 
   return preparedItem;
@@ -236,14 +239,15 @@ export const createItem = async (columnItems, listID: string, name, items, close
       }
     }
 
-    const isLightColor = Object.values(lightColors).includes(newColor);
+    const isLightBGColor = isLightColor(newColor);
 
     const itemToAdd = await new ItemType({
       name,
       listID,
       tasks: [],
+      boardID: defaultBoardID,
       backgroundColor: newColor,
-      ...(isLightColor && {
+      ...(isLightBGColor && {
         fontColor: colors.dark,
       }),
     } as ItemType);

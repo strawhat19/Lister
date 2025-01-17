@@ -1,6 +1,6 @@
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import { IDData, Types, Views } from '@/shared/types/types';
+import { BoardTypes, IDData, Types, Views } from '@/shared/types/types';
 import { Dimensions, Alert, Platform, Vibration } from 'react-native';
 
 export const COL = 5;
@@ -10,6 +10,7 @@ export const maxTaskNameLength = 28;
 export const maxItemSummaryLength = 125;
 export const delayBeforeScrollingDown = 175;
 export const maxItemDescriptionLength = 250;
+export const defaultBoardID = `3_Column_${BoardTypes.Kanban}`;
 export const SIZE = Dimensions.get(`window`).width / COL - MARGIN;
 
 export const web = () => Platform.OS == `web`;

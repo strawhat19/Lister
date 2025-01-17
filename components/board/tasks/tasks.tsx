@@ -2,17 +2,16 @@ import * as Haptics from 'expo-haptics';
 import { boardStyles } from '../styles';
 import { SharedContext } from '@/shared/shared';
 import { titleRowStyles } from '../column/column';
+import { TaskType, Views } from '@/shared/types/types';
 import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { ItemType, TaskType, Views } from '@/shared/types/types';
-import CustomTextInput from '@/components/custom-input/custom-input';
+import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { delayBeforeScrollingDown, genID, maxTaskNameLength } from '@/shared/variables';
 import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
+import { defaultBoardID, delayBeforeScrollingDown, genID, maxTaskNameLength } from '@/shared/variables';
 import { addTaskToDatabase, deleteTaskFromDatabase, getTasksForItem, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
-import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 
 export default function Tasks({ selected }: any) {
     const listRef = useRef(null);
@@ -91,6 +90,8 @@ export default function Tasks({ selected }: any) {
                 name: taskName, 
                 index: newIndex, 
                 itemID: selected?.id,
+                boardID: defaultBoardID,
+                listID: selected?.listID,
             })
 
             await addTaskToDatabase(newTask);
@@ -107,19 +108,19 @@ export default function Tasks({ selected }: any) {
     }
 
     const renderDraggableItem = useCallback(
-        ({ item, drag, isActive, getIndex }: RenderItemParams<ItemType>) => {
+        ({ item: taskItem, drag, isActive, getIndex }: RenderItemParams<TaskType>) => {
 
-        let index = item?.index;
+        let index = taskItem?.index;
         const swipeableRef = useRef<Swipeable>(null);
         let isFirst: boolean = index == 1 ? true : false;
         let isLast: boolean = index == itemTasks?.length ? true : false;
 
-        const handleRightSwipe = (taskID: string = item?.id) => {
+        const handleRightSwipe = (taskID: string = taskItem?.id) => {
             swipeableRef.current?.close();
             deleteTaskWithConfirmation(taskID);
         };
 
-        const handleLeftSwipe = (task = item) => {
+        const handleLeftSwipe = (task = taskItem) => {
             swipeableRef.current?.close();
             Vibration.vibrate(1);
             updateTaskFieldsInDatabase(task?.id, { complete: !task.complete } as Partial<TaskType>);
@@ -146,14 +147,14 @@ export default function Tasks({ selected }: any) {
                     overshootRight={false}
                     renderLeftActions={renderLeftActions}
                     renderRightActions={renderRightActions}
-                    onSwipeableLeftOpen={() => handleLeftSwipe(item)}
-                    onSwipeableRightOpen={() => handleRightSwipe(item?.id)}
+                    onSwipeableLeftOpen={() => handleLeftSwipe(taskItem)}
+                    onSwipeableRightOpen={() => handleRightSwipe(taskItem?.id)}
                     onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 >    
                     <TouchableOpacity
                         onLongPress={drag}
                         disabled={isActive}
-                        onPress={() => onPressTask(item)}
+                        onPress={() => onPressTask(taskItem)}
                         style={[boardStyles.rowItem, { 
                             width: `100%`, 
                             minHeight: 35, 
@@ -161,20 +162,20 @@ export default function Tasks({ selected }: any) {
                             borderTopRightRadius: isFirst ? taskBorderRadius : 0, 
                             borderBottomLeftRadius: isLast ? taskBorderRadius : 0, 
                             borderBottomRightRadius: isLast ? taskBorderRadius : 0, 
-                            backgroundColor: item?.complete ? colors.white : colors.black,
+                            backgroundColor: taskItem?.complete ? colors.white : colors.black,
                         }]}
                     >
                         <View style={{width: `100%`, backgroundColor: colors.transparent, ...globalStyles.flexRow, gap: 15, paddingLeft: 15}}>
                             <FontAwesome 
                                 size={18} 
-                                name={item?.complete ? `check` : `circle-o`} 
-                                color={item?.complete ? colors.appleGreen : colors.white} 
+                                name={taskItem?.complete ? `check` : `circle-o`} 
+                                color={taskItem?.complete ? colors.appleGreen : colors.white} 
                             />
-                            <Text style={{ textAlign: `center`, fontWeight: `bold`, fontStyle: `italic`, color: item?.complete ? colors.white : colors.black, backgroundColor: item?.complete ? colors.black : colors.white, width: 20, height: 20, borderRadius: `100%`, paddingTop: 1.5 }}>
+                            <Text style={{ textAlign: `center`, fontWeight: `bold`, fontStyle: `italic`, color: taskItem?.complete ? colors.white : colors.black, backgroundColor: taskItem?.complete ? colors.black : colors.white, width: 20, height: 20, borderRadius: `100%`, paddingTop: 1.5 }}>
                                 {getIndex() + 1}
                             </Text>
-                            <Text style={{ textAlign: `left`, fontWeight: `bold`, fontStyle: `italic`, color: item?.complete ? colors.black : colors.white, textDecorationLine: item?.complete ? `line-through` : `none` }}>
-                                {item?.name}
+                            <Text style={{ textAlign: `left`, fontWeight: `bold`, fontStyle: `italic`, color: taskItem?.complete ? colors.black : colors.white, textDecorationLine: taskItem?.complete ? `line-through` : `none` }}>
+                                {taskItem?.name}
                             </Text>
                         </View>
                     </TouchableOpacity>

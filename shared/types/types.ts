@@ -116,9 +116,10 @@ export class BoardType {
     creator?: string = ``;
     complete?: boolean = false;
     boardType?: BoardTypes = BoardTypes.Kanban;
+    color?: typeof colors | string = colors.mainBG;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
-    backgroundColor?: keyof typeof colors | string = colors.black;
+    backgroundColor?: keyof typeof colors | string = colors.mainBG;
 
     constructor(data: Partial<BoardType>) {
         Object.assign(this, data);
@@ -144,6 +145,7 @@ export class ColumnType {
     category: string;
     creator?: string = ``;
     complete?: boolean = false;
+    color?: typeof colors | string = colors.listsBG;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
     backgroundColor?: keyof typeof colors | string = colors.listsBG;
@@ -176,9 +178,10 @@ export class ItemType {
     description: string = ``;
     complete?: boolean = false;
     orientation?: Orientations = Orientations.Portrait;
+    color?: typeof colors | string = colors.activeColor;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
-    backgroundColor?: keyof typeof colors | string = colors.appleBlue;
+    backgroundColor?: keyof typeof colors | string = colors.activeColor;
     
     constructor(data: Partial<ItemType>) {
         Object.assign(this, data);
@@ -205,9 +208,10 @@ export class TaskType {
     name: string = ``;
     creator?: string = ``;
     complete?: boolean = false;
+    color?: typeof colors | string = colors.mainBG;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
-    backgroundColor?: keyof typeof colors | string = colors.black;
+    backgroundColor?: keyof typeof colors | string = colors.mainBG;
 
     constructor(data: Partial<TaskType>) {
         Object.assign(this, data);

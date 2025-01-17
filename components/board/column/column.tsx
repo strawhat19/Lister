@@ -57,6 +57,11 @@ export default function Column({
         Vibration.vibrate(1);
         closeBottomSheet();
     }
+
+    const onDoneDismiss = () => {
+        Vibration.vibrate(1);
+        return null;
+    }
     
     const onDragBegin = () => {
         setDragging(true);
@@ -316,7 +321,7 @@ export default function Column({
                                                 cancelColor={itemName == `` ? colors.white : colors.error}
                                                 doneColor={itemName == `` ? colors.white : colors.activeColor}
                                                 endIconColor={itemName == `` ? colors.disabledFont : colors.white}
-                                                onDone={itemName == `` ? () => onCancel() : () => addItem()}
+                                                onDone={itemName == `` ? () => onDoneDismiss() : () => addItem()}
                                                 extraStyle={{ color: colors.white, width: `83%`, backgroundColor: colors.black }}
                                                 style={{ 
                                                     minHeight: itemHeight, 

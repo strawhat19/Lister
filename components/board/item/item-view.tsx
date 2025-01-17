@@ -127,8 +127,8 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             style={{ 
                                 ...itemFontStyles, 
                                 ...styles.itemInput,
-                                fontSize: 16, 
                                 minHeight: maxItemDescriptionHeight, 
+                                fontSize: 16, 
                             }}
                         />
                     </ScrollView>

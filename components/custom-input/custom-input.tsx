@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 0,
         fontWeight: `bold`,
         flexDirection: `row`,
-        backgroundColor: colors.mainBG,
+        backgroundColor: colors.listsBG,
         justifyContent: `space-between`,
     },
 })

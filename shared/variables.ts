@@ -16,8 +16,8 @@ export const paginationHeightMargin = 200;
 export const cardImageWidth = web() ? `25%` : `33%`;
 
 export const itemHeight = 35;
-export const paginationSize = 5;
 export const useDatabase = true;
+export const paginationSize = 5;
 export const tabBarIconSize = 18;
 export const maxItemNameLength = 50;
 export const maxTaskNameLength = 28;
@@ -27,14 +27,6 @@ export const maxItemDescriptionLength = 250;
 export const defaultBoardID = `3_Column_${BoardTypes.Kanban}`;
 export const SIZE = Dimensions.get(`window`).width / COL - MARGIN;
 
-export const log = (string: string, data?: any, alert = false) => {
-  if (alert == true && Platform.OS != `web`) Alert.alert(string);
-  if (data) devEnv && console.log(string, ((typeof data == `object` && Object.keys(data).length > 0) || Array.isArray(data) ? (
-    JSON.stringify(data, null, 2)
-  ) : data));
-  else devEnv && console.log(string);
-}
-
 export const showDevFeatures = true;
 export const localDevelopment = process.env.NODE_ENV == `development`;
 export const urlHostIncludes = (string) => window.location.host.includes(string);
@@ -43,6 +35,27 @@ export const devEnv = (web() ? (urlHostIncludes(`local`) || urlHostIncludes(`:`)
 export const capWords = (str: string) => str.replace(/\b\w/g, (match) => match.toUpperCase());
 export const getNumberFromString = (string: string) => parseInt((string.match(/\d+/) as any)[0]);
 export const capitalizeAllWords = (string: string) => string.replace(/(?:^|\s)\w/g, (match) => match.toUpperCase());
+
+export const log = (string: string, data?: any, alert = false) => {
+  if (alert == true && Platform.OS != `web`) Alert.alert(string);
+  if (data) devEnv && console.log(string, ((typeof data == `object` && Object.keys(data).length > 0) || Array.isArray(data) ? (
+    JSON.stringify(data, null, 2)
+  ) : data));
+  else devEnv && console.log(string);
+}
+
+export const logLine = (str: string, num: number) => log(str.repeat(num));
+export const logNewLine = (str: string, num: number) => {
+  log(`\n`);
+  log(str.repeat(num));
+  log(`\n`);
+};
+
+export const logMsgLine = (logMessage: string) => {
+  const logMessageLength = logMessage?.length;
+  logNewLine(`.`, logMessageLength);
+  log(logMessage);
+}
 
 export const animationOptions = {
   useNativeDriver: true,

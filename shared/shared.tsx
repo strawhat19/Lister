@@ -1,14 +1,14 @@
 import { User } from './models/User';
 import 'react-native-gesture-handler';
 import { defaultColumns } from './database';
-import { View } from '@/components/theme/Themed';
-import { animationOptions, log, useDatabase } from './variables';
+import { colors, View } from '@/components/theme/Themed';
 import SlideUp from '@/components/slide-up/slide-up';
 import { useSharedValue } from 'react-native-reanimated';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Animated, useWindowDimensions, Vibration } from 'react-native';
+import { animationOptions, log, logMsgLine, useDatabase } from './variables';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { itemsDatabaseCollection, db, tasksDatabaseCollection } from './server/firebase';
 import { BoardType, ColumnType, ItemType, ItemViews, TaskType } from '@/shared/types/types';
@@ -108,7 +108,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
           snapshot.forEach((doc) => itemsFromDB.push({ ...doc.data() } as any));
           setItems(itemsFromDB);
           setItemsLoading(false);
-          log(`${itemsFromDB.length} Item(s) from Database`);
+          logMsgLine(`${itemsFromDB.length} Item(s) from Database`);
         }, error => {
           setItemsLoading(false);
           log(`Error on Get Item(s) from Database`, error);
@@ -122,7 +122,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
           snapshot.forEach((doc) => tasksFromDB.push({ ...doc.data() } as any));
           setTasks(tasksFromDB);
           setTasksLoading(false);
-          log(`${tasksFromDB.length} Task(s) from Database`);
+          logMsgLine(`${tasksFromDB.length} Task(s) from Database`);
         }, error => {
           setTasksLoading(false);
           log(`Error on Get Task(s) from Database`, error);

@@ -257,30 +257,33 @@ export const prepareItemForDatabase = async (itm: ItemType, items: ItemType[], l
 export const createItem = async (columnItems, listID: string, name, items, closeBottomSheet) => {
   if (listID && isValid(listID)) {
     let lastColor = ``;
-    let newColor = await randomCardColor();
+    let backgroundColor = await randomCardColor();
 
     if (columnItems && columnItems?.length > 0) {
       let lastItemColor = columnItems[columnItems.length - 1]?.backgroundColor;
       if (lastItemColor) {
         lastColor = lastItemColor;
         if (lastColor) {
-          if (lastColor == newColor) {
-            newColor = await randomCardColor(undefined, lastColor);
+          if (lastColor == backgroundColor) {
+            backgroundColor = await randomCardColor(undefined, lastColor);
           }
         }
       }
     }
 
-    const isLightBGColor = isLightColor(newColor);
+    const isLightBGColor = isLightColor(backgroundColor);
+    const colorKey = findColorKey(backgroundColor, colors);
 
     const itemToAdd = await new ItemType({
       name,
       listID,
       tasks: [],
+      summary: ``,
+      description: ``,
+      backgroundColor,
+      color: colorKey,
       boardID: defaultBoardID,
-      backgroundColor: newColor,
-      ...(isLightBGColor && { fontColor: colors.dark, }),
-      summary: `Color: ${findColorKey(newColor, colors)}`,
+      ...(isLightBGColor && { fontColor: colors.darkFont }),
     } as ItemType);
 
     const newItem = await prepareItemForDatabase(itemToAdd, items, listID);

@@ -127,7 +127,7 @@ export const findColorKey = (color: string, colors: Record<string, string | ((al
       return key;
     }
   }
-  return undefined;
+  return color;
 }
 
 const rgbaToHsl = (rgba: string): [number, number, number] => {

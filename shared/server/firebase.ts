@@ -118,19 +118,19 @@ export const deleteTaskFromDatabase = async (taskID: string) => {
   }
 }
 
-export const updateItemIndexInDatabase = async (itemID: string, newIndex: any, key: string = `index`) => {
+export const updateItemFieldInDatabase = async (itemID: string, value: any, key: string = `index`) => {
   try {
     const itemRef = await doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
-    await updateDoc(itemRef, { [key]: newIndex });
+    await updateDoc(itemRef, { [key]: value });
   } catch (error) {
     log(`Error Updating Item ${itemID} ${capWords(key)}`, error);
   }
 }
 
-export const updateTaskIndexInDatabase = async (taskID: string, newIndex: any, key: string = `index`) => {
+export const updateTaskFieldInDatabase = async (taskID: string, value: any, key: string = `index`) => {
   try {
     const taskRef = await doc(db, tasksDatabaseCollection, taskID).withConverter(taskConverter);
-    await updateDoc(taskRef, { [key]: newIndex });
+    await updateDoc(taskRef, { [key]: value });
   } catch (error) {
     log(`Error Updating Task ${taskID} ${capWords(key)}`, error);
   }

@@ -11,7 +11,7 @@ export default function Item({ item, drag, isActive, getIndex }: any | RenderIte
     let { selected, fadeAnim, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
 
     return (
-        <ScaleDecorator>
+        <ScaleDecorator activeScale={1.01}>
             <TouchableOpacity
                 onLongPress={drag}
                 disabled={isActive}

@@ -11,8 +11,8 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { borderRadius, colors, globalStyles, Text, View } from '@/components/theme/Themed';
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { gridSpacing, log, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
-import { getItemsForColumn, deleteItemFromDatabase, updateItemIndexInDatabase } from '@/shared/server/firebase';
+import { genID, gridSpacing, log, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldInDatabase, addItemToDatabase } from '@/shared/server/firebase';
 
 export default function Column({ 
     column, 
@@ -57,13 +57,19 @@ export default function Column({
     
     const onPlaceHolderIndexChange = (onPlaceHolderIndexChangeData: any) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        log(`onPlaceHolderIndexChange`, onPlaceHolderIndexChangeData);
+        // log(`onPlaceHolderIndexChange`, onPlaceHolderIndexChangeData);
     }
 
     useEffect(() => {
         let itemsForColumn = getItemsForColumn(items, column?.id);
         setColumnItems(itemsForColumn);
     }, [items])
+
+    const deleteItem = async (itemID: string = selected?.id) => {
+        await setColumnItems(prevItems => prevItems.filter(itm => itm.id != itemID));
+        await deleteItemFromDatabase(itemID);
+        await closeItem();
+    }
 
     const itemForm = new ItemType({
         ...column,
@@ -91,29 +97,12 @@ export default function Column({
         await LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         await setDragging(false);
         let { data } = await onDragEndData;
+        await setColumnItems(data);
         if (data?.length > 0) {
-            // const updatedItems = data?.map((item, itemIndex) => ({ ...item, index: itemIndex + 1}));
-            // await setColumnItems(updatedItems);
             data.forEach((itm, itmIndex) => {
-                updateItemIndexInDatabase(itm?.id, itmIndex + 1);
+                updateItemFieldInDatabase(itm?.id, itmIndex + 1);
             })
         }
-    }
-
-    const deleteItem = async (itemID: string = selected?.id) => {
-        await deleteItemFromDatabase(itemID);
-        // const updatedBoardData = board.map((list: ColumnType, listIndex) => {
-        //     let updatedIndexList = { ...list, index: listIndex + 1 };
-        //     if (list.id === column?.id) {
-        //         return { 
-        //             ...updatedIndexList, 
-        //             items: list.items.filter(itm => itm?.id != selected?.id)
-        //         }
-        //     }
-        //     return updatedIndexList;
-        // });
-        // setBoard(updatedBoardData);
-        await closeItem();
     }
 
     const renderDraggableItem = useCallback(
@@ -125,12 +114,48 @@ export default function Column({
             swipeableRef.current?.close();
             deleteItemWithConfirmation(itemID);
         };
+     
+        const handleLeftSwipe = async (itm: ItemType, direction = -1) => {
+            swipeableRef.current?.close();
+            swipeCarousel(direction);
+
+            const nextColIndex = column.index + 1 > 3 ? 1 : column.index + 1;
+            const nextColumn = board?.find(col => col.index == nextColIndex);
+            const nextListID = nextColumn?.id;
+
+            updateItemFieldInDatabase(itm?.id, nextListID, `listID`);
+
+            // const type = Views.Item;
+            // const newKey = items?.length + 1;
+            // const itemsForNextColumn = getItemsForColumn(items, nextListID);
+            // const newIndex = itemsForNextColumn.length + 1;
+
+            // const { id, uuid, date } = await genID(type, newIndex);
+
+            // const clonedItem = await new ItemType({
+            //     ...itm,
+            //     id,
+            //     uuid,
+            //     type,
+            //     key: newKey,
+            //     created: date,
+            //     updated: date,
+            //     index: newIndex,
+            //     listID: nextListID,
+            // } as ItemType);
+
+            // await addItemToDatabase(clonedItem);
+        };
         
         const renderRightActions = () => (
             <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8 }]}>
-                <Text style={titleRowStyles.actionText}>
-                    Delete
-                </Text>
+                <FontAwesome name={`trash`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
+            </View>
+        );
+        
+        const renderLeftActions = () => (
+            <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8 }]}>
+                <FontAwesome name={`arrow-right`} color={colors.white} size={22} style={{ paddingHorizontal: 35 }} />
             </View>
         );
 
@@ -141,10 +166,11 @@ export default function Column({
                     ref={swipeableRef}
                     overshootLeft={false}
                     overshootRight={false}
+                    renderLeftActions={renderLeftActions}
                     renderRightActions={renderRightActions}
-                    // renderLeftActions={renderLeftActions}
-                    // onSwipeableLeftOpen={handleLeftSwipe}
+                    onSwipeableLeftOpen={() => handleLeftSwipe(item)}
                     onSwipeableRightOpen={() => handleRightSwipe(item?.id)}
+                    onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 >
                     <Item
                         item={item}
@@ -265,9 +291,9 @@ export default function Column({
                                             renderItem={renderDraggableItem}
                                             keyExtractor={(item) => item.id.toString()}
                                             onScrollBeginDrag={() => setDragging(false)}
-                                            onPlaceholderIndexChange={async (onPlaceHolderIndexChangeData) => await onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
                                             onDragEnd={async (onDragEndData) => await onDragEnd(onDragEndData)}
                                             style={{ height: `auto`, maxHeight: height - paginationHeightMargin}}
+                                            onPlaceholderIndexChange={async (onPlaceHolderIndexChangeData) => await onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
                                             contentContainerStyle={{
                                                 width: `100%`,
                                                 height: `auto`,
@@ -347,7 +373,7 @@ export const titleRowStyles = StyleSheet.create({
         fontSize: 18,
     },
     leftAction: {
-        flex: 1,
+        alignItems: `flex-end`,
         justifyContent: `center`,
         backgroundColor: colors.appleBlue,
     },

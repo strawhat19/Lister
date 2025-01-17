@@ -3,14 +3,14 @@ import { boardStyles } from '../styles';
 import { SharedContext } from '@/shared/shared';
 import { titleRowStyles } from '../column/column';
 import { Swipeable } from 'react-native-gesture-handler';
+import { genID, maxTaskNameLength } from '@/shared/variables';
 import { ItemType, TaskType, Views } from '@/shared/types/types';
-import { genID, log, maxTaskNameLength } from '@/shared/variables';
 import CustomTextInput from '@/components/custom-input/custom-input';
 import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { addTaskToDatabase, deleteTaskFromDatabase, getTasksForItem, updateTaskIndexInDatabase } from '@/shared/server/firebase';
-import { colors, globalStyles, taskBorderRadius, Text, View, borderRadius } from '@/components/theme/Themed';
+import { addTaskToDatabase, deleteTaskFromDatabase, getTasksForItem, updateTaskFieldInDatabase } from '@/shared/server/firebase';
 
 export default function Tasks({ selected }: any) {
     const listRef = useRef(null);
@@ -35,7 +35,7 @@ export default function Tasks({ selected }: any) {
             // const updatedTasks = data?.map((task, taskIndex) => ({ ...task, index: taskIndex + 1}));
             // await setTasks(updatedTasks);
             data.forEach((tsk, tskIndex) => {
-                updateTaskIndexInDatabase(tsk?.id, tskIndex + 1);
+                updateTaskFieldInDatabase(tsk?.id, tskIndex + 1);
             })
         }
     }

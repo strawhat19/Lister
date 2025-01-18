@@ -80,7 +80,7 @@ export const fontColors = {
   lightFont: allColors.white,
 }
 
-export const activeColors = {
+export const themeColors = {
   error: allColors.red,
   info: allColors.appleBlue,
   success: allColors.appleGreen,
@@ -92,33 +92,55 @@ export const activeColors = {
 export const themes = {
   dark: {
     ...fontColors,
-    ...activeColors,
+    ...themeColors,
+    taskBG: allColors.black,
     mainBG: allColors.black,
     listsBG: allColors.dark,
+    inputBG: allColors.black,
+    taskColor: allColors.white,
+    inputColor: allColors.white,
+    taskBGComplete: allColors.white,
+    taskColorComplete: allColors.black,
   },
   light: {
     ...fontColors,
-    ...activeColors,
+    ...themeColors,
+    taskBG: allColors.white,
     mainBG: allColors.white,
+    inputBG: allColors.white,
+    taskColor: allColors.dark,
+    inputColor: allColors.dark,
     listsBG: allColors.steelGray,
+    taskBGComplete: allColors.dark,
+    taskColorComplete: allColors.white,
   },
   steel: {
     ...fontColors,
-    ...activeColors,
+    ...themeColors,
+    taskBG: allColors.black,
+    inputBG: allColors.black,
+    taskColor: allColors.white,
+    inputColor: allColors.white,
     mainBG: allColors.appleGreen,
     listsBG: allColors.steelGray,
+    taskBGComplete: allColors.white,
   },
   gray: {
     ...fontColors,
-    ...activeColors,
+    ...themeColors,
+    taskBG: allColors.black,
+    inputBG: allColors.black,
     listsBG: allColors.white,
+    taskColor: allColors.white,
     mainBG: allColors.coolGray,
+    inputColor: allColors.white,
     activeColor: allColors.black,
     inactiveColor: allColors.white,
+    taskBGComplete: allColors.white,
   },
 }
 
-export const themeToUse = themes.light;
+export const themeToUse = themes.dark;
 
 export const colors = {
   ...allColors,

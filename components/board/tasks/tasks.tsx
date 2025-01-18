@@ -139,7 +139,7 @@ export default function Tasks({ selected }: any) {
                             borderTopRightRadius: isFirst ? taskBorderRadius : 0, 
                             borderBottomLeftRadius: isLast ? taskBorderRadius : 0, 
                             borderBottomRightRadius: isLast ? taskBorderRadius : 0, 
-                            backgroundColor: taskItem?.complete ? colors.white : colors.black,
+                            backgroundColor: taskItem?.complete ? colors.taskBGComplete : colors.taskBG,
                         }]}
                     >
                         <View style={{width: `100%`, backgroundColor: colors.transparent, ...globalStyles.flexRow, gap: 15, paddingLeft: 15}}>
@@ -148,10 +148,10 @@ export default function Tasks({ selected }: any) {
                                 name={taskItem?.complete ? `check` : `circle-o`} 
                                 color={taskItem?.complete ? colors.appleGreen : colors.white} 
                             />
-                            <Text style={{ textAlign: `center`, fontWeight: `bold`, fontStyle: `italic`, color: taskItem?.complete ? colors.white : colors.black, backgroundColor: taskItem?.complete ? colors.black : colors.white, width: 20, height: 20, borderRadius: `100%`, paddingTop: 1.5 }}>
+                            <Text style={{ textAlign: `center`, fontWeight: `bold`, fontStyle: `italic`, color: taskItem?.complete ? colors.taskColorComplete : colors.taskColor, backgroundColor: taskItem?.complete ? colors.taskBGComplete : colors.taskBG, width: 20, height: 20, borderRadius: `100%`, paddingTop: 1.5 }}>
                                 {getIndex() + 1}
                             </Text>
-                            <Text style={{ textAlign: `left`, fontWeight: `bold`, fontStyle: `italic`, color: taskItem?.complete ? colors.black : colors.white, textDecorationLine: taskItem?.complete ? `line-through` : `none` }}>
+                            <Text style={{ textAlign: `left`, fontWeight: `bold`, fontStyle: `italic`, color: taskItem?.complete ? colors.taskColorComplete : colors.taskColor, textDecorationLine: taskItem?.complete ? `line-through` : `none` }}>
                                 {taskItem?.name}
                             </Text>
                         </View>
@@ -187,8 +187,8 @@ export default function Tasks({ selected }: any) {
                         }}
                     />
                 ) : (
-                    <View style={{ flex: 1, backgroundColor: colors.black, paddingVertical: 10, ...globalStyles.flexRow, justifyContent: `center` }}>
-                        <Text style={{ fontStyle: `italic`, textAlign: `center` }}>
+                    <View style={{ flex: 1, backgroundColor: colors.taskBG, paddingVertical: 10, ...globalStyles.flexRow, justifyContent: `center` }}>
+                        <Text style={{ fontStyle: `italic`, textAlign: `center`, color: colors.taskColor }}>
                             No Tasks Yet
                         </Text>
                     </View>
@@ -206,15 +206,15 @@ export default function Tasks({ selected }: any) {
                     onCancel={() => setTaskName(``)}
                     onBlur={() => setEditing(false)}
                     onFocus={() => setEditing(true)}
-                    extraStyle={{ color: colors.white }}
-                    doneColor={taskName == `` ? colors.disabledFont : colors.white}
-                    cancelColor={taskName == `` ? colors.disabledFont : colors.red}
                     endIconPress={() => taskToEdit == null ? addTask() : editTask()}
-                    endIconColor={taskName == `` ? colors.disabledFont : colors.white}
+                    cancelColor={taskName == `` ? colors.disabledFont : colors.error}
+                    endIconColor={taskName == `` ? colors.disabledFont : colors.inputBG}
+                    doneColor={taskName == `` ? colors.disabledFont : colors.activeColor}
                     doneText={taskName == `` ? `Done` : taskToEdit == null ? `Add` : `Save`}
-                    endIconStyle={{ minHeight: itemHeight, maxHeight: itemHeight, backgroundColor: colors.black }}
+                    extraStyle={{ color: colors.inputColor, backgroundColor: colors.inputBG }}
                     onDone={taskName == `` ? null : () => taskToEdit == null ? addTask() : editTask()}
                     style={{ width: `80%`, minHeight: itemHeight, ...globalStyles.flexRow, marginBottom: 0, }}
+                    endIconStyle={{ minHeight: itemHeight, maxHeight: itemHeight, backgroundColor: colors.inputBG }}
                 />
             </View>
         </>

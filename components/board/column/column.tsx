@@ -151,14 +151,14 @@ export default function Column({
         };
         
         const renderRightActions = () => (
-            <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8 }]}>
-                <FontAwesome name={`chevron-left`} color={colors.white} size={22} style={{ paddingHorizontal: itemHeight }} />
+            <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.activeColor }]}>
+                <FontAwesome name={`chevron-left`} color={colors.white} size={22} style={{ paddingHorizontal: 25 }} />
             </View>
         );
         
         const renderLeftActions = () => (
-            <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8 }]}>
-                <FontAwesome name={`chevron-right`} color={colors.white} size={22} style={{ paddingHorizontal: itemHeight }} />
+            <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8, backgroundColor: colors.activeColor }]}>
+                <FontAwesome name={`chevron-right`} color={colors.white} size={22} style={{ paddingHorizontal: 25 }} />
             </View>
         );
 
@@ -316,17 +316,17 @@ export default function Column({
                                                 onDone={itemName == `` ? null : () => addItem()}
                                                 cancelColor={itemName == `` ? colors.white : colors.error}
                                                 doneColor={itemName == `` ? colors.white : colors.activeColor}
-                                                endIconColor={itemName == `` ? colors.disabledFont : colors.white}
-                                                extraStyle={{ color: colors.white, width: `83%`, backgroundColor: colors.black }}
+                                                endIconColor={itemName == `` ? colors.disabledFont : colors.inputBG}
+                                                extraStyle={{ color: colors.inputColor, width: `83%`, backgroundColor: colors.inputBG }}
                                                 style={{ 
-                                                    minHeight: itemHeight, 
                                                     marginBottom: 0, 
+                                                    minHeight: itemHeight, 
                                                     ...globalStyles.flexRow, 
                                                 }}
                                                 endIconStyle={{ 
                                                     minHeight: itemHeight, 
                                                     maxHeight: itemHeight, 
-                                                    backgroundColor: itemName == `` ? colors.black : colors.activeColor, 
+                                                    backgroundColor: itemName == `` ? colors.inputBG : colors.activeColor, 
                                                 }}
                                             />
                                         </View>
@@ -394,7 +394,7 @@ export const titleRowStyles = StyleSheet.create({
         backgroundColor: colors.navy,
     },
     actionText: {
-        padding: 20,
+        padding: 1,
         fontSize: 16,
         fontWeight: `bold`,
         fontStyle: `italic`,

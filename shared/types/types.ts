@@ -113,6 +113,7 @@ export class BoardType {
 
     // Data
     name: string;
+    count?: number = 1;
     creator?: string = ``;
     complete?: boolean = false;
     boardType?: BoardTypes = BoardTypes.Kanban;
@@ -143,6 +144,7 @@ export class ColumnType {
     // Data
     name: string;
     category: string;
+    count?: number = 1;
     creator?: string = ``;
     complete?: boolean = false;
     color?: typeof colors | string = colors.listsBG;
@@ -172,6 +174,7 @@ export class ItemType {
     // Data
     image?: any;
     name: string = ``;
+    count?: number = 1;
     fontColor?: string;
     summary: string = ``;
     creator?: string = ``;
@@ -206,6 +209,7 @@ export class TaskType {
 
     // Data
     name: string = ``;
+    count?: number = 1;
     creator?: string = ``;
     complete?: boolean = false;
     color?: typeof colors | string = colors.mainBG;

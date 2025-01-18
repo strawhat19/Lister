@@ -21,7 +21,7 @@ export default function Column({
     swipeCarousel,
     animatedAdjacent, 
     blurIntensity = 0, 
-    backgroundColor = colors.mainBG, 
+    backgroundColor = colors.transparent, 
 }: ColumnType | any) {
     let { 
         items,
@@ -195,21 +195,22 @@ export default function Column({
                     {/* <> */}
                         <View id={`column_${column?.id}`} style={[
                             {  
-                                width: `100%`,
                                 paddingTop: 5,
                                 marginTop: 15,
+                                width: `100%`,
                                 backgroundColor, 
                                 marginHorizontal: `auto`,
                                 opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.55,
                             }, 
                             animatedAdjacent,
                         ]}>
-                            <BlurView intensity={blurIntensity} style={[StyleSheet.absoluteFill, { borderRadius: 12 }]} />
+                            <BlurView intensity={blurIntensity} style={[StyleSheet.absoluteFill, { borderRadius: 12, opacity: 0 }]} />
                             <View style={{ 
                                 padding: 0,
                                 width: `95%`, 
                                 borderRadius: 12, 
                                 marginHorizontal: `auto`, 
+                                opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.35,
                                 backgroundColor: selected == null ? colors.listsBG : colors.transparent, 
                             }}>
                                 <View style={[titleRowStyles.titleRow, { paddingVertical: 7 }]}>
@@ -227,7 +228,7 @@ export default function Column({
                                             </TouchableOpacity>
                                         ) : <></>
                                     )}
-                                    <Text style={[titleRowStyles.title, titleRowStyles.fontColor, { flexBasis: selected?.type == Views.ItemForm ? `70%` : `50%` }]}>
+                                    <Text numberOfLines={1} ellipsizeMode={`tail`} style={[titleRowStyles.title, titleRowStyles.fontColor, { flexBasis: selected?.type == Views.ItemForm ? `65%` : `45%` }]}>
                                         {selected == null ? (
                                             `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                                 toFixedWithoutRounding(slideIndex + 1, 1)
@@ -282,7 +283,7 @@ export default function Column({
                                         />
                                     // </PanGestureHandler>
                                 ) : (
-                                    <View style={{ width: `100%`, backgroundColor, height: height - paginationHeightMargin, paddingTop: itemHeight }}>
+                                    <View style={{ width: `100%`, backgroundColor: colors.transparent, height: height - paginationHeightMargin, paddingTop: itemHeight }}>
                                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
                                             {columnItems?.length > 0 ? loadingMessages.zero : loadingMessages.loading}
                                         </Text>

@@ -8,7 +8,7 @@ import { Text as DefaultText, View as DefaultView } from 'react-native';
 export const borderRadius = 10;
 export const itemCardHeight = 150;
 export const taskBorderRadius = 8;
-export const itemSimplifiedCardHeight = 71.3;
+export const itemSimplifiedCardHeight = 100;
 
 export const fontFamilies = {
   arial: `Arial`,

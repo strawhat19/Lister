@@ -16,6 +16,8 @@ export default function Item({
 }: any | RenderItemParams<ItemType>) {
     let { selected, fadeAnim, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
 
+    const fontColor = isLightColor(item?.backgroundColor) ? colors.dark : colors.lightFont;
+
     return (
         <ScaleDecorator activeScale={1.01}>
             <TouchableOpacity
@@ -31,6 +33,7 @@ export default function Item({
                     <View style={{ 
                         ...boardStyles.card, 
                         gap: 25,
+                        // backgroundColor: colors.white,
                         backgroundColor: item?.backgroundColor,
                         height: (isValid(item?.summary) || isValid(item?.image)) ? itemCardHeight : itemSimplifiedCardHeight, 
                         minHeight: (isValid(item?.summary) || isValid(item?.image)) ? itemCardHeight : itemSimplifiedCardHeight, 
@@ -40,27 +43,33 @@ export default function Item({
                             <View style={[boardStyles.cardImageContainer]}>
                                 <CustomImage alt={item?.name} source={{ uri: item?.image }} style={boardStyles.cardImage} />
                             </View>
-                        ) : <View style={{ width: 15 }}></View>}
+                        ) : <></>}
 
                         <View style={[boardStyles.cardRight, { 
                             gap: 10, 
-                            // display: `flex`,
-                            // alignItems: `center`,
-                            // flexDirection: `row`,
+                            display: `flex`,
                             position: `relative`, 
-                            // justifyContent: `center`,
+                            flexDirection: `row`,
+                            alignItems: `center`,
                             paddingVertical: (isValid(item?.summary) || isValid(item?.image)) ? 30 : 10, 
                         }]}>
-                            <View style={[styles.indexBadge, { display: `flex`, justifyContent: `center`, alignItems: `center` }]}>
-                                <Text style={{ ...boardStyles.cardTitle, color: isLightColor(item?.backgroundColor) ? colors.dark : colors.white, fontSize: 16 }}>
+                            <View style={[styles.indexBadge, { 
+                                display: `flex`, 
+                                borderRightWidth: 2,
+                                alignItems: `center`, 
+                                borderColor: fontColor,
+                                justifyContent: `center`, 
+                                backgroundColor: colors.transparent,
+                            }]}>
+                                <Text style={{ ...boardStyles.cardTitle, color: fontColor, fontSize: 18, fontStyle: `italic` }}>
                                     {getIndex != undefined ? getIndex() + 1 : item?.index}
                                 </Text>
                             </View>
-                            <Text numberOfLines={2} ellipsizeMode={`tail`} style={{ ...boardStyles.cardTitle, color: isLightColor(item?.backgroundColor) ? colors.dark : colors.white, overflowY: `visible`, ...(!isValid(item?.summary) && { maxWidth: `80%` }) }}>
+                            <Text numberOfLines={2} ellipsizeMode={`tail`} style={{ ...boardStyles.cardTitle, color: fontColor, overflowY: `visible`, marginLeft: 70, ...(!isValid(item?.summary) && { maxWidth: `70%` }) }}>
                                 {item?.name}
                             </Text>
                             {isValid(item?.summary) ? (
-                                <Text numberOfLines={3} ellipsizeMode={`tail`} style={{ ...boardStyles.cardDescription, color: isLightColor(item?.backgroundColor) ? colors.dark : colors.white, maxWidth: `90%` }}>
+                                <Text numberOfLines={3} ellipsizeMode={`tail`} style={{ ...boardStyles.cardDescription, color: fontColor, maxWidth: `90%` }}>
                                     {item?.summary}
                                 </Text>
                             ) : <></>}
@@ -75,12 +84,8 @@ export default function Item({
 
 const styles = StyleSheet.create({
     indexBadge: { 
-        top: 20, 
-        width: 25, 
-        right: 15, 
-        height: 25,
-        borderRadius: `100%`, 
-        position: `absolute`, 
-        backgroundColor: colors.transparent, 
+        width: `15%`, 
+        height: `1000%`,
+        position: `absolute`,
     },
 })

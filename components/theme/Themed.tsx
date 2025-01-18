@@ -30,6 +30,7 @@ export const lightColors = {
   appleYellow: `rgba(255, 204, 0, 1)`,
   appleGolden: `rgba(255, 215, 0, 1)`,
   lightGray: `rgba(204, 204, 204, 1)`,
+  appleGreen: `rgba(52, 199, 89, 1)`,
   pastelPink: `rgba(255, 209, 220, 1)`,
   appleGreenMint: `rgba(170, 240, 209, 1)`,
 }
@@ -42,7 +43,6 @@ export const cardColors = {
   hotPink: `rgba(255, 105, 180, 1)`,
   appleBlue: `rgba(0, 122, 255, 1)`,
   coolGray: `rgba(119, 136, 153, 1)`,
-  appleGreen: `rgba(52, 199, 89, 1)`,
   lightBlue: `rgba(47, 149, 220, 1)`,
   disabledFont: `rgb(105, 124, 147)`,
   applePurple: `rgba(88, 86, 214, 1)`,

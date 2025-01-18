@@ -16,7 +16,7 @@ export default function Item({
 }: any | RenderItemParams<ItemType>) {
     let { selected, fadeAnim, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
 
-    const fontColor = isLightColor(item?.backgroundColor) ? colors.dark : colors.lightFont;
+    const fontColor = isLightColor(item?.backgroundColor) ? colors.darkFont : colors.lightFont;
 
     return (
         <ScaleDecorator activeScale={1.01}>

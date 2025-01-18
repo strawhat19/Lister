@@ -98,6 +98,9 @@ export class CustomImageType {
 
 export class BoardType {
     // Meta
+    A?: any;
+    B?: any;
+    C?: any;
     key?: any;
     index?: number;
     id: string | number | any;
@@ -129,6 +132,9 @@ export class BoardType {
 
 export class ColumnType {
     // Meta
+    A?: any;
+    B?: any;
+    C?: any;
     key?: any;
     index?: number;
     id: string | number | any;
@@ -159,8 +165,12 @@ export class ColumnType {
 
 export class ItemType {
     // Meta
+    A?: any;
+    B?: any;
+    C?: any;
     key?: any;
     index?: number;
+    count?: number = 1;
     id: string | number | any;
     uuid?: string | number | any;
     type?: string | Views | Types = Views.Item;
@@ -174,7 +184,6 @@ export class ItemType {
     // Data
     image?: any;
     name: string = ``;
-    count?: number = 1;
     fontColor?: string;
     summary: string = ``;
     creator?: string = ``;
@@ -196,8 +205,12 @@ export class ItemType {
 
 export class TaskType {
     // Meta
+    A?: any;
+    B?: any;
+    C?: any;
     key?: any;
     index?: number;
+    count?: number = 1;
     id: string | number | any;
     uuid?: string | number | any;
     type?: string | Views | Types = Views.Task;
@@ -209,7 +222,6 @@ export class TaskType {
 
     // Data
     name: string = ``;
-    count?: number = 1;
     creator?: string = ``;
     complete?: boolean = false;
     color?: typeof colors | string = colors.mainBG;

@@ -13,8 +13,9 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { borderRadius, colors, globalStyles, isLightColor, Text, View } from '@/components/theme/Themed';
-import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem } from '@/shared/server/firebase';
+import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem, db, itemsDatabaseCollection } from '@/shared/server/firebase';
 import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+import { doc, writeBatch } from 'firebase/firestore';
 
 export default function Column({ 
     column, 
@@ -118,9 +119,14 @@ export default function Column({
         let { data } = await onDragEndData;
         await setColumnItems(data);
         if (data?.length > 0) {
-            data.forEach((itm, itmIndex) => {
-                updateItemFieldsInDatabase(itm?.id, { index: itmIndex + 1 }, true, false);
+            const batch = writeBatch(db);
+            await data.forEach((itm, itmIndex) => {
+                const now = new Date().toLocaleString(`en-US`);
+                const itemRef = doc(db, itemsDatabaseCollection, itm?.id);
+                batch.update(itemRef, { index: itmIndex + 1, updated: now });
             })
+            await Vibration.vibrate(1);
+            await batch.commit();
         }
     }
 

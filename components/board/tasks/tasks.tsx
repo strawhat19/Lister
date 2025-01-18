@@ -11,7 +11,8 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import { delayBeforeScrollingDown, itemHeight, maxTaskNameLength } from '@/shared/variables';
 import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { addTaskToDatabase, deleteTaskFromDatabase, getTasksForItem, prepareTaskForDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
+import { addTaskToDatabase, db, deleteTaskFromDatabase, getTasksForItem, prepareTaskForDatabase, tasksDatabaseCollection, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
+import { doc, writeBatch } from 'firebase/firestore';
 
 export default function Tasks({ selected }: any) {
     const listRef = useRef(null);
@@ -36,9 +37,14 @@ export default function Tasks({ selected }: any) {
         let { data } = await onDragEndData;
         await setItemTasks(data);
         if (data?.length > 0) {
+            const batch = writeBatch(db);
             await data.forEach((tsk, tskIndex) => {
-                updateTaskFieldsInDatabase(tsk?.id, { index: tskIndex + 1}, true, false);
+                const now = new Date().toLocaleString(`en-US`);
+                const taskRef = doc(db, tasksDatabaseCollection, tsk?.id);
+                batch.update(taskRef, { index: tskIndex + 1, updated: now });
             })
+            await Vibration.vibrate(1);
+            await batch.commit();
         }
     }
 
@@ -72,6 +78,7 @@ export default function Tasks({ selected }: any) {
 
     const addTask = async () => {
         const taskToAdd = new TaskType({
+            A: taskName,
             name: taskName, 
             itemID: selected?.id,
             listID: selected?.listID,

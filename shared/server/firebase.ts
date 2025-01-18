@@ -1,8 +1,8 @@
 import { User } from '../models/User';
 import { Vibration } from 'react-native';
 import { initializeApp } from 'firebase/app';
-import { BoardTypes, ItemType, TaskType, Views } from '../types/types';
-import { colors, findColorKey, isLightColor, lightColors, randomCardColor } from '@/components/theme/Themed';
+import { ItemType, TaskType, Views } from '../types/types';
+import { colors, findColorKey, isLightColor, randomCardColor } from '@/components/theme/Themed';
 import { defaultBoardID, findHighestNumberInArrayByKey, genID, isValid, log } from '../variables';
 import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from 'firebase/firestore';
 
@@ -15,9 +15,11 @@ export enum DatabaseTableNames {
   users = `users`,
   items = `items`,
   tasks = `tasks`,
+  counts = `counts`,
   boards = `boards`,
   events = `events`,
   visits = `visits`,
+  metrics = `metrics`,
   columns = `columns`,
   comments = `comments`,
   templates = `templates`,
@@ -39,6 +41,11 @@ export const db = getFirestore(app);
 
 export const isProduction = process.env.NODE_ENV == `production`;
 export const environment = isProduction ? Environments.production : Environments.beta;
+
+export const usersDatabaseCollection = environment + DatabaseTableNames.users;
+export const itemsDatabaseCollection = environment + DatabaseTableNames.items;
+export const tasksDatabaseCollection = environment + DatabaseTableNames.tasks;
+export const metricsDatabaseCollection = environment + DatabaseTableNames.metrics;
 
 export const getItemsForColumn = (items: ItemType[], listID: string) => (
   items && items?.length > 0 ? items?.filter(itm => itm?.listID == listID).sort((a, b) => a?.index - b?.index) : []
@@ -78,10 +85,6 @@ export const taskConverter = {
   }
 }
 
-export const usersDatabaseCollection = environment + DatabaseTableNames.users;
-export const itemsDatabaseCollection = environment + DatabaseTableNames.items;
-export const tasksDatabaseCollection = environment + DatabaseTableNames.tasks;
-
 export const addUserToDatabase = async (usr: User) => {
   try {
     await Vibration.vibrate(1);
@@ -96,20 +99,20 @@ export const addUserToDatabase = async (usr: User) => {
 export const addItemToDatabase = async (itm: ItemType) => {
   try {
     await Vibration.vibrate(1);
-    const itemReference = await doc(db, itemsDatabaseCollection, itm?.id).withConverter(itemConverter);
+    const itemReference = doc(db, itemsDatabaseCollection, itm?.id).withConverter(itemConverter);
     await setDoc(itemReference, itm as ItemType);
-    log(`Added Item "${itm?.name}" to Database`);
+    log(`Added Item #${itm?.count} "${itm?.name}" to Database`);
   } catch (error) {
     log(`Error Adding Item to Database ${itemsDatabaseCollection}`, error);
   }
-}
+};
 
 export const addTaskToDatabase = async (tsk: TaskType) => {
   try {
     await Vibration.vibrate(1);
     const taskReference = await doc(db, tasksDatabaseCollection, tsk?.id).withConverter(taskConverter);
     await setDoc(taskReference, tsk as TaskType);
-    log(`Added Task "${tsk?.name}" to Database`);
+    log(`Added Task #${tsk?.count} "${tsk?.name}" to Database`);
   } catch (error) {
     log(`Error Adding Task to Database ${tasksDatabaseCollection}`, error);
   }
@@ -194,14 +197,15 @@ export const prepareTaskForDatabase = async (tsk: TaskType, tasks: TaskType[], i
 
   let highestKey = await findHighestNumberInArrayByKey(tasks, `key`);
   let highestIndex = await findHighestNumberInArrayByKey(tasks, `index`);
+  let highestCount = await findHighestNumberInArrayByKey(tasks, `count`);
   let highestColumnIndex = await findHighestNumberInArrayByKey(tasksForItem, `index`);
 
   const maxHighest = Math.max(highestKey ?? -Infinity, highestIndex ?? -Infinity);
 
-  if (maxHighest >= newKey) newKey = maxHighest + 1;
   if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
+  if (maxHighest >= newKey) newKey = maxHighest >= highestCount ? maxHighest + 1 : highestCount + 1;
 
-  const { id, uuid, date } = await genID(type, newIndex);
+  const { id, uuid, date } = await genID(type, newKey);
 
   const preparedTask = await new TaskType({ 
     ...tsk,
@@ -210,6 +214,7 @@ export const prepareTaskForDatabase = async (tsk: TaskType, tasks: TaskType[], i
     uuid,
     itemID,
     key: newKey,
+    count: newKey,
     created: date,
     updated: date,
     index: newIndex, 
@@ -227,15 +232,16 @@ export const prepareItemForDatabase = async (itm: ItemType, items: ItemType[], l
   let newIndex = itemsForColumn?.length + 1;
 
   let highestKey = await findHighestNumberInArrayByKey(items, `key`);
+  let highestCount = await findHighestNumberInArrayByKey(items, `count`);
   let highestIndex = await findHighestNumberInArrayByKey(items, `index`);
   let highestColumnIndex = await findHighestNumberInArrayByKey(itemsForColumn, `index`);
 
   const maxHighest = Math.max(highestKey ?? -Infinity, highestIndex ?? -Infinity);
 
-  if (maxHighest >= newKey) newKey = maxHighest + 1;
   if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
+  if (maxHighest >= newKey) newKey = maxHighest >= highestCount ? maxHighest + 1 : highestCount + 1;
 
-  const { id, uuid, date } = await genID(type, newIndex);
+  const { id, uuid, date } = await genID(type, newKey);
 
   const preparedItem = await new ItemType({
     ...itm,
@@ -244,6 +250,7 @@ export const prepareItemForDatabase = async (itm: ItemType, items: ItemType[], l
     type,
     listID,
     key: newKey,
+    count: newKey,
     created: date,
     updated: date,
     index: newIndex,
@@ -275,6 +282,7 @@ export const createItem = async (columnItems, listID: string, name, items, close
     const itemToAdd = await new ItemType({
       name,
       listID,
+      A: name,
       image: ``,
       tasks: [],
       summary: ``,

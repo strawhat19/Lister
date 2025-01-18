@@ -162,11 +162,11 @@ function MovableItem({
     </View>
   );
 
-    const deleteItem = async (itemID: string = selected?.id) => {
-      await setItems(prevItems => prevItems.filter(itm => itm.id != itemID));
-      await closeBottomSheet();
-      await deleteItemFromDatabase(itemID);
-    }
+  const deleteItem = async (itemID: string = selected?.id) => {
+    await setItems(prevItems => prevItems.filter(itm => itm.id != itemID));
+    await closeBottomSheet();
+    await deleteItemFromDatabase(itemID);
+  }
 
   return (
     <Animated.View style={animatedStyle}>

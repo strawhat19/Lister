@@ -27,13 +27,11 @@ export default function Column({
         items,
         height, 
         selected,
-        fadeAnim, 
         isDragging,
         slideIndex,
         setDragging, 
         boardColumns,
         activeTopName,
-        openBottomSheet, 
         closeBottomSheet, 
     } = useContext<any>(SharedContext);
 
@@ -182,9 +180,6 @@ export default function Column({
                         drag={drag}
                         getIndex={getIndex}
                         isActive={isActive}
-                        fadeAnim={fadeAnim}
-                        openBottomSheet={openBottomSheet}
-                        closeBottomSheet={closeBottomSheet}
                         isLast={getIndex() == columnItems.length - 1}
                         keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
                     />
@@ -318,10 +313,10 @@ export default function Column({
                                                 endIconDisabled={itemName == ``}
                                                 onBlur={() => setAddingItem(false)}
                                                 doneText={itemName == `` ? `Done` : `Add`}
+                                                onDone={itemName == `` ? null : () => addItem()}
                                                 cancelColor={itemName == `` ? colors.white : colors.error}
                                                 doneColor={itemName == `` ? colors.white : colors.activeColor}
                                                 endIconColor={itemName == `` ? colors.disabledFont : colors.white}
-                                                onDone={itemName == `` ? () => onDoneDismiss() : () => addItem()}
                                                 extraStyle={{ color: colors.white, width: `83%`, backgroundColor: colors.black }}
                                                 style={{ 
                                                     minHeight: itemHeight, 

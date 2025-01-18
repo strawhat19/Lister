@@ -19,8 +19,6 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
         slideIndex, 
         boardColumns,
         setSlideIndex,
-        openBottomSheet, 
-        closeBottomSheet, 
     } = useContext<any>(SharedContext);
 
     const columnRefs = useMemo(() => {
@@ -89,8 +87,6 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
                                         carouselRef={carouselRef}
                                         swipeCarousel={swipeCarousel}
                                         columnRef={columnRefs[column.id]}
-                                        openBottomSheet={openBottomSheet}
-                                        closeBottomSheet={closeBottomSheet}
                                         active={(slideIndex + 1) == column.index}
                                     />
                                 // </>

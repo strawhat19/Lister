@@ -172,7 +172,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
       <GestureHandlerRootView>
         <View style={{ flex: 1, width: `100%` }}>
           {children}
-          {/* <SlideUp /> */}
+          <SlideUp />
         </View>
       </GestureHandlerRootView>
     </SharedContext.Provider>

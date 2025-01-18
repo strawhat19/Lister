@@ -102,6 +102,12 @@ export const themes = {
     mainBG: allColors.white,
     listsBG: allColors.steelGray,
   },
+  steel: {
+    ...fontColors,
+    ...activeColors,
+    mainBG: allColors.appleGreen,
+    listsBG: allColors.steelGray,
+  },
   gray: {
     ...fontColors,
     ...activeColors,
@@ -112,7 +118,7 @@ export const themes = {
   },
 }
 
-export const themeToUse = themes.dark;
+export const themeToUse = themes.light;
 
 export const colors = {
   ...allColors,

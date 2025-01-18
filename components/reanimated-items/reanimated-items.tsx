@@ -188,8 +188,6 @@ function MovableItem({
                     item={itm}
                     fadeAnim={fadeAnim}
                     isLast={index == itm.length - 1}
-                    openBottomSheet={openBottomSheet}
-                    closeBottomSheet={closeBottomSheet}
                     keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
                 /> */}
                 <View style={{ flex: 1, width: `100%`, height: `100%`, minHeight: itemHeight, backgroundColor: itm?.backgroundColor, ...globalStyles.flexRow, justifyContent: `center` }}>

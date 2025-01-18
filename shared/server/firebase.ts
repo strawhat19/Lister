@@ -166,7 +166,7 @@ export const updateItemFieldsInDatabase = async (itemID: string, updates: { [key
     const itemRef = await doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
     if (vibrate) await Vibration.vibrate(1);
     await updateDoc(itemRef, fields);
-    if (logResult) log(`Item Fields Updated in Database`);
+    if (logResult) log(`Item Fields Updated in Database`, fields);
   } catch (error) {
     log(`Error Updating Item Fields`, { error, fields });
   }
@@ -208,14 +208,12 @@ export const prepareTaskForDatabase = async (tsk: TaskType, tasks: TaskType[], i
     id, 
     type,
     uuid,
+    itemID,
     key: newKey,
     created: date,
     updated: date,
     index: newIndex, 
     boardID: defaultBoardID,
-    // name: taskName, 
-    // itemID: selected?.id,
-    // listID: selected?.listID,
   })
 
   return preparedTask;

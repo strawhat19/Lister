@@ -1,15 +1,15 @@
 import * as Haptics from 'expo-haptics';
 import { boardStyles } from '../styles';
+import { TaskType } from '@/shared/types/types';
 import { SharedContext } from '@/shared/shared';
 import { titleRowStyles } from '../column/column';
-import { TaskType, Views } from '@/shared/types/types';
 import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
-import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { delayBeforeScrollingDown, itemHeight, maxTaskNameLength } from '@/shared/variables';
 import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
-import { delayBeforeScrollingDown, genID, itemHeight, maxTaskNameLength } from '@/shared/variables';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { addTaskToDatabase, deleteTaskFromDatabase, getTasksForItem, prepareTaskForDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
 
@@ -42,18 +42,18 @@ export default function Tasks({ selected }: any) {
         }
     }
 
-    const deleteTaskWithConfirmation = (taskID: string) => {
-        Vibration.vibrate(1);
-        Alert.alert(
-            `Delete Task`,
-            `Are you sure you want to delete this task?`,
-            [
-                { text: `Cancel`, style: `cancel`, onPress: async () => await Vibration.vibrate(1) }, 
-                { text: `Delete`, style: `destructive`, onPress: async () => await deleteTaskFromDatabase(taskID) }
-            ],
-            { cancelable: true, onDismiss: async () => await Vibration.vibrate(1) },
-        )
-    }
+    // const deleteTaskWithConfirmation = (taskID: string) => {
+    //     Vibration.vibrate(1);
+    //     Alert.alert(
+    //         `Delete Task`,
+    //         `Are you sure you want to delete this task?`,
+    //         [
+    //             { text: `Cancel`, style: `cancel`, onPress: async () => await Vibration.vibrate(1) }, 
+    //             { text: `Delete`, style: `destructive`, onPress: async () => await deleteTaskFromDatabase(taskID) }
+    //         ],
+    //         { cancelable: true, onDismiss: async () => await Vibration.vibrate(1) },
+    //     )
+    // }
 
     const editTask = async () => {
         await setTaskName(``);
@@ -92,9 +92,9 @@ export default function Tasks({ selected }: any) {
         let isFirst: boolean = index == 1 ? true : false;
         let isLast: boolean = index == itemTasks?.length ? true : false;
 
-        const handleRightSwipe = (taskID: string = taskItem?.id) => {
-            swipeableRef.current?.close();
-            deleteTaskWithConfirmation(taskID);
+        const handleRightSwipe = async (taskID: string = taskItem?.id) => {
+            // swipeableRef.current?.close();
+            await deleteTaskFromDatabase(taskID);
         };
 
         const handleLeftSwipe = (task = taskItem) => {
@@ -163,7 +163,15 @@ export default function Tasks({ selected }: any) {
 
     return (
         <>
-            <View style={[styles.tasksContainer, { maxHeight: editing ? 225 : (selected?.image && selected?.image != `` ? 185 : 340), marginTop: editing ? 0 : 12, }]}>
+            <View style={
+                [
+                    styles.tasksContainer, 
+                    { 
+                        marginTop: editing ? -15 : 12, 
+                        maxHeight: editing ? 265 : (selected?.image && selected?.image != `` ? 185 : 340), 
+                    },
+                ]
+            }>
                 {itemTasks.length > 0 ? (
                     <DraggableFlatList
                         ref={listRef}
@@ -187,9 +195,9 @@ export default function Tasks({ selected }: any) {
                         }}
                     />
                 ) : (
-                    <View style={{ flex: 1, backgroundColor: colors.taskBG, paddingVertical: 10, ...globalStyles.flexRow, justifyContent: `center` }}>
-                        <Text style={{ fontStyle: `italic`, textAlign: `center`, color: colors.taskColor }}>
-                            No Tasks Yet
+                    <View style={{ flex: 1, backgroundColor: colors.transparent, paddingVertical: 10, ...globalStyles.flexRow, alignItems: `flex-start`, justifyContent: `center` }}>
+                        <Text style={{ fontStyle: `italic`, textAlign: `center`, color: colors.taskBG }}>
+                            0 Task(s)
                         </Text>
                     </View>
                 )}
@@ -199,8 +207,8 @@ export default function Tasks({ selected }: any) {
                     ref={inputRef}
                     value={taskName}
                     showLabel={false}
-                    placeholder={`Name`}
                     endIconName={`save`}
+                    placeholder={`Task Name`}
                     onChangeText={setTaskName}
                     maxLength={maxTaskNameLength}
                     onCancel={() => setTaskName(``)}

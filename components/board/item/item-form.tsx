@@ -3,8 +3,8 @@ import { ItemType } from '@/shared/types/types';
 import { SharedContext } from '@/shared/shared';
 import React, { useContext, useEffect, useState } from 'react';
 import CustomImage from '@/components/custom-image/custom-image';
-import CustomTextInput from '@/components/custom-input/custom-input';
 import { getItemsForColumn, createItem } from '@/shared/server/firebase';
+import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { borderRadius, colors, globalStyles, Text, View } from '@/components/theme/Themed';
 import { StyleSheet, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 import { isValid, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, openCamera, web } from '@/shared/variables';
@@ -47,7 +47,7 @@ export default function ItemForm({ }: any) {
                         {!editing || (editing && form?.description?.length < 43) ? (
                             <View style={{ ...globalStyles.flexRow, gap: 15 }}>
                                 <View style={{ flex: 1, maxWidth: (form.image != `` && validImage) ? `50%` : `100%` }}>
-                                    <CustomTextInput
+                                    <ForwardRefInput
                                         value={form.name}
                                         placeholder={`Name`}
                                         maxLength={maxItemNameLength}
@@ -59,7 +59,7 @@ export default function ItemForm({ }: any) {
                                         doneColor={formError == true ? undefined : colors.white}
                                         onChangeText={(text) => handleInputChange(`name`, text)}
                                     />
-                                    <CustomTextInput
+                                    <ForwardRefInput
                                         value={form.summary}
                                         placeholder={`Summary`}
                                         maxLength={maxItemSummaryLength}
@@ -71,7 +71,7 @@ export default function ItemForm({ }: any) {
                                         doneColor={formError == true ? undefined : colors.white}
                                         onChangeText={(text) => handleInputChange(`summary`, text)}
                                     />
-                                    <CustomTextInput
+                                    <ForwardRefInput
                                         value={form.image}
                                         placeholder={`Image URL`}
                                         endIconColor={colors.white}
@@ -105,7 +105,7 @@ export default function ItemForm({ }: any) {
                                 ) : <></>}
                             </View>
                         ) : <></>}
-                        <CustomTextInput
+                        <ForwardRefInput
                             multiline
                             numberOfLines={15}
                             value={form.description}

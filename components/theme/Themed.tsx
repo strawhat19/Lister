@@ -8,7 +8,7 @@ import { Text as DefaultText, View as DefaultView } from 'react-native';
 export const borderRadius = 10;
 export const itemCardHeight = 150;
 export const taskBorderRadius = 8;
-export const itemSimplifiedCardHeight = 100;
+export const itemSimplifiedCardHeight = `auto`;
 
 export const fontFamilies = {
   arial: `Arial`,
@@ -30,6 +30,7 @@ export const lightColors = {
   appleYellow: `rgba(255, 204, 0, 1)`,
   appleGolden: `rgba(255, 215, 0, 1)`,
   lightGray: `rgba(204, 204, 204, 1)`,
+  pastelPink: `rgba(255, 209, 220, 1)`,
   appleGreenMint: `rgba(170, 240, 209, 1)`,
 }
 
@@ -46,7 +47,6 @@ export const cardColors = {
   disabledFont: `rgb(105, 124, 147)`,
   applePurple: `rgba(88, 86, 214, 1)`,
   steelGray: `rgba(112, 128, 144, 1)`,
-  pastelPink: `rgba(255, 209, 220, 1)`,
   neonHotPink: `rgba(255, 20, 147, 1)`,
   electricCyan: `rgba(0, 191, 255, 1)`,
   deepRoyalBlue: `rgba(63, 81, 181, 1)`,

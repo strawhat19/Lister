@@ -62,7 +62,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     enterFadeBlur();
     setIndx(1);
     if (item) {
-      log(`Opened Details for ${item?.type} that says "${item?.name}"`, item);
+      log(`Opened Details for ${item?.type} that says "${item?.name}"`);
       if (item.name) setActiveTopName(item.name);
       if (backgroundColor) {
         item = {

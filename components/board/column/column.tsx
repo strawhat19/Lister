@@ -6,7 +6,8 @@ import { SharedContext } from '@/shared/shared';
 import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Animated, { Layout } from 'react-native-reanimated';
-import CustomTextInput from '@/components/custom-input/custom-input';
+import LoadingSpinner from '@/components/loading/loading-spinner';
+import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { ColumnType, Directions, ItemType, Views } from '@/shared/types/types';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
@@ -14,7 +15,6 @@ import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 
 import { borderRadius, colors, globalStyles, isLightColor, Text, View } from '@/components/theme/Themed';
 import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem } from '@/shared/server/firebase';
 import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
-import LoadingSpinner from '@/components/loading/loading-spinner';
 
 export default function Column({ 
     column, 
@@ -269,7 +269,7 @@ export default function Column({
                                             onPlaceholderIndexChange={(onPlaceHolderIndexChangeData) => onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
                                             style={{ 
                                                 height: `auto`, 
-                                                maxHeight: addingItem ? ((height - paginationHeightMargin) - 155) : height - paginationHeightMargin, 
+                                                maxHeight: addingItem ? ((height - paginationHeightMargin) - 175) : height - paginationHeightMargin, 
                                             }}
                                             contentContainerStyle={{
                                                 width: `100%`,
@@ -300,25 +300,32 @@ export default function Column({
                                         </TouchableOpacity>
                                     ) : ( */}
                                         <View style={[globalStyles.singleLineInput, titleRowStyles.addItemButton, { marginTop: 5, justifyContent: `center`, marginHorizontal: `auto`, opacity: selected == null ? 1 : 0 }]}>
-                                            <CustomTextInput
+                                            <ForwardRefInput
                                                 width={`100%`}
                                                 value={itemName}
                                                 showLabel={false}
                                                 endIconName={`save`}
+                                                onDoneVibrate={true}
                                                 placeholder={`Item Name`}
                                                 onFocus={() => onFocus()}
                                                 onChangeText={setItemName}
                                                 onCancel={() => onCancel()}
                                                 maxLength={maxItemNameLength}
+                                                onDoneDismiss={itemName == ``}
                                                 endIconPress={() => addItem()}
                                                 endIconDisabled={itemName == ``}
                                                 onBlur={() => setAddingItem(false)}
                                                 doneText={itemName == `` ? `Done` : `Add`}
-                                                onDone={itemName == `` ? null : () => addItem()}
-                                                cancelColor={itemName == `` ? colors.white : colors.error}
-                                                doneColor={itemName == `` ? colors.white : colors.activeColor}
+                                                onDone={itemName == `` ? () => {} : () => addItem()}
+                                                cancelColor={itemName == `` ? colors.transparent : colors.error}
+                                                doneColor={itemName == `` ? colors.transparent : colors.activeColor}
                                                 endIconColor={itemName == `` ? colors.disabledFont : colors.inputColor}
-                                                extraStyle={{ color: colors.inputColor, width: `83%`, backgroundColor: colors.inputBG }}
+                                                extraStyle={{ 
+                                                    width: `83%`, 
+                                                    color: colors.inputColor, 
+                                                    backgroundColor: colors.inputBG, 
+                                                    fontStyle: itemName == `` ? `italic` : `normal`,
+                                                }}
                                                 style={{ 
                                                     marginBottom: 0, 
                                                     minHeight: itemHeight, 

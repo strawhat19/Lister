@@ -298,7 +298,7 @@ export default function Column({
                                             <FontAwesome name={`bars`} color={colors.lightBlue} size={20} />
                                         </TouchableOpacity>
                                     ) : ( */}
-                                        <View style={[globalStyles.singleLineInput, titleRowStyles.addItemButton, { marginTop: 0, justifyContent: `center`, marginHorizontal: `auto`, opacity: selected == null ? 1 : 0 }]}>
+                                        <View style={[globalStyles.singleLineInput, titleRowStyles.addItemButton, { marginTop: 5, justifyContent: `center`, marginHorizontal: `auto`, opacity: selected == null ? 1 : 0 }]}>
                                             <CustomTextInput
                                                 width={`100%`}
                                                 value={itemName}
@@ -316,7 +316,7 @@ export default function Column({
                                                 onDone={itemName == `` ? null : () => addItem()}
                                                 cancelColor={itemName == `` ? colors.white : colors.error}
                                                 doneColor={itemName == `` ? colors.white : colors.activeColor}
-                                                endIconColor={itemName == `` ? colors.disabledFont : colors.inputBG}
+                                                endIconColor={itemName == `` ? colors.disabledFont : colors.inputColor}
                                                 extraStyle={{ color: colors.inputColor, width: `83%`, backgroundColor: colors.inputBG }}
                                                 style={{ 
                                                     marginBottom: 0, 

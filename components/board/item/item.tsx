@@ -41,13 +41,22 @@ export default function Item({
                                 <CustomImage alt={item?.name} source={{ uri: item?.image }} style={boardStyles.cardImage} />
                             </View>
                         ) : <View style={{ width: 15 }}></View>}
-                        <View style={[boardStyles.cardRight, { gap: 10, position: `relative`, paddingVertical: (isValid(item?.summary) || isValid(item?.image)) ? 30 : 10 }]}>
+
+                        <View style={[boardStyles.cardRight, { 
+                            gap: 10, 
+                            // display: `flex`,
+                            // alignItems: `center`,
+                            // flexDirection: `row`,
+                            position: `relative`, 
+                            // justifyContent: `center`,
+                            paddingVertical: (isValid(item?.summary) || isValid(item?.image)) ? 30 : 10, 
+                        }]}>
                             <View style={[styles.indexBadge, { display: `flex`, justifyContent: `center`, alignItems: `center` }]}>
                                 <Text style={{ ...boardStyles.cardTitle, color: isLightColor(item?.backgroundColor) ? colors.dark : colors.white, fontSize: 16 }}>
                                     {getIndex != undefined ? getIndex() + 1 : item?.index}
                                 </Text>
                             </View>
-                            <Text style={{ ...boardStyles.cardTitle, color: isLightColor(item?.backgroundColor) ? colors.dark : colors.white, overflowY: `visible` }}>
+                            <Text numberOfLines={2} ellipsizeMode={`tail`} style={{ ...boardStyles.cardTitle, color: isLightColor(item?.backgroundColor) ? colors.dark : colors.white, overflowY: `visible`, ...(!isValid(item?.summary) && { maxWidth: `80%` }) }}>
                                 {item?.name}
                             </Text>
                             {isValid(item?.summary) ? (
@@ -56,6 +65,7 @@ export default function Item({
                                 </Text>
                             ) : <></>}
                         </View>
+                        
                     </View>
                 </Animated.View>
             </TouchableOpacity>
@@ -65,10 +75,10 @@ export default function Item({
 
 const styles = StyleSheet.create({
     indexBadge: { 
-        top: 10, 
-        right: 10, 
+        top: 20, 
         width: 25, 
-        height: 25 ,
+        right: 15, 
+        height: 25,
         borderRadius: `100%`, 
         position: `absolute`, 
         backgroundColor: colors.transparent, 

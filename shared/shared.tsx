@@ -31,9 +31,9 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [tasks, setTasks] = useState<TaskType[]>([]);
   let [user, setUser] = useState<User | null>(null);
   let [users, setUsers] = useState<User[] | null>([]);
-  let [itemsLoading, setItemsLoading] = useState(false);
-  let [usersLoading, setUsersLoading] = useState(false);
-  let [tasksLoading, setTasksLoading] = useState(false);
+  let [itemsLoading, setItemsLoading] = useState(true);
+  let [usersLoading, setUsersLoading] = useState(true);
+  let [tasksLoading, setTasksLoading] = useState(true);
   let [selected, setSelected] = useState<ItemType | ColumnType | null>(null);
   let [boardColumns, setBoardColumns] = useState<BoardType | ColumnType[]>(defaultColumns);
   let [activeTopName, setActiveTopName] = useState(boardColumns[slideIndex]?.name);
@@ -62,7 +62,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     enterFadeBlur();
     setIndx(1);
     if (item) {
-      log(`Opened Details for ${item?.type} that says "${item?.name}"`);
+      log(`Opened Details for ${item?.type} that says "${item?.name}"`, item);
       if (item.name) setActiveTopName(item.name);
       if (backgroundColor) {
         item = {

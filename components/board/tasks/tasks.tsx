@@ -110,8 +110,8 @@ export default function Tasks({ selected }: any) {
         );
         
         const renderLeftActions = () => (
-            <View style={[titleRowStyles.leftAction, { backgroundColor: colors.appleGreen, borderRadius: taskBorderRadius - 3, marginRight: 3 }]}>
-                <FontAwesome name={`check`} color={colors.white} size={18} style={{ paddingHorizontal: 15 }} />
+            <View style={[titleRowStyles.leftAction, { backgroundColor: taskItem.complete ? colors.activeColor : colors.success, borderRadius: taskBorderRadius - 3, marginRight: 3 }]}>
+                <FontAwesome name={taskItem.complete ? `circle-o` : `check`} color={colors.white} size={18} style={{ paddingHorizontal: 15 }} />
             </View>
         );
 

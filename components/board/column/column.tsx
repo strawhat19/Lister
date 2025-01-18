@@ -14,6 +14,7 @@ import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 
 import { borderRadius, colors, globalStyles, isLightColor, Text, View } from '@/components/theme/Themed';
 import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem } from '@/shared/server/firebase';
 import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+import LoadingSpinner from '@/components/loading/loading-spinner';
 
 export default function Column({ 
     column, 
@@ -31,6 +32,7 @@ export default function Column({
         slideIndex,
         setDragging, 
         boardColumns,
+        itemsLoading,
         activeTopName,
         closeBottomSheet, 
     } = useContext<any>(SharedContext);
@@ -251,7 +253,7 @@ export default function Column({
                                         </TouchableOpacity>
                                     )}
                                 </View>
-                                {(!loading || columnItems?.length > 0) ? (
+                                {(columnItems?.length > 0) ? (
                                     // <PanGestureHandler enabled={!isDragging} activeOffsetX={[-10, 10]} activeOffsetY={[-10, 10]} onGestureEvent={!isDragging ? handleGesture : null}>
                                         <DraggableFlatList
                                             ref={listRef}
@@ -280,9 +282,10 @@ export default function Column({
                                         />
                                     // </PanGestureHandler>
                                 ) : (
-                                    <View style={{ width: `100%`, backgroundColor: colors.transparent, height: height - paginationHeightMargin, paddingTop: itemHeight }}>
+                                    <View style={{ width: `100%`, backgroundColor: colors.transparent, height: `auto`, paddingVertical: 15, ...globalStyles.flexRow, justifyContent: `center`, gap: 15 }}>
+                                        <LoadingSpinner spinning={true} />
                                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
-                                            {columnItems?.length > 0 ? loadingMessages.zero : loadingMessages.loading}
+                                            {itemsLoading ? loadingMessages.loading : loadingMessages.zero}
                                         </Text>
                                     </View>
                                 )}

@@ -180,8 +180,8 @@ export class ItemType {
     creator?: string = ``;
     description: string = ``;
     complete?: boolean = false;
-    orientation?: Orientations = Orientations.Portrait;
     color?: typeof colors | string = colors.activeColor;
+    orientation?: string | Orientations = Orientations.Portrait;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
     backgroundColor?: keyof typeof colors | string = colors.activeColor;

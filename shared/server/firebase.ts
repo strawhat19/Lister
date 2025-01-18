@@ -277,6 +277,7 @@ export const createItem = async (columnItems, listID: string, name, items, close
     const itemToAdd = await new ItemType({
       name,
       listID,
+      image: ``,
       tasks: [],
       summary: ``,
       description: ``,

@@ -1,5 +1,6 @@
 import { colors } from '@/components/theme/Themed';
 import { ColumnType, ItemType, Views, TaskType } from './types/types';
+import { defaultBoardID } from './variables';
 
 export const defaultCategories = {
   To_Do: `To Do`,
@@ -153,6 +154,7 @@ export const defaultColumns: ColumnType[] = [
     index: 1, 
     name: `Items`, 
     type: Views.Column,
+    boardID: defaultBoardID,
     category: defaultCategories.To_Do,
     id: defaultListIDs.listColumn_1_items,
     listID: defaultListIDs.listColumn_1_items,
@@ -163,6 +165,7 @@ export const defaultColumns: ColumnType[] = [
     index: 2, 
     name: `Active`, 
     type: Views.Column,
+    boardID: defaultBoardID,
     category: defaultCategories.Active,
     id: defaultListIDs.listColumn_2_active,
     listID: defaultListIDs.listColumn_2_active,
@@ -173,6 +176,7 @@ export const defaultColumns: ColumnType[] = [
     index: 3, 
     name: `Complete`, 
     type: Views.Column,
+    boardID: defaultBoardID,
     category: defaultCategories.Done,
     id: defaultListIDs.listColumn_3_complete,
     listID: defaultListIDs.listColumn_3_complete,

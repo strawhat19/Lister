@@ -55,11 +55,6 @@ export default function Column({
         Vibration.vibrate(1);
         closeBottomSheet();
     }
-
-    const onDoneDismiss = () => {
-        Vibration.vibrate(1);
-        return null;
-    }
     
     const onDragBegin = () => {
         setDragging(true);
@@ -151,14 +146,14 @@ export default function Column({
         };
         
         const renderRightActions = () => (
-            <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.activeColor }]}>
-                <FontAwesome name={`chevron-left`} color={colors.white} size={22} style={{ paddingHorizontal: 25 }} />
+            <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.mainBG }]}>
+                <FontAwesome name={`angle-double-left`} color={colors.white} size={22} style={{ paddingHorizontal: 20, fontWeight: `bold` }} />
             </View>
         );
         
         const renderLeftActions = () => (
-            <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8, backgroundColor: colors.activeColor }]}>
-                <FontAwesome name={`chevron-right`} color={colors.white} size={22} style={{ paddingHorizontal: 25 }} />
+            <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8, backgroundColor: colors.mainBG }]}>
+                <FontAwesome name={`angle-double-right`} color={colors.white} size={22} style={{ paddingHorizontal: 20, fontWeight: `bold` }} />
             </View>
         );
 
@@ -187,6 +182,8 @@ export default function Column({
             </Animated.View>
         )
     }, [])
+
+    const fontColor = isLightColor(selected?.backgroundColor) ? colors.darkFont : colors.lightFont;
 
     return (
         <>
@@ -220,9 +217,9 @@ export default function Column({
                                         </Text>
                                     ) : (
                                         selected?.type == Views.Item ? (
-                                            <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: colors.red }]}>
-                                                <FontAwesome name={`trash`} color={colors.white} size={14} />
-                                                <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold` }]}>
+                                            <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: selected?.backgroundColor }]}>
+                                                <FontAwesome name={`trash`} color={fontColor} size={14} />
+                                                <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: fontColor }]}>
                                                     Delete
                                                 </Text>
                                             </TouchableOpacity>
@@ -230,7 +227,7 @@ export default function Column({
                                     )}
                                     <Text numberOfLines={1} ellipsizeMode={`tail`} style={[titleRowStyles.title, titleRowStyles.fontColor, { flexBasis: selected?.type == Views.ItemForm ? `65%` : `45%` }]}>
                                         {selected == null ? (
-                                            `${column?.name} - ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
+                                            `${column?.name} ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                                 toFixedWithoutRounding(slideIndex + 1, 1)
                                             )}`
                                         ) : activeTopName}
@@ -246,10 +243,10 @@ export default function Column({
                                             </Text>
                                         </>
                                     ) : (
-                                        <TouchableOpacity onPress={() => closeItem()} style={[titleRowStyles.topButton, { backgroundColor: colors.navy }]}>
-                                            <FontAwesome name={`ban`} color={colors.white} size={14} />
-                                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold` }]}>
-                                                Cancel
+                                        <TouchableOpacity onPress={() => closeItem()} style={[titleRowStyles.topButton, { backgroundColor: selected?.backgroundColor }]}>
+                                            <FontAwesome name={`ban`} color={fontColor} size={14} />
+                                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: fontColor }]}>
+                                                Close
                                             </Text>
                                         </TouchableOpacity>
                                     )}

@@ -4,12 +4,13 @@ import { SharedContext } from '@/shared/shared';
 import React, { useContext, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { boardStyles, cardedBorderRight } from '../styles';
-import { colors, Text, View } from '@/components/theme/Themed';
 import CustomImage from '@/components/custom-image/custom-image';
 import CustomTextInput from '@/components/custom-input/custom-input';
 import { ItemViewType, Views, ItemViews } from '@/shared/types/types';
+import { updateItemFieldsInDatabase } from '@/shared/server/firebase';
+import { colors, isLightColor, Text, View } from '@/components/theme/Themed';
 import { Animated, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
+import { isValid, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
 
 export const maxItemDescriptionHeight = 251;
 
@@ -19,7 +20,13 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
     const [name, setName] = useState(selected.name);
     const [summary, setSummary] = useState(selected.summary);
     const [description, setDescription] = useState(selected.description);
+
     const itemFontStyles = { ...(selected.fontColor && { color: selected.fontColor }) };
+    const placeHolderColor = isLightColor(selected?.backgroundColor) ? colors.darkFont : colors.lightFont;
+
+    const onDescriptionSave = async () => await updateItemFieldsInDatabase(selected?.id, { description }); 
+    const onNameSave = async () => isValid(name) ? await updateItemFieldsInDatabase(selected?.id, { name }) : null; 
+    const onSummarySave = async () => typeof summary == `string` ? await updateItemFieldsInDatabase(selected?.id, { summary }) : null; 
 
     const scrollingDetailsEnabled = () => {
         return description && typeof description == `string` && (selected?.image && selected?.image != ``);
@@ -88,10 +95,18 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             showLabel={false}
                             placeholder={`Name`}
                             onChangeText={setName}
+                            onDone={() => onNameSave()}
                             maxLength={maxItemNameLength}
-                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 21, minHeight: 30, maxHeight: 30, }}
+                            placeholderTextColor={name == `` ? colors.black : placeHolderColor}
+                            style={{ 
+                                ...itemFontStyles, 
+                                ...styles.itemInput, 
+                                maxHeight: 30, 
+                                minHeight: 30, 
+                                fontSize: 21, 
+                                fontStyle: name == `` ? `italic` : `normal`,
+                            }}
                         />
-
                         <CustomTextInput
                             value={summary}
                             multiline={true}
@@ -99,8 +114,16 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             numberOfLines={5}
                             placeholder={`Summary`}
                             onChangeText={setSummary}
+                            onDone={() => onSummarySave()}
                             maxLength={maxItemSummaryLength}
-                            style={{ ...itemFontStyles, ...styles.itemInput, fontSize: 18, minHeight: selected?.image ? 215 : `auto`, }}
+                            placeholderTextColor={summary == `` ? colors.black : placeHolderColor}
+                            style={{ 
+                                ...itemFontStyles, 
+                                ...styles.itemInput, 
+                                fontSize: summary == `` ? 12 : 18, 
+                                minHeight: selected?.image ? 215 : `auto`, 
+                                fontStyle: summary == `` ? `italic` : `normal`,
+                            }}
                         />
                     </View>
                 </> : <></>}
@@ -123,12 +146,15 @@ export default function ItemView({ selected,  backgroundColor }: ItemViewType) {
                             onChangeText={setDescription}
                             onBlur={() => setEditing(false)}
                             onFocus={() => setEditing(true)}
+                            onDone={() => onDescriptionSave()}
                             maxLength={maxItemDescriptionLength}
+                            placeholderTextColor={description == `` ? colors.black : placeHolderColor}
                             style={{ 
                                 ...itemFontStyles, 
                                 ...styles.itemInput,
+                                fontStyle: description == `` ? `italic` : `normal`,
                                 minHeight: maxItemDescriptionHeight, 
-                                fontSize: 16, 
+                                fontSize: description == `` ? 12 : 16, 
                             }}
                         />
                     </ScrollView>

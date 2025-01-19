@@ -13,7 +13,7 @@ import { ColumnType, Directions, ItemType, ItemViews } from '@/shared/types/type
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { borderRadius, colors, getFontColor, globalStyles, isLightColor, Text, View } from '@/components/theme/Themed';
+import { borderRadius, colors, getFontColor, globalStyles, Text, View } from '@/components/theme/Themed';
 import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem, db, itemsDatabaseCollection } from '@/shared/server/firebase';
 import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
@@ -43,6 +43,7 @@ export default function Column({
     } = useContext<any>(SharedContext);
 
     const listRef = useRef(null);
+    const fontColor = getFontColor(selected?.backgroundColor);
 
     const loadingMessages = {
         loading: `Loading`,
@@ -198,8 +199,6 @@ export default function Column({
             </Animated.View>
         )
     }, [])
-
-    const fontColor = isLightColor(selected?.backgroundColor) ? colors.darkFont : colors.lightFont;
 
     return (
         <>

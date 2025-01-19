@@ -1,9 +1,8 @@
 import { SharedContext } from '@/shared/shared';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import React, { forwardRef, useContext, useId } from 'react';
-import { colors, globalStyles, isLightColor, Text, View } from '../theme/Themed';
+import { colors, getFontColor, globalStyles, Text, View } from '../theme/Themed';
 import { Keyboard, TextInput, StyleSheet, InputAccessoryView, TouchableOpacity, Vibration } from 'react-native';
-import { logMsgLine } from '@/shared/variables';
 
 declare global {
     interface ForwardRefInputProps {
@@ -76,7 +75,7 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
 
     const generatedID = useId();
     const accessoryViewID = `inputAccessoryView-${generatedID}`;
-    const inputFontColor = { color: isLightColor(selected?.backgroundColor) ? colors.dark : colors.white };
+    const inputFontColor = { color: getFontColor(selected?.backgroundColor) };
 
     const onDoneVibration = () => {
         onDone();

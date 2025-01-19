@@ -108,6 +108,12 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
           const itemsFromDB: any[] = [];
           snapshot.forEach((doc) => itemsFromDB.push({ ...doc.data() } as any));
           setItems(itemsFromDB);
+          if (itemsFromDB.length > 0 && selected != null) {
+            let selectedItem = itemsFromDB?.find(itm => itm?.id == selected?.id);
+            if (selectedItem) {
+              setSelected(selectedItem);
+            }
+          }
           setItemsLoading(false);
           logMsgLine(`${itemsFromDB.length} Item(s) from Database`);
         }, error => {

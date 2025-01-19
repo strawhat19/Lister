@@ -1,7 +1,7 @@
 import Items from './items';
 import { SharedContext } from '@/shared/shared';
 import { FontAwesome } from '@expo/vector-icons';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { boardStyles, cardedBorderRight } from '../styles';
 import CustomImage from '@/components/custom-image/custom-image';
@@ -14,8 +14,8 @@ import { isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSumma
 
 export const maxItemDescriptionHeight = 251;
 
-export default function ItemView({ selected, backgroundColor }: ItemViewType) {
-    let { view, setView, editing, setEditing, setSelected, setActiveTopName } = useContext<any>(SharedContext);
+export default function ItemView({ backgroundColor }: ItemViewType) {
+    let { selected, items, view, setView, editing, setEditing, setSelected, setActiveTopName } = useContext<any>(SharedContext);
 
     const [name, setName] = useState(selected?.name);
     const [image, setImage] = useState(selected?.image);
@@ -27,6 +27,20 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
     const itemFontStyles = { ...(selected?.fontColor && { color: selected?.fontColor }) };
     const placeHolderColor = isLightColor(selected?.backgroundColor) ? colors.darkFont : colors.lightFont;
     const scrollingDetailsEnabled = () => description && typeof description == `string` && (selected?.image && selected?.image != ``);
+
+    useEffect(() => {
+        let thisItem;
+        if (selected?.type == Views.Item) {
+            thisItem = items.find(itm => itm.id == selected?.id);
+            if (thisItem) {
+                setSelected(thisItem);
+                setName(thisItem?.name);
+                setImage(thisItem?.image);
+                setSummary(thisItem?.summary);
+                setDescription(thisItem?.description);
+            }
+        }
+    }, [items, selected])
 
     const resetImage = () => {
         setValidImage(true);
@@ -337,6 +351,49 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                     </View>
                 )}
             </> : <></>}
+
+            {view == ItemViews.Details && <>
+                {selected?.type == Views.Column && <View style={{ flex: 1, backgroundColor: colors.transparent }} />}
+                <View style={[globalStyles.flexRow, { gap: 10, width: `90%`, position: `relative`, top: -15, paddingBottom: 10, justifyContent: `flex-start`, backgroundColor: colors.transparent }]}>
+                    <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                        Status
+                    </Text>
+                    <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                        {selected?.complete ? `Complete` : `Open`}
+                    </Text>
+                </View>
+                <View style={[globalStyles.flexRow, { gap: 10, width: `90%`, position: `relative`, top: -15, paddingBottom: 10, justifyContent: `flex-start`, backgroundColor: colors.transparent }]}>
+                    <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                        Color
+                    </Text>
+                    <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                        {selected?.color ?? selected?.backgroundColor}
+                    </Text>
+                    <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                        {selected?.color ? selected?.backgroundColor : ``}
+                    </Text>
+                </View>
+                {(isValid(selected?.created) || isValid(selected?.updated)) && <>
+                    <View style={[globalStyles.flexRow, { gap: 5, width: `90%`, position: `relative`, top: -15, justifyContent: `space-between`, backgroundColor: colors.transparent }]}>
+                        {isValid(selected?.created) && <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                            Created By Rakib on
+                        </Text>}
+                        {isValid(selected?.updated) && <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                            Updated By Rakib on
+                        </Text>}
+                    </View>
+                </>}
+                {(isValid(selected?.created) || isValid(selected?.updated)) && <>
+                    <View style={[globalStyles.flexRow, { gap: 5, width: `90%`, position: `relative`, top: -15, justifyContent: `space-between`, backgroundColor: colors.transparent }]}>
+                        {isValid(selected?.created) && <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                            {selected?.created}
+                        </Text>}
+                        {isValid(selected?.updated) && <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                            {selected?.updated}
+                        </Text>}
+                    </View>
+                </>}
+            </>}
         </>
     )
 }

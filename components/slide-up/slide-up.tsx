@@ -49,7 +49,7 @@ export default function SlideUp({ maxHeight = `90%`, backgroundColor = colors.ma
                 <BottomSheetView style={boardStyles.contentContainer}>
                     <>
                         {selected != null ? <>
-                            <ItemView selected={selected} />
+                            <ItemView />
                         </> : <></>}
                     </>
                 </BottomSheetView>

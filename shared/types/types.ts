@@ -66,7 +66,7 @@ export enum Views {
 }
 
 export class ItemViewType {
-    selected: ItemType | null;
+    selected?: ItemType | null;
     backgroundColor?: keyof typeof colors | string = `appleBlue`;
     constructor(data: Partial<ItemViewType>) {
         Object.assign(this, data);

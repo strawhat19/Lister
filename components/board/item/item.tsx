@@ -7,6 +7,7 @@ import CustomImage from '@/components/custom-image/custom-image';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { Text, View, borderRadius, colors, isLightColor, itemCardHeight, itemSimplifiedCardHeight } from '@/components/theme/Themed';
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function Item({ 
     item, 
@@ -16,7 +17,7 @@ export default function Item({
 }: any | RenderItemParams<ItemType>) {
     let { selected, fadeAnim, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
 
-    const fontColor = isLightColor(item?.backgroundColor) ? colors.darkFont : colors.lightFont;
+    const fontColor = (item?.complete || isLightColor(item?.backgroundColor)) ? colors.darkFont : colors.lightFont;
 
     return (
         <ScaleDecorator activeScale={1.01}>
@@ -33,7 +34,7 @@ export default function Item({
                     <View style={{ 
                         ...boardStyles.card, 
                         gap: 25,
-                        backgroundColor: item?.backgroundColor,
+                        backgroundColor: item?.complete ? colors.white : item?.backgroundColor,
                         height: (isValid(item?.summary) || isValid(item?.image)) ? itemCardHeight : itemSimplifiedCardHeight, 
                         minHeight: (isValid(item?.summary) || isValid(item?.image)) ? itemCardHeight : itemSimplifiedCardHeight, 
                         maxHeight: (isValid(item?.summary) || isValid(item?.image)) ? itemCardHeight : itemSimplifiedCardHeight,
@@ -57,7 +58,9 @@ export default function Item({
                             }),
                         }]}>
                             <View style={[styles.indexBadge, { 
+                                gap: 3,
                                 display: `flex`, 
+                                flexDirection: `row`,
                                 backgroundColor: colors.transparent,
                                 ...((isValid(item?.summary) || isValid(item?.image)) ? {
                                     right: isValid(item?.image) ? (isValid(item?.summary) ? 0 : 1) : -8,
@@ -69,6 +72,9 @@ export default function Item({
                                     justifyContent: `center`, 
                                 }),
                             }]}>
+                                {!isValid(item?.summary) && !isValid(item?.image) && (
+                                    item?.complete && <FontAwesome name={`check`} color={colors.success} size={16} />
+                                )}
                                 <Text style={{ ...boardStyles.cardTitle, color: fontColor, fontSize: 18, fontStyle: `italic` }}>
                                     {getIndex != undefined ? getIndex() + 1 : item?.index}
                                 </Text>
@@ -80,6 +86,7 @@ export default function Item({
                                     ...boardStyles.cardTitle, 
                                     color: fontColor, 
                                     overflowY: `visible`,
+                                    textDecorationLine: item?.complete ? `line-through` : `none`,
                                     ...(isValid(item?.summary) ? {
                                         maxWidth: `90%`, 
                                         marginLeft: isValid(item?.image) ? -5 : -35, 
@@ -100,13 +107,13 @@ export default function Item({
                                         maxWidth: `90%`,
                                         color: fontColor, 
                                         marginLeft: isValid(item?.image) ? -5 : -35, 
+                                        textDecorationLine: item?.complete ? `line-through` : `none`,
                                     }}
                                 >
                                     {item?.summary}
                                 </Text>
                             ) : <></>}
                         </View>
-                        
                     </View>
                 </Animated.View>
             </TouchableOpacity>

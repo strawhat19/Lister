@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { View, Animated, StyleSheet, Easing } from 'react-native';
 
-export default function LoadingSpinner({ spinning = true, color = colors.activeColor, size = 16 }) {
+export default function LoadingSpinner({ spinning = true, color = colors.active, size = 16 }) {
   const spinValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {

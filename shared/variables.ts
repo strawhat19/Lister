@@ -102,6 +102,13 @@ export const generateID = () => {
   }).join(``);
 }
 
+export const camelCaseToTitleCase = (camelCaseString: string): string => {
+  let splitOnEveryCapital = camelCaseString.split(/(?=[A-Z])/);
+  let mappedOnEveryCapital = splitOnEveryCapital.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+  let cleanedUpTitleCase = mappedOnEveryCapital.join(` `);
+  return cleanedUpTitleCase;
+}
+
 export const combineArraysByKey = <T>(data: T[], key: keyof T): any[] => {
   return data.reduce((combined, item) => {
     const arrayToCombine = item[key];

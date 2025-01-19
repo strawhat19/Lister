@@ -29,8 +29,8 @@ export default function SliderPagination({ carouselRef }: any) {
                 size={paginationSize}
                 onPress={onPressPagination}
                 containerStyle={{ gap: 10 }}
-                activeDotStyle={{ backgroundColor: colors.activeColor }}
-                dotStyle={{ backgroundColor: colors.inactiveColor, borderRadius: 40 }}
+                activeDotStyle={{ backgroundColor: colors.active }}
+                dotStyle={{ backgroundColor: colors.disabled, borderRadius: 40 }}
             />
         </View>
     )

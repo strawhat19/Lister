@@ -332,7 +332,7 @@ export default function Column({
                                                 cancelText={itemName == `` ? `Close` : `Cancel`}
                                                 onDone={itemName == `` ? () => {} : () => addItem()}
                                                 cancelColor={itemName == `` ? colors.disabledFont : colors.error}
-                                                doneColor={itemName == `` ? colors.disabledFont : colors.activeColor}
+                                                doneColor={itemName == `` ? colors.disabledFont : colors.active}
                                                 endIconColor={itemName == `` ? colors.disabledFont : colors.inputColor}
                                                 extraStyle={{ 
                                                     width: `83%`, 
@@ -349,7 +349,7 @@ export default function Column({
                                                 endIconStyle={{ 
                                                     minHeight: itemHeight, 
                                                     maxHeight: itemHeight, 
-                                                    backgroundColor: itemName == `` ? colors.inputBG : colors.activeColor, 
+                                                    backgroundColor: itemName == `` ? colors.inputBG : colors.active, 
                                                 }}
                                             />
                                         </View>

@@ -12,9 +12,9 @@ export default function TabLayout({ backgroundColor = colors.mainBG }) {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.activeColor,
+        tabBarActiveTintColor: colors.active,
         headerShown: useClientOnlyValue(false, true),
-        tabBarInactiveTintColor: colors.inactiveColor,
+        tabBarInactiveTintColor: colors.disabled,
         headerStyle: { 
           elevation: 0, 
           backgroundColor, 

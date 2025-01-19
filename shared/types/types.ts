@@ -146,19 +146,20 @@ export class ColumnType {
     id: string | number | any;
     uuid?: string | number | any;
     type?: string | Views | Types = Views.Column;
-
+    
     // Relational
     items: ItemType[] = [];
     listID?: string | number;
     boardID!: string | number;
     itemIDs?: string[] | number[] = [];
-
+    
     // Data
     name: string;
     category: string;
     count?: number = 1;
     creator?: string = ``;
     complete?: boolean = false;
+    colorsEnabled?: boolean = true;
     color?: typeof colors | string = colors.listsBG;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
@@ -195,11 +196,11 @@ export class ItemType {
     creator?: string = ``;
     description: string = ``;
     complete?: boolean = false;
-    color?: typeof colors | string = colors.activeColor;
+    color?: typeof colors | string = colors.active;
     orientation?: string | Orientations = Orientations.Portrait;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
-    backgroundColor?: keyof typeof colors | string = colors.activeColor;
+    backgroundColor?: keyof typeof colors | string = colors.active;
     
     constructor(data: Partial<ItemType>) {
         Object.assign(this, data);

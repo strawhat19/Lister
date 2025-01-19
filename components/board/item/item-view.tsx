@@ -3,14 +3,14 @@ import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
 import { FontAwesome } from '@expo/vector-icons';
 import { titleRowStyles } from '../column/column';
+import ColumnSettings from '../column/column-settings';
 import { boardStyles, cardedBorderRight } from '../styles';
 import CustomImage from '@/components/custom-image/custom-image';
-import { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { ScrollView, Swipeable } from 'react-native-gesture-handler';
-import { ItemViewType, Views, ItemViews, ItemType } from '@/shared/types/types';
 import { updateItemFieldsInDatabase } from '@/shared/server/firebase';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
+import { ItemViewType, Views, ItemViews, ItemType } from '@/shared/types/types';
 import { Animated, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
 import { borderRadius, colors, draggableViewItemBorderRadius, getFontColor, globalStyles, Text, View } from '@/components/theme/Themed';
@@ -90,7 +90,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
 
     const swipeableStatus = (itm = selected) => {        
         const renderActions = (side: string) => (
-            <View style={[side == `right` ? titleRowStyles.rightAction : titleRowStyles.leftAction, { backgroundColor: itm.complete ? colors.activeColor : colors.success, borderRadius: draggableViewItemBorderRadius - 3, marginLeft: side == `right` ? 3 : 0, marginRight: side == `right` ? 0 : 3 }]}>
+            <View style={[side == `right` ? titleRowStyles.rightAction : titleRowStyles.leftAction, { backgroundColor: itm.complete ? colors.active : colors.success, borderRadius: draggableViewItemBorderRadius - 3, marginLeft: side == `right` ? 3 : 0, marginRight: side == `right` ? 0 : 3 }]}>
                 <FontAwesome name={itm.complete ? `circle-o` : `check`} color={colors.white} size={12} style={{ paddingHorizontal: 15 }} />
             </View>
         );
@@ -114,9 +114,9 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                 childrenContainerStyle={{ flex: 1, height: `auto`, minHeight: 25 }}
                 onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
             >
-                <TouchableOpacity style={[globalStyles.flexRow, { flex: 1, borderRadius: draggableViewItemBorderRadius - 5, backgroundColor: selected?.complete ? colors.success : colors.activeColor, justifyContent: `center`, gap: 5 }]}>
-                    <FontAwesome name={selected?.complete ? `check` : `circle-o`} size={12} color={getFontColor(selected?.complete ? colors.success : colors.activeColor)} />
-                    <Text style={[styles.detailsFooterText, { fontSize: 12, color: getFontColor(selected?.complete ? colors.success : colors.activeColor), }]}>
+                <TouchableOpacity style={[globalStyles.flexRow, { flex: 1, borderRadius: draggableViewItemBorderRadius - 5, backgroundColor: selected?.complete ? colors.success : colors.active, justifyContent: `center`, gap: 5 }]}>
+                    <FontAwesome name={selected?.complete ? `check` : `circle-o`} size={12} color={getFontColor(selected?.complete ? colors.success : colors.active)} />
+                    <Text style={[styles.detailsFooterText, { fontSize: 12, color: getFontColor(selected?.complete ? colors.success : colors.active), }]}>
                         {selected?.complete ? `Complete` : `Open`}
                     </Text>
                 </TouchableOpacity>
@@ -142,7 +142,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                 doneText={(isValid(name) && name != selected?.name) ? `Save` : `Done`}
                 cancelText={(isValid(name) && name != selected?.name) ? `Cancel` : `Close`}
                 cancelColor={(isValid(name) && name != selected?.name) ? colors.error : colors.disabledFont}
-                doneColor={(isValid(name) && name != selected?.name) ? colors.activeColor : colors.disabledFont}
+                doneColor={(isValid(name) && name != selected?.name) ? colors.active : colors.disabledFont}
                 onDone={(isValid(name) && name != selected?.name) ? () => onNameSave() : () => setName(selected?.name)}
                 style={{ 
                     ...itemFontStyles, 
@@ -250,7 +250,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                             doneText={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? `Save` : `Done`}
                             cancelText={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? `Cancel` : `Close`}
                             cancelColor={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? colors.error : colors.disabledFont}
-                            doneColor={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? colors.activeColor : colors.disabledFont}
+                            doneColor={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? colors.active : colors.disabledFont}
                             onDone={(typeof summary == `string` && summary != selected?.summary) ? () => onSummarySave() : () => setSummary(selected?.summary)}
                             style={{ 
                                 ...itemFontStyles, 
@@ -268,6 +268,9 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
             {selected?.type == Views.Column && <>
                 {view == ItemViews.Items && <>
                     <Items />
+                </>}
+                {view == ItemViews.Settings && <>
+                    <ColumnSettings />
                 </>}
             </>}
 
@@ -297,7 +300,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                             doneText={(description != selected?.description && (isValid(description) || description == ``)) ? `Save` : `Done`}
                             cancelText={(description != selected?.description && (isValid(description) || description == ``)) ? `Cancel` : `Close`}
                             cancelColor={(description != selected?.description && (isValid(description) || description == ``)) ? colors.error : colors.disabledFont}
-                            doneColor={(description != selected?.description && (isValid(description) || description == ``)) ? colors.activeColor : colors.disabledFont}
+                            doneColor={(description != selected?.description && (isValid(description) || description == ``)) ? colors.active : colors.disabledFont}
                             onDone={(typeof description == `string` && description != selected?.description) ? () => onDescriptionSave() : () => setDescription(selected?.description)}
                             style={{ 
                                 ...itemFontStyles, 
@@ -357,7 +360,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                                 cancelText={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? `Cancel` : `Close`}
                                 onDone={((isValid(image) && image != selected?.image && validImage) || image == ``) ? () => onImageSave() : () => resetImage()}
                                 cancelColor={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? colors.error : colors.disabledFont}
-                                doneColor={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? colors.activeColor : colors.disabledFont}
+                                doneColor={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? colors.active : colors.disabledFont}
                                 style={{ 
                                     ...itemFontStyles, 
                                     ...styles.itemInput,

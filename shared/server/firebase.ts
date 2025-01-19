@@ -2,8 +2,8 @@ import { User } from '../models/User';
 import { Vibration } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { ItemType, TaskType, Views } from '../types/types';
-import { colors, findColorKey, isLightColor, randomCardColor } from '@/components/theme/Themed';
-import { defaultBoardID, findHighestNumberInArrayByKey, genID, isValid, logMsgLine } from '../variables';
+import { colors, detectIfNameIsColor, isLightColor } from '@/components/theme/Themed';
+import { camelCaseToTitleCase, defaultBoardID, findHighestNumberInArrayByKey, genID, isValid, logMsgLine } from '../variables';
 import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from 'firebase/firestore';
 
 export enum Environments {
@@ -261,25 +261,19 @@ export const prepareItemForDatabase = async (itm: ItemType, items: ItemType[], l
 
 export const createItem = async (columnItems, listID: string, name, items, closeBottomSheet) => {
   if (listID && isValid(listID)) {
+    name = name.trim().replace(/\s+/g, ` `);
+    
     let lastColor = ``;
-    let backgroundColor = await randomCardColor();
-
     if (columnItems && columnItems?.length > 0) {
       let lastItemColor = columnItems[columnItems.length - 1]?.backgroundColor;
       if (lastItemColor) {
         lastColor = lastItemColor;
-        if (lastColor) {
-          if (lastColor == backgroundColor) {
-            backgroundColor = await randomCardColor(undefined, lastColor);
-          }
-        }
       }
     }
+    
+    let { colorKey, backgroundColor } = await detectIfNameIsColor(name, lastColor);
 
-    const isLightBGColor = isLightColor(backgroundColor);
-    const colorKey = findColorKey(backgroundColor, colors);
-
-    name = name.trim().replace(/\s+/g, ` `);
+    let isLightBGColor = isLightColor(backgroundColor);
 
     const itemToAdd = await new ItemType({
       name,
@@ -290,8 +284,8 @@ export const createItem = async (columnItems, listID: string, name, items, close
       summary: ``,
       description: ``,
       backgroundColor,
-      color: colorKey,
       boardID: defaultBoardID,
+      color: camelCaseToTitleCase(colorKey),
       ...(isLightBGColor && { fontColor: colors.darkFont }),
     } as ItemType);
 

@@ -20,26 +20,53 @@ export const fontFamily = fontFamilies.spacemono;
 
 // Colors
 export const lightColors = {
+  lime: `rgba(0, 255, 0, 1)`,
+  neon: `rgba(57, 255, 20, 1)`,
   cyan: `rgba(0, 255, 255, 1)`,
   ccc: `rgba(204, 204, 204, 1)`,
+  ash: `rgba(178, 190, 181, 1)`,
+  yellow: `rgba(255, 255, 0, 1)`,
+  orange: `rgba(255, 165, 0, 1)`,
+  pink: `rgba(255, 192, 203, 1)`,
+  mango: `rgba(255, 194, 77, 1)`,
   white: `rgba(255, 255, 255, 1)`,
   paper: `rgba(240, 240, 240, 1)`,
   cream: `rgba(255, 253, 208, 1)`,
+  peach: `rgba(255, 218, 185, 1)`,
+  beige: `rgba(245, 245, 220, 1)`,
+  ivory: `rgba(255, 255, 240, 1)`,
+  silver: `rgba(192, 192, 192, 1)`,
+  skyBlue: `rgba(135, 206, 235, 1)`,
+  offwhite: `rgba(245, 245, 245, 1)`,
+  lavender: `rgba(230, 230, 250, 1)`,
   softPink: `rgba(255, 182, 193, 1)`,
+  appleGreen: `rgba(52, 199, 89, 1)`,
   appleMint: `rgba(174, 230, 216, 1)`,
   appleYellow: `rgba(255, 204, 0, 1)`,
   appleGolden: `rgba(255, 215, 0, 1)`,
   lightGray: `rgba(204, 204, 204, 1)`,
-  appleGreen: `rgba(52, 199, 89, 1)`,
   pastelPink: `rgba(255, 209, 220, 1)`,
   appleGreenMint: `rgba(170, 240, 209, 1)`,
 }
 
 export const cardColors = {
   ...lightColors,
+  iosBG: `#3e3e3e`,
   red: `rgba(255, 0, 0, 1)`,
+  green: `rgba(0, 128, 0, 1)`,
+  navy: `rgba(4, 57, 123, 1)`,
+  teal: `rgba(0, 128, 128, 1)`,
+  maroon: `rgba(128, 0, 0, 1)`,
+  olive: `rgba(128, 128, 0, 1)`,
+  brown: `rgba(165, 42, 42, 1)`,
+  steel: `rgba(70, 130, 180, 1)`,
+  gray: `rgba(128, 128, 128, 1)`,
+  darkNavy: `rgba(0, 0, 128, 1)`,
+  coral: `rgba(255, 127, 80, 1)`,
+  purple: `rgba(128, 0, 128, 1)`,
   tomato: `rgba(255, 99, 71, 1)`,
   light: `rgba(47, 149, 220, 1)`,
+  magenta: `rgba(255, 0, 255, 1)`,
   hotPink: `rgba(255, 105, 180, 1)`,
   appleBlue: `rgba(0, 122, 255, 1)`,
   coolGray: `rgba(119, 136, 153, 1)`,
@@ -49,6 +76,8 @@ export const cardColors = {
   steelGray: `rgba(112, 128, 144, 1)`,
   neonHotPink: `rgba(255, 20, 147, 1)`,
   electricCyan: `rgba(0, 191, 255, 1)`,
+  appleBlueMed: `rgba(0, 98, 204, 1)`,
+  appleGreenMed: `rgba(42, 159, 71, 1)`,
   deepRoyalBlue: `rgba(63, 81, 181, 1)`,
   appleGreenShade: `rgba(0, 125, 27, 1)`,
   lavenderPurple: `rgba(150, 123, 182, 1)`,
@@ -60,9 +89,11 @@ export const commonColors = {
   black: `rgba(0, 0, 0, 1)`,
   transparent: `transparent`,
   blue: `rgba(0, 0, 255, 1)`,
-  navy: `rgba(4, 57, 123, 1)`,
   dark: `rgba(39, 39, 41, 1)`,
+  gold: `rgba(255, 215, 0, 1)`,
   ogDark: `rgba(19, 24, 31, 1)`,
+  violet: `rgba(138, 43, 226, 1)`,
+  golden: `rgba(218, 165, 32, 1)`,
   pasteBlackBG: `rgba(42, 47, 53, 1)`,
   jiraColumnBG: `rgba(35, 38, 42, 1)`,
 }
@@ -82,11 +113,14 @@ export const fontColors = {
 
 export const themeColors = {
   error: allColors.red,
+  tertiary: allColors.red,
   info: allColors.appleBlue,
+  warning: allColors.yellow,
+  active: allColors.appleBlue,
+  primary: allColors.appleBlue,
   success: allColors.appleGreen,
-  warning: allColors.appleGolden,
-  activeColor: allColors.appleBlue,
-  inactiveColor: allColors.disabledFont,
+  secondary: allColors.appleGreen,
+  disabled: allColors.disabledFont,
 }
 
 export const themes = {
@@ -150,13 +184,38 @@ export const colors = {
 export const isLightColor = (colorString) => Object.values(lightColors).includes(colorString);
 export const getFontColor = (colorString, darkFont = colors.darkFont, lightFont = colors.lightFont) => isLightColor(colorString) ? darkFont : lightFont;
 
-export const findColorKey = (color: string, colors: Record<string, string | ((alpha: number) => string)>): string | undefined => {
+export const findColorCodeToKey = (colorCode: string, colors: Record<string, string | ((alpha: number) => string)>): string | undefined => {
   for (const [key, value] of Object.entries(colors)) {
-    if (typeof value === `string` && value === color) {
+    if (typeof value === `string` && value === colorCode) {
       return key;
     }
   }
-  return color;
+  return colorCode;
+}
+
+export const detectIfNameIsColor = async (name: string, lastColor: string) => {
+  let colorKey;
+  let backgroundColor;
+  let colorEntries = Object.entries(colors);
+  let nameIsColor = colorEntries.find(([key, value]) => 
+    key.toLowerCase().split(` `).join(``) == name.toLowerCase().split(` `).join(``)
+  );
+  
+  if (nameIsColor) {
+    colorKey = nameIsColor[0];
+    backgroundColor = nameIsColor[1];
+  } else {
+    backgroundColor = await randomCardColor();
+    if (lastColor == backgroundColor) {
+      backgroundColor = await randomCardColor(undefined, lastColor);
+    }
+    colorKey = findColorCodeToKey(backgroundColor, colors);
+  }
+
+  return {
+    colorKey,
+    backgroundColor,
+  }
 }
 
 const rgbaToHsl = (rgba: string): [number, number, number] => {

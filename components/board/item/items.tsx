@@ -112,12 +112,15 @@ export default function Items({ simple = false, component }: any) {
     }
 
     const renderDraggableItem = useCallback(
-        ({ item: itm, drag, isActive, getIndex }: RenderItemParams<TaskType | ItemType | any>) => {
+        ({ item: itm, drag, isActive, getIndex, draggableItems }: any | RenderItemParams<TaskType | ItemType>) => {
 
         let index = itm?.index;
         const swipeableRef = useRef<Swipeable>(null);
         let isFirst: boolean = index == 1 ? true : false;
         let isLast: boolean = index == draggableItems?.length ? true : false;
+        
+        let bgColor = itm?.complete ? colors.taskBGComplete : (itm?.type == Views.Task ? colors.taskBG : itm?.backgroundColor);
+        let fColor = itm?.complete ? colors.taskColorComplete : (itm?.type == Views.Task ? colors.taskColor : getFontColor(itm?.backgroundColor));
 
         const handleRightSwipe = async (itmID: string = itm?.id) => {
             swipeableRef.current?.close();
@@ -152,7 +155,7 @@ export default function Items({ simple = false, component }: any) {
         );
         
         const renderLeftActions = () => (
-            <View style={[titleRowStyles.leftAction, { backgroundColor: itm.complete ? colors.activeColor : colors.success, borderRadius: draggableViewItemBorderRadius - 3, marginRight: 3 }]}>
+            <View style={[titleRowStyles.leftAction, { backgroundColor: itm.complete ? colors.active : colors.success, borderRadius: draggableViewItemBorderRadius - 3, marginRight: 3 }]}>
                 <FontAwesome name={itm.complete ? `circle-o` : `check`} color={colors.white} size={18} style={{ paddingHorizontal: 15 }} />
             </View>
         );
@@ -178,23 +181,23 @@ export default function Items({ simple = false, component }: any) {
                             style={[boardStyles.rowItem, { 
                                 width: `100%`, 
                                 minHeight: itemHeight, 
+                                backgroundColor: bgColor,
                                 borderTopLeftRadius: isFirst ? draggableViewItemBorderRadius : 0, 
                                 borderTopRightRadius: isFirst ? draggableViewItemBorderRadius : 0, 
                                 borderBottomLeftRadius: isLast ? draggableViewItemBorderRadius : 0, 
                                 borderBottomRightRadius: isLast ? draggableViewItemBorderRadius : 0, 
-                                backgroundColor: itm?.complete ? colors.taskBGComplete : colors.taskBG,
                             }]}
                         >
                             <View style={{width: `100%`, backgroundColor: colors.transparent, ...globalStyles.flexRow, gap: 15, paddingLeft: 15}}>
                                 <FontAwesome 
                                     size={18} 
+                                    color={fColor} 
                                     name={itm?.complete ? `check` : `circle-o`} 
-                                    color={itm?.complete ? colors.appleGreen : colors.white} 
                                 />
-                                <Text style={{ textAlign: `center`, fontWeight: `bold`, fontStyle: `italic`, color: itm?.complete ? colors.taskColorComplete : colors.taskColor, backgroundColor: itm?.complete ? colors.taskBGComplete : colors.taskBG, width: 20, height: 20, borderRadius: `100%`, paddingTop: 1.5 }}>
+                                <Text style={{ textAlign: `center`, fontWeight: `bold`, fontStyle: `italic`, color: fColor, width: 20, height: 20, borderRadius: `100%`, paddingTop: 1.5 }}>
                                     {getIndex() + 1}
                                 </Text>
-                                <Text style={{ textAlign: `left`, fontWeight: `bold`, fontStyle: `italic`, color: itm?.complete ? colors.taskColorComplete : colors.taskColor, textDecorationLine: itm?.complete ? `line-through` : `none` }}>
+                                <Text style={{ textAlign: `left`, fontWeight: `bold`, fontStyle: `italic`, color: fColor, textDecorationLine: itm?.complete ? `line-through` : `none` }}>
                                     {itm?.name}
                                 </Text>
                             </View>
@@ -227,12 +230,12 @@ export default function Items({ simple = false, component }: any) {
                         style={{ height: `auto` }}
                         nestedScrollEnabled={true}
                         directionalLockEnabled={true}
-                        renderItem={renderDraggableItem}
                         showsVerticalScrollIndicator={false}
                         keyExtractor={(item) => item.id.toString()}
                         onDragEnd={async (onDragEndData: any) => await onDragEnd(onDragEndData)}
                         onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                         onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                        renderItem={(onDragItem: RenderItemParams<ItemType | TaskType>) => renderDraggableItem({ ...onDragItem, draggableItems })}
                         contentContainerStyle={{
                             gap: 3,
                             width: `100%`,
@@ -243,8 +246,7 @@ export default function Items({ simple = false, component }: any) {
                     />
                 ) : (
                     <View style={{ flex: 1, backgroundColor: colors.transparent, paddingVertical: 10, ...globalStyles.flexRow, alignItems: `flex-start`, justifyContent: `center`, gap: 15 }}>
-                        {/* <LoadingSpinner /> */}
-                        <Text style={{ fontStyle: `italic`, textAlign: `center`, color: getFontColor(colors.listsBG, colors.taskBG), fontWeight: `bold` }}>
+                        <Text style={{ fontStyle: `italic`, textAlign: `center`, color: getFontColor(selected?.backgroundColor), fontWeight: `bold` }}>
                             0 {selected?.type == Views.Item ? `Task(s)` : `Item(s)`}
                         </Text>
                     </View>
@@ -264,14 +266,14 @@ export default function Items({ simple = false, component }: any) {
                     cancelText={itmName == `` ? `Close` : `Cancel`}
                     endIconPress={() => itmToEdit == null ? addItm() : editItm()}
                     cancelColor={itmName == `` ? colors.disabledFont : colors.error}
-                    doneColor={itmName == `` ? colors.disabledFont : colors.activeColor}
+                    doneColor={itmName == `` ? colors.disabledFont : colors.active}
                     placeholder={`${selected?.type == Views.Item ? `Task` : `Item`} Name`}
                     endIconColor={itmName == `` ? colors.disabledFont : colors.inputColor}
                     doneText={itmName == `` ? `Done` : itmToEdit == null ? `Add` : `Save`}
                     onDone={itmName == `` ? null : () => itmToEdit == null ? addItm() : editItm()}
                     maxLength={selected?.type == Views.Item ? maxTaskNameLength : maxItemNameLength}
                     style={{ width: `80%`, minHeight: itemHeight, ...globalStyles.flexRow, marginBottom: 0, }}
-                    endIconStyle={{ minHeight: itemHeight, maxHeight: itemHeight, backgroundColor: itmName == `` ? colors.inputBG : colors.activeColor }}
+                    endIconStyle={{ minHeight: itemHeight, maxHeight: itemHeight, backgroundColor: itmName == `` ? colors.inputBG : colors.active }}
                     extraStyle={{ color: colors.inputColor, backgroundColor: colors.inputBG, fontWeight: `bold`, fontStyle: itmName == `` ? `italic` : `normal` }}
                 />
             </View>

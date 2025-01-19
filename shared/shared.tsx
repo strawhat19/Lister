@@ -7,8 +7,8 @@ import { useSharedValue } from 'react-native-reanimated';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Animated, useWindowDimensions, Vibration } from 'react-native';
 import { animationOptions, log, logMsgLine, useDatabase } from './variables';
+import { Animated, Keyboard, useWindowDimensions, Vibration } from 'react-native';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { itemsDatabaseCollection, db, tasksDatabaseCollection } from './server/firebase';
 import { BoardType, ColumnType, ItemType, ItemViews, SliderModes, TaskType, Views } from '@/shared/types/types';
@@ -44,12 +44,13 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const blurBGContainerOpacity = useRef(new Animated.Value(0)).current;
 
-  const closeBottomSheet = () => {
+  const closeBottomSheet = (dismissKeyboard = false) => {
     setIndx(0);
     exitFadeBlur();
     setEditing(false);
     setSelected(null);
     setView(defaultItemView);
+    if (dismissKeyboard) Keyboard.dismiss();
   }
 
   const onSheetChange = (index?: any) => {

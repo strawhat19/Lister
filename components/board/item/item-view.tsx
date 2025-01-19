@@ -1,5 +1,4 @@
-import ItemForm from './item-form';
-import Tasks from '../tasks/tasks';
+import Items from './items';
 import { SharedContext } from '@/shared/shared';
 import { FontAwesome } from '@expo/vector-icons';
 import React, { useContext, useState } from 'react';
@@ -34,7 +33,7 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
         setImage(selected?.image);
     }
 
-    const onTopTogglePress = (viewType: ItemViews) => {
+    const onTopTogglePress = (viewType: ItemViews | Views) => {
         Vibration.vibrate(1);
         setView(viewType);
     }
@@ -50,7 +49,7 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
     }; 
     
     const onNameSave = async () => {
-        await updateItemFieldsInDatabase(selected?.id, { name });
+        if (selected?.type == Views.Item) await updateItemFieldsInDatabase(selected?.id, { name });
         await setSelected({ ...selected, name });
         await setActiveTopName(name);
     }; 
@@ -65,30 +64,85 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
         log(`Not Valid Image`);
     }
 
+    const nameInput = () => {
+        return <>
+            <ForwardRefInput
+                value={name}
+                multiline={true}
+                showLabel={false}
+                numberOfLines={2}
+                placeholder={`Name`}
+                onDoneDismiss={true}
+                scrollEnabled={false}
+                onChangeText={setName}
+                maxLength={maxItemNameLength}
+                onCancel={() => setName(selected?.name)}
+                extraStyle={{ backgroundColor: colors.transparent }}
+                placeholderTextColor={name == `` ? colors.black : placeHolderColor}
+                doneText={(isValid(name) && name != selected?.name) ? `Save` : `Done`}
+                cancelText={(isValid(name) && name != selected?.name) ? `Cancel` : `Close`}
+                cancelColor={(isValid(name) && name != selected?.name) ? colors.error : colors.disabledFont}
+                doneColor={(isValid(name) && name != selected?.name) ? colors.activeColor : colors.disabledFont}
+                onDone={(isValid(name) && name != selected?.name) ? () => onNameSave() : () => setName(selected?.name)}
+                style={{ 
+                    ...itemFontStyles, 
+                    ...styles.itemInput, 
+                    fontSize: 21, 
+                    maxHeight: `auto`, 
+                    minHeight: `auto`, 
+                    backgroundColor: colors.transparent,
+                    fontStyle: name == `` ? `italic` : `normal`,
+                }}
+            />
+        </>
+    }
+
     return (
         <>
-            {(!editing && selected?.type == Views.Item) ? (
-                <View style={{ gap: 0, display: `flex`, flexDirection: `row`, alignItems: `center`, justifyContent: `space-between`, backgroundColor: colors.transparent, width: `100%`, height: 30, marginTop: -15, marginBottom: 10, borderRadius: 8, overflow: `hidden` }}>
-                    <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Details)} style={[boardStyles.rowItem, { height: `100%`, flexBasis: `32.5%`, backgroundColor: view == ItemViews.Details ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black, ...globalStyles.flexRow, gap: 10 }]}>
+            {!editing ? <>
+                {selected?.type == Views.Column && <>
+                    <View style={[styles.nameInput, globalStyles.flexRow, { paddingLeft: 20 }]}>
+                        <FontAwesome name={`pencil`} size={18} color={colors.white} style={{ position: `relative`, top: -5.7, right: -10 }} />
+                        {nameInput()}
+                    </View>
+                </>}
+                <View style={styles.topTabs}>
+                    <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Details)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Details ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
                         <FontAwesome name={`align-left`} size={18} color={colors.white} />
                         <Text style={{ fontWeight: `bold` }}>
                             {ItemViews.Details}
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Tasks)} style={[boardStyles.rowItem, { height: `100%`, flexBasis: `32.5%`, backgroundColor: view == ItemViews.Tasks ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black, ...globalStyles.flexRow, gap: 10 }]}>
-                        <FontAwesome name={`list`} size={18} color={colors.white} />
-                        <Text style={{ fontWeight: `bold` }}>
-                            {ItemViews.Tasks}
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Images)} style={[boardStyles.rowItem, { height: `100%`, flexBasis: `32.5%`, backgroundColor: view == ItemViews.Images ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black, ...globalStyles.flexRow, gap: 10 }]}>
-                        <FontAwesome name={`image`} size={18} color={colors.white} />
-                        <Text style={{ fontWeight: `bold` }}>
-                            {ItemViews.Images}
-                        </Text>
-                    </TouchableOpacity>
+                    {selected?.type == Views.Column && <>
+                        <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Items)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Items ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
+                            <FontAwesome name={`list`} size={18} color={colors.white} />
+                            <Text style={{ fontWeight: `bold` }}>
+                                {ItemViews.Items}
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Settings)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Settings ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
+                            <FontAwesome name={`gears`} size={18} color={colors.white} />
+                            <Text style={{ fontWeight: `bold` }}>
+                                {ItemViews.Settings}
+                            </Text>
+                        </TouchableOpacity>
+                    </>}
+                    {selected?.type == Views.Item && <>
+                        <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Tasks)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Tasks ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
+                            <FontAwesome name={`list`} size={18} color={colors.white} />
+                            <Text style={{ fontWeight: `bold` }}>
+                                {ItemViews.Tasks}
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Images)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Images ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
+                            <FontAwesome name={`image`} size={18} color={colors.white} />
+                            <Text style={{ fontWeight: `bold` }}>
+                                {ItemViews.Images}
+                            </Text>
+                        </TouchableOpacity>
+                    </>}
                 </View>
-            ) : <></>}
+            </> : <></>}
             <Animated.View 
                 id={`sheetCard_${selected?.id}`} 
                 style={{ 
@@ -98,12 +152,9 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                     alignItems: `center`,
                     paddingTop: selected?.type == Views.Item && isValid(selected?.image) ? 0 : 5,
                     backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
-                    height: (editing && selected?.type == Views.Item) ? 0 : ((web() || selected?.type == Views.ItemForm) ? 500 : isValid(selected?.image) ? 280 : 135), 
+                    height: (selected?.type == Views.Column || (editing && selected?.type == Views.Item)) ? 0 : (web() ? 500 : isValid(selected?.image) ? 280 : 135), 
                 }}
             >
-                {selected?.type == Views.ItemForm ? <>
-                    <ItemForm />
-                </> : <></>}
                 {(!editing && selected?.type == Views.Item) ? <>
                     {isValid(selected?.image) ? (
                         <View style={{ ...boardStyles.cardImageContainer, alignItems: `center`, minWidth: validSelectedImage ? `50%` : 0, marginLeft: validSelectedImage ? 0 : -115 }}>
@@ -122,7 +173,7 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                             />
                         </View>
                     ) : <></>}
-                    <View id={`itemTitle_${selected.id}`} style={{ ...boardStyles.cardRight, height: `100%`, minHeight: `100%`, maxHeight: `100%`, gap: 0, paddingVertical: 0, alignItems: `center`, justifyContent: `center`, backgroundColor: colors.transparent, paddingTop: isValid(selected?.image) ? 60 : 0 }}>
+                    <View style={{ ...boardStyles.cardRight, height: `100%`, minHeight: `100%`, maxHeight: `100%`, gap: 0, paddingVertical: 0, alignItems: `center`, justifyContent: `center`, backgroundColor: colors.transparent, paddingTop: isValid(selected?.image) ? 60 : 0 }}>
                         <ForwardRefInput
                             value={name}
                             multiline={true}
@@ -181,6 +232,12 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                 </> : <></>}
             </Animated.View>
 
+            {selected?.type == Views.Column && <>
+                {view == ItemViews.Items && <>
+                    <Items />
+                </>}
+            </>}
+
             {selected?.type == Views.Item ? <>
                 {view == ItemViews.Details && (
                     <ScrollView 
@@ -221,7 +278,7 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                 )}
 
                 {view == ItemViews.Tasks && <>
-                    <Tasks selected={selected} />
+                    <Items />
                 </>}
 
                 {view == ItemViews.Images && (
@@ -285,7 +342,40 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
 }
 
 const styles = StyleSheet.create({
-    borderedInput: { borderWidth: 1, borderColor: colors.listsBG, },
+    nameInput: { 
+        gap: 10, 
+        height: 50,
+        width: `100%`,
+        marginTop: -20,
+        marginBottom: 10,
+        overflow: `hidden`,
+        justifyContent: `center`, 
+        backgroundColor: colors.transparent, 
+    },
+    topTabs: { 
+        gap: 0,
+        height: 30,
+        width: `100%`,
+        marginTop: -15,
+        borderRadius: 8,
+        display: `flex`,
+        marginBottom: 10,
+        overflow: `hidden`,
+        flexDirection: `row`,
+        alignItems: `center`,
+        justifyContent: `space-between`,
+        backgroundColor: colors.transparent,
+    },
+    topTabButtons: { 
+        gap: 10, 
+        height: `100%`, 
+        flexBasis: `32.5%`, 
+        ...globalStyles.flexRow, 
+    },
+    borderedInput: { 
+        borderWidth: 1, 
+        borderColor: colors.listsBG, 
+    },
     itemInput: { 
         ...boardStyles.cardTitle, 
         backgroundColor: colors.transparent, 

@@ -11,7 +11,7 @@ import { Animated, useWindowDimensions, Vibration } from 'react-native';
 import { animationOptions, log, logMsgLine, useDatabase } from './variables';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { itemsDatabaseCollection, db, tasksDatabaseCollection } from './server/firebase';
-import { BoardType, ColumnType, ItemType, ItemViews, TaskType } from '@/shared/types/types';
+import { BoardType, ColumnType, ItemType, ItemViews, SliderModes, TaskType, Views } from '@/shared/types/types';
 
 configureReanimatedLogger({ strict: false, level: ReanimatedLogLevel.error });
 
@@ -26,7 +26,6 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [slideIndex, setSlideIndex] = useState(0);
   let [modalOpen, setModalOpen] = useState(false);
   let [isDragging, setDragging] = useState(false);
-  let [view, setView] = useState(defaultItemView);
   let [items, setItems] = useState<ItemType[]>([]);
   let [tasks, setTasks] = useState<TaskType[]>([]);
   let [user, setUser] = useState<User | null>(null);
@@ -34,6 +33,8 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [itemsLoading, setItemsLoading] = useState(true);
   let [usersLoading, setUsersLoading] = useState(true);
   let [tasksLoading, setTasksLoading] = useState(true);
+  let [sliderMode, setSliderMode] = useState(SliderModes.Parallax);
+  let [view, setView] = useState<ItemViews | Views>(defaultItemView);
   let [selected, setSelected] = useState<ItemType | ColumnType | null>(null);
   let [boardColumns, setBoardColumns] = useState<BoardType | ColumnType[]>(defaultColumns);
   let [activeTopName, setActiveTopName] = useState(boardColumns[slideIndex]?.name);
@@ -161,6 +162,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         blurBGContainerOpacity,
         isDragging, setDragging,
         modalOpen, setModalOpen,
+        sliderMode, setSliderMode,
         slideIndex, setSlideIndex,
         boardColumns, setBoardColumns,
         tasksLoading, setTasksLoading,

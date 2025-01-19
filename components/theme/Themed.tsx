@@ -7,8 +7,8 @@ import { Text as DefaultText, View as DefaultView } from 'react-native';
 // Sizing & Spacing
 export const borderRadius = 4;
 export const itemCardHeight = 150;
-export const taskBorderRadius = 8;
 export const itemSimplifiedCardHeight = `auto`;
+export const draggableViewItemBorderRadius = 8;
 
 export const fontFamilies = {
   arial: `Arial`,
@@ -243,7 +243,7 @@ export const globalStyles = StyleSheet.create({
     alignItems: `center`,
     position: `relative`,
     maxHeight: itemHeight,
-    borderRadius: taskBorderRadius,
+    borderRadius: draggableViewItemBorderRadius,
     backgroundColor: colors.transparent,
 },
 })

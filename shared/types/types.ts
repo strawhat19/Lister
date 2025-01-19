@@ -4,6 +4,10 @@ export type Type = {
     type: Types | Views; 
 }
 
+export enum SliderModes {
+    Parallax = `parallax`,
+}
+
 export type DataNoID = {
     name?: string; 
     index?: number;
@@ -45,11 +49,13 @@ export enum BoardTypes {
 }
 
 export enum ItemViews {
+    Items = `Items`,
     Tasks = `Tasks`,
     Images = `Images`,
     Details = `Details`,
     Summary = `Summary`,
     Comments = `Comments`,
+    Settings = `Settings`,
 }
 
 export enum Views {
@@ -57,7 +63,6 @@ export enum Views {
     Task = `Task`,
     Board = `Board`,
     Column = `Column`,
-    ItemForm = `Item Form`,
 }
 
 export class ItemViewType {

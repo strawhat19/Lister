@@ -57,7 +57,7 @@ export default function TabLayout({ backgroundColor = colors.mainBG }) {
         options={{ 
           title: `Settings`, 
           tabBarIcon: ({ color }) => (
-            <FontAwesome name={`cog`} size={tabBarIconSize} color={color} />
+            <FontAwesome name={`gears`} size={tabBarIconSize} color={color} />
           ), 
         }}
       />

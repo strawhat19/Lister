@@ -9,13 +9,16 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Animated, { Layout } from 'react-native-reanimated';
 import LoadingSpinner from '@/components/loading/loading-spinner';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
-import { ColumnType, Directions, ItemType, Views } from '@/shared/types/types';
+import { ColumnType, Directions, ItemType, ItemViews } from '@/shared/types/types';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { borderRadius, colors, globalStyles, isLightColor, Text, View } from '@/components/theme/Themed';
 import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem, db, itemsDatabaseCollection } from '@/shared/server/firebase';
 import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+
+export const defaultColumnView = ItemViews.Items;
+const fontColor = isLightColor(colors.listsBG) ? colors.darkFont : colors.lightFont;
 
 export default function Column({ 
     column, 
@@ -28,6 +31,7 @@ export default function Column({
     let { 
         items,
         height, 
+        setView,
         selected,
         isDragging,
         slideIndex,
@@ -35,6 +39,7 @@ export default function Column({
         boardColumns,
         itemsLoading,
         activeTopName,
+        openBottomSheet,
         closeBottomSheet, 
     } = useContext<any>(SharedContext);
 
@@ -45,7 +50,6 @@ export default function Column({
         zero: `No Items Yet`,
     }
 
-    const [loading,] = useState(false);
     const [itemName, setItemName] = useState(``);
     const [addingItem, setAddingItem] = useState(false);
     const [columnItems, setColumnItems] = useState<ItemType[]>([]);
@@ -62,6 +66,11 @@ export default function Column({
     const onDragBegin = () => {
         setDragging(true);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
+
+    const openColumnDetails = () => {
+        setView(ItemViews.Items);
+        openBottomSheet(column, colors.listsBG);
     }
 
     useEffect(() => {
@@ -218,39 +227,39 @@ export default function Column({
                                 opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.35,
                                 backgroundColor: selected == null ? colors.listsBG : colors.transparent, 
                             }}>
-                                <View style={[titleRowStyles.titleRow, { paddingVertical: 7 }]}>
-                                    {selected == null && column?.category && column?.category?.length > 0 ? (
+                                <TouchableOpacity onPress={() => openColumnDetails()} disabled={selected != null} style={[titleRowStyles.titleRow, { paddingVertical: 7, position: `relative` }]}>
+                                    {selected == null && column?.category && column?.category?.length > 0 ? <>
                                         <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
                                             {column?.category}
                                         </Text>
-                                    ) : (
-                                        selected?.type == Views.Item ? (
-                                            <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: selected?.backgroundColor }]}>
-                                                <FontAwesome name={`trash`} color={fontColor} size={14} />
-                                                <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: fontColor }]}>
-                                                    Delete
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ) : <></>
+                                        <FontAwesome style={{ position: `absolute`, top: 12, left: 95  }} size={12} name={`gears`} color={colors.disabledFont} />
+                                    </> : (
+                                        <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: selected?.backgroundColor }]}>
+                                            <FontAwesome name={`trash`} color={fontColor} size={14} />
+                                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: fontColor }]}>
+                                                Delete
+                                            </Text>
+                                        </TouchableOpacity>
                                     )}
-                                    <Text numberOfLines={1} ellipsizeMode={`tail`} style={[titleRowStyles.title, titleRowStyles.fontColor, { flexBasis: selected?.type == Views.ItemForm ? `65%` : `50%` }]}>
+                                    <Text numberOfLines={1} ellipsizeMode={`tail`} style={[titleRowStyles.title, titleRowStyles.fontColor, { flexBasis: `50%` }]}>
                                         {selected == null ? (
                                             `${column?.name} ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                                 toFixedWithoutRounding(slideIndex + 1, 1)
                                             )}`
                                         ) : activeTopName}
                                     </Text>
-                                    {selected == null ? (
-                                        columnItems && columnItems.length > 0 ? (
+                                    {selected == null ? <>
+                                        {columnItems && columnItems.length > 0 ? <>
                                             <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
                                                 {columnItems?.length >= 10 ? columnItems?.length : columnItems?.length + ` Item${columnItems?.length > 1 ? `s` : `(s)`}`}
                                             </Text>
-                                        ) : <>
+                                        </> : <>
                                             <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
                                                 0 Item(s)
                                             </Text>
-                                        </>
-                                    ) : (
+                                        </>}
+                                        <FontAwesome style={{ position: `absolute`, top: 12, right: 95  }} size={12} name={`gears`} color={colors.disabledFont} />
+                                    </> : (
                                         <TouchableOpacity onPress={() => closeItem()} style={[titleRowStyles.topButton, { backgroundColor: selected?.backgroundColor }]}>
                                             <FontAwesome name={`ban`} color={fontColor} size={14} />
                                             <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: fontColor }]}>
@@ -258,7 +267,7 @@ export default function Column({
                                             </Text>
                                         </TouchableOpacity>
                                     )}
-                                </View>
+                                </TouchableOpacity>
                                 {(columnItems?.length > 0) ? (
                                     // <PanGestureHandler enabled={!isDragging} activeOffsetX={[-10, 10]} activeOffsetY={[-10, 10]} onGestureEvent={!isDragging ? handleGesture : null}>
                                         <DraggableFlatList
@@ -418,6 +427,6 @@ export const titleRowStyles = StyleSheet.create({
     },
     fontColor: { 
         fontWeight: `bold`,
-        color: isLightColor(colors.listsBG) ? colors.darkFont : colors.lightFont, 
+        color: fontColor, 
     },
 })

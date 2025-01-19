@@ -3,6 +3,7 @@ import { BlurView } from 'expo-blur';
 import { boardStyles } from '../styles';
 import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
+import { doc, writeBatch } from 'firebase/firestore';
 import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Animated, { Layout } from 'react-native-reanimated';
@@ -15,7 +16,6 @@ import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 
 import { borderRadius, colors, globalStyles, isLightColor, Text, View } from '@/components/theme/Themed';
 import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem, db, itemsDatabaseCollection } from '@/shared/server/firebase';
 import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
-import { doc, writeBatch } from 'firebase/firestore';
 
 export default function Column({ 
     column, 
@@ -209,7 +209,7 @@ export default function Column({
                             }, 
                             animatedAdjacent,
                         ]}>
-                            {/* <BlurView intensity={blurIntensity} style={[StyleSheet.absoluteFill, { borderRadius: 12, opacity: 0 }]} /> */}
+                            <BlurView intensity={blurIntensity} style={[StyleSheet.absoluteFill, { borderRadius: 12 }]} />
                             <View style={{ 
                                 padding: 0,
                                 width: `95%`, 
@@ -289,7 +289,7 @@ export default function Column({
                                     // </PanGestureHandler>
                                 ) : (
                                     <View style={{ width: `100%`, backgroundColor: colors.transparent, height: `auto`, paddingVertical: 15, ...globalStyles.flexRow, justifyContent: `center`, gap: 15 }}>
-                                        <LoadingSpinner />
+                                        {itemsLoading ? <LoadingSpinner /> : <></>}
                                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
                                             {itemsLoading ? loadingMessages.loading : loadingMessages.zero}
                                         </Text>

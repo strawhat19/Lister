@@ -3,17 +3,17 @@ import { boardStyles } from '../styles';
 import { TaskType } from '@/shared/types/types';
 import { SharedContext } from '@/shared/shared';
 import { titleRowStyles } from '../column/column';
+import { doc, writeBatch } from 'firebase/firestore';
 import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import LoadingSpinner from '@/components/loading/loading-spinner';
 import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { delayBeforeScrollingDown, isValid, itemHeight, maxTaskNameLength } from '@/shared/variables';
 import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
+import { delayBeforeScrollingDown, isValid, itemHeight, maxTaskNameLength } from '@/shared/variables';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { addTaskToDatabase, db, deleteTaskFromDatabase, getTasksForItem, prepareTaskForDatabase, tasksDatabaseCollection, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
-import { doc, writeBatch } from 'firebase/firestore';
-import LoadingSpinner from '@/components/loading/loading-spinner';
 
 export default function Tasks({ selected }: any) {
     const listRef = useRef(null);
@@ -204,7 +204,7 @@ export default function Tasks({ selected }: any) {
                     />
                 ) : (
                     <View style={{ flex: 1, backgroundColor: colors.transparent, paddingVertical: 10, ...globalStyles.flexRow, alignItems: `flex-start`, justifyContent: `center`, gap: 15 }}>
-                        <LoadingSpinner />
+                        {/* <LoadingSpinner /> */}
                         <Text style={{ fontStyle: `italic`, textAlign: `center`, color: colors.taskBG, fontWeight: `bold` }}>
                             0 Task(s)
                         </Text>
@@ -223,6 +223,7 @@ export default function Tasks({ selected }: any) {
                     onCancel={() => setTaskName(``)}
                     onBlur={() => setEditing(false)}
                     onFocus={() => setEditing(true)}
+                    endIconDisabled={taskName == ``}
                     cancelText={taskName == `` ? `Close` : `Cancel`}
                     endIconPress={() => taskToEdit == null ? addTask() : editTask()}
                     cancelColor={taskName == `` ? colors.disabledFont : colors.error}

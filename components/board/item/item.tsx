@@ -60,8 +60,8 @@ export default function Item({
                                 display: `flex`, 
                                 backgroundColor: colors.transparent,
                                 ...((isValid(item?.summary) || isValid(item?.image)) ? {
-                                    top: -5,
                                     right: isValid(item?.image) ? (isValid(item?.summary) ? 0 : 1) : -8,
+                                    top: (isValid(item?.summary) && isValid(item?.image)) ? 25 : isValid(item?.image) ? -20 : (isValid(item?.summary) ? 15 : -5),
                                 } : {
                                     borderRightWidth: 2, 
                                     alignItems: `center`,
@@ -82,9 +82,9 @@ export default function Item({
                                     overflowY: `visible`,
                                     ...(isValid(item?.summary) ? {
                                         maxWidth: `90%`, 
-                                        marginLeft: isValid(item?.image) ? 0 : -35, 
+                                        marginLeft: isValid(item?.image) ? -5 : -35, 
                                     } : { 
-                                        marginLeft: isValid(item?.image) ? 0 : 70, 
+                                        marginLeft: isValid(item?.image) ? -5 : 70, 
                                         maxWidth: isValid(item?.image) ? `100%` : `70%`, 
                                     }), 
                                 }}
@@ -97,11 +97,9 @@ export default function Item({
                                     ellipsizeMode={`tail`} 
                                     style={{ 
                                         ...boardStyles.cardDescription, 
-                                        color: fontColor, 
                                         maxWidth: `90%`,
-                                        ...(isValid(item?.summary) ? {
-                                            marginLeft: isValid(item?.image) ? 0 : -35, 
-                                        } : { }),
+                                        color: fontColor, 
+                                        marginLeft: isValid(item?.image) ? -5 : -35, 
                                     }}
                                 >
                                     {item?.summary}

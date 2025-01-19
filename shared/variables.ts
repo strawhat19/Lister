@@ -51,10 +51,10 @@ export const logNewLine = (str: string, num: number) => {
   log(`\n`);
 };
 
-export const logMsgLine = (logMessage: string) => {
+export const logMsgLine = (logMessage: string, data?) => {
   const logMessageLength = logMessage?.length;
   logNewLine(`.`, logMessageLength);
-  log(logMessage);
+  log(logMessage, data);
 }
 
 export const animationOptions = {

@@ -1,7 +1,7 @@
 import { User } from './models/User';
 import 'react-native-gesture-handler';
 import { defaultColumns } from './database';
-import { colors, View } from '@/components/theme/Themed';
+import { View } from '@/components/theme/Themed';
 import SlideUp from '@/components/slide-up/slide-up';
 import { useSharedValue } from 'react-native-reanimated';
 import { collection, onSnapshot } from 'firebase/firestore';
@@ -62,7 +62,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     enterFadeBlur();
     setIndx(1);
     if (item) {
-      log(`Opened Details for ${item?.type} that says "${item?.name}"`);
+      logMsgLine(`Opened Details for ${item?.type} that says "${item?.name}"`);
       if (item.name) setActiveTopName(item.name);
       if (backgroundColor) {
         item = {

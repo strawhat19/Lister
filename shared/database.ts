@@ -1,6 +1,6 @@
+import { defaultBoardID } from './variables';
 import { colors } from '@/components/theme/Themed';
 import { ColumnType, ItemType, Views, TaskType } from './types/types';
-import { defaultBoardID } from './variables';
 
 export const defaultCategories = {
   To_Do: `To Do`,

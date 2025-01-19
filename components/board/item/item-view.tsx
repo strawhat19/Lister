@@ -11,7 +11,7 @@ import { updateItemFieldsInDatabase } from '@/shared/server/firebase';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { Animated, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { borderRadius, colors, globalStyles, isLightColor, Text, View } from '@/components/theme/Themed';
-import { isValid, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
+import { isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
 
 export const maxItemDescriptionHeight = 251;
 
@@ -19,15 +19,20 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
     let { view, setView, editing, setEditing, setSelected, setActiveTopName } = useContext<any>(SharedContext);
 
     const [name, setName] = useState(selected?.name);
-    const [validImage, setValidImage] = useState(true);
     const [image, setImage] = useState(selected?.image);
+    const [validImage, setValidImage] = useState(false);
     const [summary, setSummary] = useState(selected?.summary);
-    const [validSelectedImage, setValidSelectedImage] = useState(true);
     const [description, setDescription] = useState(selected?.description);
+    const [validSelectedImage, setValidSelectedImage] = useState(isValid(selected?.image));
 
     const itemFontStyles = { ...(selected?.fontColor && { color: selected?.fontColor }) };
     const placeHolderColor = isLightColor(selected?.backgroundColor) ? colors.darkFont : colors.lightFont;
     const scrollingDetailsEnabled = () => description && typeof description == `string` && (selected?.image && selected?.image != ``);
+
+    const resetImage = () => {
+        setValidImage(true);
+        setImage(selected?.image);
+    }
 
     const onTopTogglePress = (viewType: ItemViews) => {
         Vibration.vibrate(1);
@@ -54,6 +59,11 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
         await updateItemFieldsInDatabase(selected?.id, { image });
         await setSelected({ ...selected, image });
     }; 
+
+    const notValidImage = () => {
+        setValidImage(false);
+        log(`Not Valid Image`);
+    }
 
     return (
         <>
@@ -96,7 +106,7 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                 </> : <></>}
                 {(!editing && selected?.type == Views.Item) ? <>
                     {isValid(selected?.image) ? (
-                        <View  id={`itemImage_${selected.id}`} style={{ ...boardStyles.cardImageContainer, alignItems: `center`, minWidth: validSelectedImage ? `50%` : 0, marginLeft: validImage ? 0 : -115 }}>
+                        <View style={{ ...boardStyles.cardImageContainer, alignItems: `center`, minWidth: validSelectedImage ? `50%` : 0, marginLeft: validSelectedImage ? 0 : -115 }}>
                             <CustomImage 
                                 alt={selected.name} 
                                 source={{ uri: selected.image }} 
@@ -112,7 +122,7 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                             />
                         </View>
                     ) : <></>}
-                    <View id={`itemTitle_${selected.id}`} style={{ ...boardStyles.cardRight, height: `100%`, minHeight: `100%`, maxHeight: `100%`, gap: 0, paddingVertical: 0, alignItems: `center`, justifyContent: `center`, backgroundColor: colors.transparent, paddingTop: isValid(selected?.image) ? 50 : 0 }}>
+                    <View id={`itemTitle_${selected.id}`} style={{ ...boardStyles.cardRight, height: `100%`, minHeight: `100%`, maxHeight: `100%`, gap: 0, paddingVertical: 0, alignItems: `center`, justifyContent: `center`, backgroundColor: colors.transparent, paddingTop: isValid(selected?.image) ? 60 : 0 }}>
                         <ForwardRefInput
                             value={name}
                             multiline={true}
@@ -123,9 +133,14 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                             scrollEnabled={false}
                             onChangeText={setName}
                             maxLength={maxItemNameLength}
-                            extraStyle={{ backgroundColor: colors.transparent, }}
+                            onCancel={() => setName(selected?.name)}
+                            extraStyle={{ backgroundColor: colors.transparent }}
                             placeholderTextColor={name == `` ? colors.black : placeHolderColor}
-                            onDone={(isValid(name) && name != selected?.name) ? () => onNameSave() : null}
+                            doneText={(isValid(name) && name != selected?.name) ? `Save` : `Done`}
+                            cancelText={(isValid(name) && name != selected?.name) ? `Cancel` : `Close`}
+                            cancelColor={(isValid(name) && name != selected?.name) ? colors.error : colors.disabledFont}
+                            doneColor={(isValid(name) && name != selected?.name) ? colors.activeColor : colors.disabledFont}
+                            onDone={(isValid(name) && name != selected?.name) ? () => onNameSave() : () => setName(selected?.name)}
                             style={{ 
                                 ...itemFontStyles, 
                                 ...styles.itemInput, 
@@ -145,9 +160,14 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                             placeholder={`Summary`}
                             onChangeText={setSummary}
                             maxLength={maxItemSummaryLength}
-                            extraStyle={{ backgroundColor: colors.transparent, }}
+                            onCancel={() => setSummary(selected?.summary)}
+                            extraStyle={{ backgroundColor: colors.transparent }}
                             placeholderTextColor={summary == `` ? colors.black : placeHolderColor}
-                            onDone={(typeof summary == `string` && summary != selected?.summary) ? () => onSummarySave() : null}
+                            doneText={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? `Save` : `Done`}
+                            cancelText={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? `Cancel` : `Close`}
+                            cancelColor={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? colors.error : colors.disabledFont}
+                            doneColor={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? colors.activeColor : colors.disabledFont}
+                            onDone={(typeof summary == `string` && summary != selected?.summary) ? () => onSummarySave() : () => setSummary(selected?.summary)}
                             style={{ 
                                 ...itemFontStyles, 
                                 ...styles.itemInput, 
@@ -182,8 +202,13 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                             onBlur={() => setEditing(false)}
                             onFocus={() => setEditing(true)}
                             maxLength={maxItemDescriptionLength}
+                            onCancel={() => setDescription(selected?.description)}
                             placeholderTextColor={description == `` ? colors.black : placeHolderColor}
-                            onDone={(typeof description == `string` && description != selected?.description) ? () => onDescriptionSave() : null}
+                            doneText={(description != selected?.description && (isValid(description) || description == ``)) ? `Save` : `Done`}
+                            cancelText={(description != selected?.description && (isValid(description) || description == ``)) ? `Cancel` : `Close`}
+                            cancelColor={(description != selected?.description && (isValid(description) || description == ``)) ? colors.error : colors.disabledFont}
+                            doneColor={(description != selected?.description && (isValid(description) || description == ``)) ? colors.activeColor : colors.disabledFont}
+                            onDone={(typeof description == `string` && description != selected?.description) ? () => onDescriptionSave() : () => setDescription(selected?.description)}
                             style={{ 
                                 ...itemFontStyles, 
                                 ...styles.itemInput,
@@ -201,13 +226,13 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
 
                 {view == ItemViews.Images && (
                     <View style={[globalStyles.flexRow, { width: `100%`, backgroundColor: colors.transparent }]}>
-                        {editing && isValid(selected?.image) ? (
+                        {editing && isValid(image) ? (
                             <View style={{ ...boardStyles.cardImageContainer, alignItems: `center`, minWidth: validImage ? `50%` : 0, marginLeft: validImage ? 0 : -115 }}>
                                 <CustomImage 
                                     alt={selected.name} 
                                     source={{ uri: image }}
                                     onLoad={() => setValidImage(true)}
-                                    onError={() => setValidImage(false)} 
+                                    onError={() => notValidImage()} 
                                     style={{ 
                                         ...cardedBorderRight,
                                         ...boardStyles.cardImage, 
@@ -234,15 +259,15 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                                 onDoneDismiss={true}
                                 onChangeText={setImage}
                                 placeholder={`Image URL`}
-                                doneDisabled={!validImage}
+                                onCancel={() => resetImage()}
                                 onBlur={() => setEditing(false)}
                                 onFocus={() => setEditing(true)}
-                                doneText={validImage ? `Save` : `Done`}
-                                cancelText={validImage ? `Cancel` : `Close`}
-                                cancelColor={validImage ? colors.error : colors.disabledFont}
-                                doneColor={validImage ? colors.activeColor : colors.disabledFont}
                                 placeholderTextColor={image == `` ? colors.black : placeHolderColor}
-                                onDone={(typeof image == `string` && image != selected?.image) ? () => onImageSave() : null}
+                                doneText={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? `Save` : `Done`}
+                                cancelText={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? `Cancel` : `Close`}
+                                onDone={((isValid(image) && image != selected?.image && validImage) || image == ``) ? () => onImageSave() : () => resetImage()}
+                                cancelColor={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? colors.error : colors.disabledFont}
+                                doneColor={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? colors.activeColor : colors.disabledFont}
                                 style={{ 
                                     ...itemFontStyles, 
                                     ...styles.itemInput,

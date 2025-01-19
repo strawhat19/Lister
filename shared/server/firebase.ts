@@ -3,7 +3,7 @@ import { Vibration } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { ItemType, TaskType, Views } from '../types/types';
 import { colors, findColorKey, isLightColor, randomCardColor } from '@/components/theme/Themed';
-import { defaultBoardID, findHighestNumberInArrayByKey, genID, isValid, log } from '../variables';
+import { defaultBoardID, findHighestNumberInArrayByKey, genID, isValid, logMsgLine } from '../variables';
 import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from 'firebase/firestore';
 
 export enum Environments {
@@ -90,9 +90,9 @@ export const addUserToDatabase = async (usr: User) => {
     await Vibration.vibrate(1);
     const userReference = await doc(db, usersDatabaseCollection, usr?.id).withConverter(userConverter);
     await setDoc(userReference, usr as User);
-    log(`Added User "${usr?.name}" to Database`);
+    logMsgLine(`Added User "${usr?.name}" to Database`);
   } catch (error) {
-    log(`Error Adding User to Database ${usersDatabaseCollection}`, error);
+    logMsgLine(`Error Adding User to Database ${usersDatabaseCollection}`, error);
   }
 }
 
@@ -101,9 +101,9 @@ export const addItemToDatabase = async (itm: ItemType) => {
     await Vibration.vibrate(1);
     const itemReference = doc(db, itemsDatabaseCollection, itm?.id).withConverter(itemConverter);
     await setDoc(itemReference, itm as ItemType);
-    log(`Added Item #${itm?.count} "${itm?.name}" to Database`);
+    logMsgLine(`Added Item #${itm?.count} "${itm?.name}" to Database`);
   } catch (error) {
-    log(`Error Adding Item to Database ${itemsDatabaseCollection}`, error);
+    logMsgLine(`Error Adding Item to Database ${itemsDatabaseCollection}`, error);
   }
 };
 
@@ -112,9 +112,9 @@ export const addTaskToDatabase = async (tsk: TaskType) => {
     await Vibration.vibrate(1);
     const taskReference = await doc(db, tasksDatabaseCollection, tsk?.id).withConverter(taskConverter);
     await setDoc(taskReference, tsk as TaskType);
-    log(`Added Task #${tsk?.count} "${tsk?.name}" to Database`);
+    logMsgLine(`Added Task #${tsk?.count} "${tsk?.name}" to Database`);
   } catch (error) {
-    log(`Error Adding Task to Database ${tasksDatabaseCollection}`, error);
+    logMsgLine(`Error Adding Task to Database ${tasksDatabaseCollection}`, error);
   }
 }
 
@@ -134,7 +134,7 @@ export const deleteItemFromDatabase = async (itemID: string, cascade: boolean = 
       );
       const taskDeletionPromises = tasksQuery.docs.map(taskDoc => deleteDoc(taskDoc.ref));
       await Promise.all(taskDeletionPromises);
-      log(`Deleted All Item's Associated Tasks from Database`, tasksQuery.docs.map(doc => doc.data().name));
+      logMsgLine(`Deleted All Item's Associated Tasks from Database`, tasksQuery.docs.map(doc => doc.data().name));
     }
 
     const itemRef = await doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
@@ -142,9 +142,9 @@ export const deleteItemFromDatabase = async (itemID: string, cascade: boolean = 
     const deletedItem = deletedItemSnapshot.exists() ? deletedItemSnapshot.data() : null;
     await deleteDoc(itemRef);
 
-    log(`Deleted Item "${deletedItem?.name}" from Database`);
+    logMsgLine(`Deleted Item "${deletedItem?.name}" from Database`);
   } catch (error) {
-    log(`Error Deleting Item from Database ${itemsDatabaseCollection}`, error);
+    logMsgLine(`Error Deleting Item from Database ${itemsDatabaseCollection}`, error);
   }
 }
 
@@ -156,9 +156,9 @@ export const deleteTaskFromDatabase = async (taskID: string) => {
     const deletedTask = deletedTaskSnapshot.exists() ? deletedTaskSnapshot.data() : null;
     await deleteDoc(taskRef);
 
-    log(`Deleted Task "${deletedTask?.name}" from Database`);
+    logMsgLine(`Deleted Task "${deletedTask?.name}" from Database`);
   } catch (error) {
-    log(`Error Deleting Task ${taskID}  from Database ${tasksDatabaseCollection}`, error);
+    logMsgLine(`Error Deleting Task ${taskID}  from Database ${tasksDatabaseCollection}`, error);
   }
 }
 
@@ -169,9 +169,9 @@ export const updateItemFieldsInDatabase = async (itemID: string, updates: { [key
     const itemRef = await doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
     if (vibrate) await Vibration.vibrate(1);
     await updateDoc(itemRef, fields);
-    if (logResult) log(`Item Fields Updated in Database`, fields);
+    if (logResult) logMsgLine(`Item Fields Updated in Database`, fields);
   } catch (error) {
-    log(`Error Updating Item Fields`, { error, fields });
+    logMsgLine(`Error Updating Item Fields`, { error, fields });
   }
 };
 
@@ -182,9 +182,9 @@ export const updateTaskFieldsInDatabase = async (taskID: string, updates: { [key
     const taskRef = await doc(db, tasksDatabaseCollection, taskID).withConverter(taskConverter);
     if (vibrate) await Vibration.vibrate(1);
     await updateDoc(taskRef, fields);
-    if (logResult) log(`Task Fields Updated in Database`, fields);
+    if (logResult) logMsgLine(`Task Fields Updated in Database`, fields);
   } catch (error) {
-    log(`Error Updating Task Fields`, { error, fields });
+    logMsgLine(`Error Updating Task Fields`, { error, fields });
   }
 };
 

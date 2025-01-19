@@ -89,39 +89,38 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
     }
 
     const swipeableStatus = (itm = selected) => {        
-        // const renderLeftActions = () => (
-        //     <View style={[titleRowStyles.leftAction, { backgroundColor: itm.complete ? colors.activeColor : colors.success, borderRadius: draggableViewItemBorderRadius - 3, marginRight: 3 }]}>
-        //         <FontAwesome name={itm.complete ? `circle-o` : `check`} color={colors.white} size={18} style={{ paddingHorizontal: 15 }} />
-        //     </View>
-        // );
+        const renderActions = (side: string) => (
+            <View style={[side == `right` ? titleRowStyles.rightAction : titleRowStyles.leftAction, { backgroundColor: itm.complete ? colors.activeColor : colors.success, borderRadius: draggableViewItemBorderRadius - 3, marginLeft: side == `right` ? 3 : 0, marginRight: side == `right` ? 0 : 3 }]}>
+                <FontAwesome name={itm.complete ? `circle-o` : `check`} color={colors.white} size={12} style={{ paddingHorizontal: 15 }} />
+            </View>
+        );
 
-        // const handleLeftSwipe = (itmSwiped = itm) => {
-        //     swipeableRef.current?.close();
-        //     Vibration.vibrate(1);
-        //     updateItemFieldsInDatabase(itmSwiped?.id, { complete: !itmSwiped.complete } as Partial<ItemType>);
-        // };
+        const handleSwipe = (itmSwiped = itm) => {
+            swipeableRef.current?.close();
+            Vibration.vibrate(1);
+            updateItemFieldsInDatabase(itmSwiped?.id, { complete: !itmSwiped.complete } as Partial<ItemType>);
+        };
 
         return (
-            // <ScaleDecorator>
-            //     <Swipeable
-            //         friction={1}
-            //         ref={swipeableRef}
-            //         overshootLeft={false}
-            //         overshootRight={false}
-            //         renderLeftActions={renderLeftActions}
-            //         onSwipeableLeftOpen={() => handleLeftSwipe(itm)}
-            //         onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-            //     >
-                    // <Items simple={true} component={(
-                        <View style={[globalStyles.flexRow, { flex: 1, paddingVertical: 3, borderRadius: draggableViewItemBorderRadius - 5, backgroundColor: selected?.complete ? colors.success : colors.activeColor, justifyContent: `center`, gap: 5 }]}>
-                            <FontAwesome name={`check`} size={10} color={getFontColor(selected?.complete ? colors.success : colors.activeColor)} />
-                            <Text style={[styles.detailsFooterText, { fontSize: 10, color: getFontColor(selected?.complete ? colors.success : colors.activeColor), }]}>
-                                {selected?.complete ? `Complete` : `Open`}
-                            </Text>
-                        </View>
-                    // )} />
-            //     </Swipeable>
-            // </ScaleDecorator>
+            <Swipeable
+                friction={1}
+                ref={swipeableRef}
+                overshootRight={false}
+                onSwipeableLeftOpen={() => handleSwipe(itm)}
+                onSwipeableRightOpen={() => handleSwipe(itm)}
+                renderLeftActions={() => renderActions(`left`)}
+                renderRightActions={() => renderActions(`right`)}
+                containerStyle={{ flex: 1, height: `auto`, minHeight: 25 }}
+                childrenContainerStyle={{ flex: 1, height: `auto`, minHeight: 25 }}
+                onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+            >
+                <TouchableOpacity style={[globalStyles.flexRow, { flex: 1, borderRadius: draggableViewItemBorderRadius - 5, backgroundColor: selected?.complete ? colors.success : colors.activeColor, justifyContent: `center`, gap: 5 }]}>
+                    <FontAwesome name={selected?.complete ? `check` : `circle-o`} size={12} color={getFontColor(selected?.complete ? colors.success : colors.activeColor)} />
+                    <Text style={[styles.detailsFooterText, { fontSize: 12, color: getFontColor(selected?.complete ? colors.success : colors.activeColor), }]}>
+                        {selected?.complete ? `Complete` : `Open`}
+                    </Text>
+                </TouchableOpacity>
+            </Swipeable>
         )
     }
 
@@ -376,12 +375,6 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                 {selected?.type == Views.Column && <View style={{ flex: 1, backgroundColor: colors.transparent }} />}
                 <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
                     <Text style={[styles.detailsFooterText, { color: fontColor }]}>
-                        Status
-                    </Text>
-                    {swipeableStatus()}
-                </View>
-                <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
-                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
                         Color
                     </Text>
                     <Text style={[styles.detailsFooterText, { color: fontColor }]}>
@@ -390,6 +383,12 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                     <Text style={[styles.detailsFooterText, { color: fontColor }]}>
                         {selected?.color ? selected?.backgroundColor : ``}
                     </Text>
+                </View>
+                <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
+                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
+                        Status
+                    </Text>
+                    {swipeableStatus()}
                 </View>
                 {(isValid(selected?.created) || isValid(selected?.updated)) && <>
                     <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 5, justifyContent: `space-between`, }]}>

@@ -1,15 +1,15 @@
 import Items from './items';
 import { SharedContext } from '@/shared/shared';
 import { FontAwesome } from '@expo/vector-icons';
-import React, { useContext, useEffect, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { boardStyles, cardedBorderRight } from '../styles';
+import React, { useContext, useEffect, useState } from 'react';
 import CustomImage from '@/components/custom-image/custom-image';
 import { ItemViewType, Views, ItemViews } from '@/shared/types/types';
 import { updateItemFieldsInDatabase } from '@/shared/server/firebase';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { Animated, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { borderRadius, colors, globalStyles, isLightColor, Text, View } from '@/components/theme/Themed';
+import { borderRadius, colors, getFontColor, globalStyles, Text, View } from '@/components/theme/Themed';
 import { isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
 
 export const maxItemDescriptionHeight = 251;
@@ -24,8 +24,8 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
     const [description, setDescription] = useState(selected?.description);
     const [validSelectedImage, setValidSelectedImage] = useState(isValid(selected?.image));
 
+    const fontColor = getFontColor(selected?.backgroundColor);
     const itemFontStyles = { ...(selected?.fontColor && { color: selected?.fontColor }) };
-    const placeHolderColor = isLightColor(selected?.backgroundColor) ? colors.darkFont : colors.lightFont;
     const scrollingDetailsEnabled = () => description && typeof description == `string` && (selected?.image && selected?.image != ``);
 
     useEffect(() => {
@@ -92,7 +92,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                 maxLength={maxItemNameLength}
                 onCancel={() => setName(selected?.name)}
                 extraStyle={{ backgroundColor: colors.transparent }}
-                placeholderTextColor={name == `` ? colors.black : placeHolderColor}
+                placeholderTextColor={name == `` ? colors.black : fontColor}
                 doneText={(isValid(name) && name != selected?.name) ? `Save` : `Done`}
                 cancelText={(isValid(name) && name != selected?.name) ? `Cancel` : `Close`}
                 cancelColor={(isValid(name) && name != selected?.name) ? colors.error : colors.disabledFont}
@@ -200,7 +200,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                             maxLength={maxItemNameLength}
                             onCancel={() => setName(selected?.name)}
                             extraStyle={{ backgroundColor: colors.transparent }}
-                            placeholderTextColor={name == `` ? colors.black : placeHolderColor}
+                            placeholderTextColor={name == `` ? colors.black : fontColor}
                             doneText={(isValid(name) && name != selected?.name) ? `Save` : `Done`}
                             cancelText={(isValid(name) && name != selected?.name) ? `Cancel` : `Close`}
                             cancelColor={(isValid(name) && name != selected?.name) ? colors.error : colors.disabledFont}
@@ -227,7 +227,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                             maxLength={maxItemSummaryLength}
                             onCancel={() => setSummary(selected?.summary)}
                             extraStyle={{ backgroundColor: colors.transparent }}
-                            placeholderTextColor={summary == `` ? colors.black : placeHolderColor}
+                            placeholderTextColor={summary == `` ? colors.black : fontColor}
                             doneText={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? `Save` : `Done`}
                             cancelText={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? `Cancel` : `Close`}
                             cancelColor={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? colors.error : colors.disabledFont}
@@ -274,7 +274,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                             onFocus={() => setEditing(true)}
                             maxLength={maxItemDescriptionLength}
                             onCancel={() => setDescription(selected?.description)}
-                            placeholderTextColor={description == `` ? colors.black : placeHolderColor}
+                            placeholderTextColor={description == `` ? colors.black : fontColor}
                             doneText={(description != selected?.description && (isValid(description) || description == ``)) ? `Save` : `Done`}
                             cancelText={(description != selected?.description && (isValid(description) || description == ``)) ? `Cancel` : `Close`}
                             cancelColor={(description != selected?.description && (isValid(description) || description == ``)) ? colors.error : colors.disabledFont}
@@ -333,7 +333,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                                 onCancel={() => resetImage()}
                                 onBlur={() => setEditing(false)}
                                 onFocus={() => setEditing(true)}
-                                placeholderTextColor={image == `` ? colors.black : placeHolderColor}
+                                placeholderTextColor={image == `` ? colors.black : fontColor}
                                 doneText={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? `Save` : `Done`}
                                 cancelText={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? `Cancel` : `Close`}
                                 onDone={((isValid(image) && image != selected?.image && validImage) || image == ``) ? () => onImageSave() : () => resetImage()}
@@ -354,41 +354,41 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
 
             {view == ItemViews.Details && <>
                 {selected?.type == Views.Column && <View style={{ flex: 1, backgroundColor: colors.transparent }} />}
-                <View style={[globalStyles.flexRow, { gap: 10, width: `90%`, position: `relative`, top: -15, paddingBottom: 10, justifyContent: `flex-start`, backgroundColor: colors.transparent }]}>
-                    <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
+                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
                         Status
                     </Text>
-                    <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
                         {selected?.complete ? `Complete` : `Open`}
                     </Text>
                 </View>
-                <View style={[globalStyles.flexRow, { gap: 10, width: `90%`, position: `relative`, top: -15, paddingBottom: 10, justifyContent: `flex-start`, backgroundColor: colors.transparent }]}>
-                    <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
+                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
                         Color
                     </Text>
-                    <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
                         {selected?.color ?? selected?.backgroundColor}
                     </Text>
-                    <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
                         {selected?.color ? selected?.backgroundColor : ``}
                     </Text>
                 </View>
                 {(isValid(selected?.created) || isValid(selected?.updated)) && <>
-                    <View style={[globalStyles.flexRow, { gap: 5, width: `90%`, position: `relative`, top: -15, justifyContent: `space-between`, backgroundColor: colors.transparent }]}>
-                        {isValid(selected?.created) && <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                    <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 5, justifyContent: `space-between`, }]}>
+                        {isValid(selected?.created) && <Text style={[styles.detailsFooterText, { color: fontColor, fontSize: 10 }]}>
                             Created By Rakib on
                         </Text>}
-                        {isValid(selected?.updated) && <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                        {isValid(selected?.updated) && <Text style={[styles.detailsFooterText, { color: fontColor, fontSize: 10 }]}>
                             Updated By Rakib on
                         </Text>}
                     </View>
                 </>}
                 {(isValid(selected?.created) || isValid(selected?.updated)) && <>
-                    <View style={[globalStyles.flexRow, { gap: 5, width: `90%`, position: `relative`, top: -15, justifyContent: `space-between`, backgroundColor: colors.transparent }]}>
-                        {isValid(selected?.created) && <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                    <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 5, justifyContent: `space-between`, }]}>
+                        {isValid(selected?.created) && <Text style={[styles.detailsFooterText, { color: fontColor, fontSize: 10 }]}>
                             {selected?.created}
                         </Text>}
-                        {isValid(selected?.updated) && <Text style={{ fontWeight: `bold`, fontStyle: `italic`, fontSize: 12 }}>
+                        {isValid(selected?.updated) && <Text style={[styles.detailsFooterText, { color: fontColor, fontSize: 10 }]}>
                             {selected?.updated}
                         </Text>}
                     </View>
@@ -438,5 +438,16 @@ const styles = StyleSheet.create({
         backgroundColor: colors.transparent, 
         borderColor: colors.transparent, 
         padding: 0,
+    },
+    detailsFooter: {
+        top: -15,
+        width: `90%`, 
+        position: `relative`,
+        backgroundColor: colors.transparent,
+    },
+    detailsFooterText: {
+        fontSize: 12,
+        fontWeight: `bold`, 
+        fontStyle: `italic`, 
     },
 })

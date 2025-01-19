@@ -148,6 +148,7 @@ export const colors = {
 }
 
 export const isLightColor = (colorString) => Object.values(lightColors).includes(colorString);
+export const getFontColor = (colorString, darkFont = colors.darkFont, lightFont = colors.lightFont) => isLightColor(colorString) ? darkFont : lightFont;
 
 export const findColorKey = (color: string, colors: Record<string, string | ((alpha: number) => string)>): string | undefined => {
   for (const [key, value] of Object.entries(colors)) {

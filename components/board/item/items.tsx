@@ -10,7 +10,7 @@ import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { colors, globalStyles, draggableViewItemBorderRadius, Text, View, isLightColor } from '@/components/theme/Themed';
+import { colors, globalStyles, draggableViewItemBorderRadius, Text, View, getFontColor } from '@/components/theme/Themed';
 import { defaultBoardID, delayBeforeScrollingDown, isValid, itemHeight, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
 import { addItemToDatabase, addTaskToDatabase, db, deleteItemFromDatabase, deleteTaskFromDatabase, getItemsForColumn, getTasksForItem, itemsDatabaseCollection, prepareItemForDatabase, prepareTaskForDatabase, tasksDatabaseCollection, updateItemFieldsInDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
 
@@ -234,7 +234,7 @@ export default function Items({ }: any) {
                 ) : (
                     <View style={{ flex: 1, backgroundColor: colors.transparent, paddingVertical: 10, ...globalStyles.flexRow, alignItems: `flex-start`, justifyContent: `center`, gap: 15 }}>
                         {/* <LoadingSpinner /> */}
-                        <Text style={{ fontStyle: `italic`, textAlign: `center`, color: isLightColor(colors.listsBG) ? colors.taskBG : colors.lightFont, fontWeight: `bold` }}>
+                        <Text style={{ fontStyle: `italic`, textAlign: `center`, color: getFontColor(colors.listsBG, colors.taskBG), fontWeight: `bold` }}>
                             0 {selected?.type == Views.Item ? `Task(s)` : `Item(s)`}
                         </Text>
                     </View>

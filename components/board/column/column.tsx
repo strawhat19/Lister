@@ -13,12 +13,11 @@ import { ColumnType, Directions, ItemType, ItemViews } from '@/shared/types/type
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { borderRadius, colors, globalStyles, isLightColor, Text, View } from '@/components/theme/Themed';
+import { borderRadius, colors, getFontColor, globalStyles, isLightColor, Text, View } from '@/components/theme/Themed';
 import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem, db, itemsDatabaseCollection } from '@/shared/server/firebase';
 import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export const defaultColumnView = ItemViews.Items;
-const fontColor = isLightColor(colors.listsBG) ? colors.darkFont : colors.lightFont;
 
 export default function Column({ 
     column, 
@@ -427,6 +426,6 @@ export const titleRowStyles = StyleSheet.create({
     },
     fontColor: { 
         fontWeight: `bold`,
-        color: fontColor, 
+        color: getFontColor(colors.listsBG), 
     },
 })

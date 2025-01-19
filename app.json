@@ -3,7 +3,7 @@
     "name": "Lister",
     "slug": "lister",
     "scheme": "myapp",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "newArchEnabled": true,
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -15,6 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.strawhat19.lister",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to allow users to take photos.",
         "NSContactsUsageDescription": "This app needs access to your contacts to display contact information.",
@@ -32,13 +33,9 @@
         "READ_CONTACTS",
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "NOTIFICATIONS",
-        "CAMERA",
-        "READ_CONTACTS",
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
         "NOTIFICATIONS"
-      ]
+      ],
+      "package": "com.strawhat19.lister"
     },
     "web": {
       "bundler": "metro",
@@ -57,9 +54,7 @@
         "projectId": "9b8dd498-2526-4695-ab62-6f176fe19190"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/9b8dd498-2526-4695-ab62-6f176fe19190"
     },

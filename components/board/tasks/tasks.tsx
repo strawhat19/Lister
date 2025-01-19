@@ -211,7 +211,7 @@ export default function Tasks({ selected }: any) {
                     </View>
                 )}
             </View>
-            <View style={globalStyles.singleLineInput}>
+            <View style={[globalStyles.singleLineInput, { position: `relative`, top: -10 }]}>
                 <ForwardRefInput
                     ref={inputRef}
                     value={taskName}

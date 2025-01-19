@@ -234,8 +234,13 @@ export default function ItemView({ selected, backgroundColor }: ItemViewType) {
                                 onDoneDismiss={true}
                                 onChangeText={setImage}
                                 placeholder={`Image URL`}
+                                doneDisabled={!validImage}
                                 onBlur={() => setEditing(false)}
                                 onFocus={() => setEditing(true)}
+                                doneText={validImage ? `Save` : `Done`}
+                                cancelText={validImage ? `Cancel` : `Close`}
+                                cancelColor={validImage ? colors.error : colors.disabledFont}
+                                doneColor={validImage ? colors.activeColor : colors.disabledFont}
                                 placeholderTextColor={image == `` ? colors.black : placeHolderColor}
                                 onDone={(typeof image == `string` && image != selected?.image) ? () => onImageSave() : null}
                                 style={{ 

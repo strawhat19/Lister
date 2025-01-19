@@ -5,6 +5,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { titleRowStyles } from '../column/column';
 import ColumnSettings from '../column/column-settings';
 import { boardStyles, cardedBorderRight } from '../styles';
+import ColorPicker from '@/components/color-picker/color-picker';
 import CustomImage from '@/components/custom-image/custom-image';
 import { ScrollView, Swipeable } from 'react-native-gesture-handler';
 import { updateItemFieldsInDatabase } from '@/shared/server/firebase';
@@ -12,7 +13,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { ItemViewType, Views, ItemViews, ItemType } from '@/shared/types/types';
 import { Animated, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
+import { devEnv, isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
 import { borderRadius, colors, draggableViewItemBorderRadius, getFontColor, globalStyles, Text, View } from '@/components/theme/Themed';
 
 export const maxItemDescriptionHeight = 251;
@@ -376,6 +377,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
 
             {view == ItemViews.Details && <>
                 {selected?.type == Views.Column && <View style={{ flex: 1, backgroundColor: colors.transparent }} />}
+                {devEnv && <ColorPicker />}
                 <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
                     <Text style={[styles.detailsFooterText, { color: fontColor }]}>
                         Color

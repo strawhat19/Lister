@@ -14,7 +14,7 @@ import { colors, globalStyles, draggableViewItemBorderRadius, Text, View, getFon
 import { defaultBoardID, delayBeforeScrollingDown, isValid, itemHeight, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
 import { addItemToDatabase, addTaskToDatabase, db, deleteItemFromDatabase, deleteTaskFromDatabase, getItemsForColumn, getTasksForItem, itemsDatabaseCollection, prepareItemForDatabase, prepareTaskForDatabase, tasksDatabaseCollection, updateItemFieldsInDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
 
-export default function Items({ }: any) {
+export default function Items({ simple = false, component }: any) {
     const listRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -112,7 +112,7 @@ export default function Items({ }: any) {
     }
 
     const renderDraggableItem = useCallback(
-        ({ item: itm, drag, isActive, getIndex }: RenderItemParams<TaskType | ItemType>) => {
+        ({ item: itm, drag, isActive, getIndex }: RenderItemParams<TaskType | ItemType | any>) => {
 
         let index = itm?.index;
         const swipeableRef = useRef<Swipeable>(null);
@@ -125,7 +125,12 @@ export default function Items({ }: any) {
                 await deleteTaskFromDatabase(itmID);
             }
             if (itm?.type == Views.Item) {
-                await deleteItemWithConfirmation(itmID);
+                let emptyDetails = !isValid(itm?.summary) && !isValid(itm?.description) && !isValid(itm?.image);
+                if (itm?.complete || emptyDetails) {
+                    await deleteItemFromDatabase(itmID);
+                } else {
+                    await deleteItemWithConfirmation(itmID);
+                }
             }
         };
 
@@ -165,41 +170,46 @@ export default function Items({ }: any) {
                     onSwipeableRightOpen={() => handleRightSwipe(itm?.id)}
                     onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 >    
-                    <TouchableOpacity
-                        onLongPress={drag}
-                        disabled={isActive}
-                        onPress={() => onPressItm(itm)}
-                        style={[boardStyles.rowItem, { 
-                            width: `100%`, 
-                            minHeight: itemHeight, 
-                            borderTopLeftRadius: isFirst ? draggableViewItemBorderRadius : 0, 
-                            borderTopRightRadius: isFirst ? draggableViewItemBorderRadius : 0, 
-                            borderBottomLeftRadius: isLast ? draggableViewItemBorderRadius : 0, 
-                            borderBottomRightRadius: isLast ? draggableViewItemBorderRadius : 0, 
-                            backgroundColor: itm?.complete ? colors.taskBGComplete : colors.taskBG,
-                        }]}
-                    >
-                        <View style={{width: `100%`, backgroundColor: colors.transparent, ...globalStyles.flexRow, gap: 15, paddingLeft: 15}}>
-                            <FontAwesome 
-                                size={18} 
-                                name={itm?.complete ? `check` : `circle-o`} 
-                                color={itm?.complete ? colors.appleGreen : colors.white} 
-                            />
-                            <Text style={{ textAlign: `center`, fontWeight: `bold`, fontStyle: `italic`, color: itm?.complete ? colors.taskColorComplete : colors.taskColor, backgroundColor: itm?.complete ? colors.taskBGComplete : colors.taskBG, width: 20, height: 20, borderRadius: `100%`, paddingTop: 1.5 }}>
-                                {getIndex() + 1}
-                            </Text>
-                            <Text style={{ textAlign: `left`, fontWeight: `bold`, fontStyle: `italic`, color: itm?.complete ? colors.taskColorComplete : colors.taskColor, textDecorationLine: itm?.complete ? `line-through` : `none` }}>
-                                {itm?.name}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
+                    {simple ? component : (
+                        <TouchableOpacity
+                            onLongPress={drag}
+                            disabled={isActive}
+                            onPress={() => onPressItm(itm)}
+                            style={[boardStyles.rowItem, { 
+                                width: `100%`, 
+                                minHeight: itemHeight, 
+                                borderTopLeftRadius: isFirst ? draggableViewItemBorderRadius : 0, 
+                                borderTopRightRadius: isFirst ? draggableViewItemBorderRadius : 0, 
+                                borderBottomLeftRadius: isLast ? draggableViewItemBorderRadius : 0, 
+                                borderBottomRightRadius: isLast ? draggableViewItemBorderRadius : 0, 
+                                backgroundColor: itm?.complete ? colors.taskBGComplete : colors.taskBG,
+                            }]}
+                        >
+                            <View style={{width: `100%`, backgroundColor: colors.transparent, ...globalStyles.flexRow, gap: 15, paddingLeft: 15}}>
+                                <FontAwesome 
+                                    size={18} 
+                                    name={itm?.complete ? `check` : `circle-o`} 
+                                    color={itm?.complete ? colors.appleGreen : colors.white} 
+                                />
+                                <Text style={{ textAlign: `center`, fontWeight: `bold`, fontStyle: `italic`, color: itm?.complete ? colors.taskColorComplete : colors.taskColor, backgroundColor: itm?.complete ? colors.taskBGComplete : colors.taskBG, width: 20, height: 20, borderRadius: `100%`, paddingTop: 1.5 }}>
+                                    {getIndex() + 1}
+                                </Text>
+                                <Text style={{ textAlign: `left`, fontWeight: `bold`, fontStyle: `italic`, color: itm?.complete ? colors.taskColorComplete : colors.taskColor, textDecorationLine: itm?.complete ? `line-through` : `none` }}>
+                                    {itm?.name}
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
                 </Swipeable>
             </ScaleDecorator>
         )
     }, [])
 
     return (
-        <>
+        simple ? (
+            renderDraggableItem({selected} as any)
+        ) : (
+            <>
             <View style={
                 [
                     styles.tasksContainer, 
@@ -266,6 +276,7 @@ export default function Items({ }: any) {
                 />
             </View>
         </>
+        )
     )
 }
 

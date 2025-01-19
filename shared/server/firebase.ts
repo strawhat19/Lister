@@ -279,6 +279,8 @@ export const createItem = async (columnItems, listID: string, name, items, close
     const isLightBGColor = isLightColor(backgroundColor);
     const colorKey = findColorKey(backgroundColor, colors);
 
+    name = name.trim().replace(/\s+/g, ` `);
+
     const itemToAdd = await new ItemType({
       name,
       listID,

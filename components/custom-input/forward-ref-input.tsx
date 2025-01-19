@@ -36,6 +36,7 @@ declare global {
         onDoneDismiss?: boolean;
         onDoneVibrate?: boolean;
         scrollEnabled?: boolean;
+        trim?: boolean;
       }
 }
 
@@ -43,6 +44,7 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
     value,
     maxLength,
     placeholder,
+    trim = false,
     onChangeText,
     onDone = null,
     width = `100%`,
@@ -77,6 +79,11 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
     const accessoryViewID = `inputAccessoryView-${generatedID}`;
     const inputFontColor = { color: getFontColor(selected?.backgroundColor) };
 
+    const trimInput = () => {
+        value = value.trim().replace(/\s+/g, ` `);
+        onFocus();
+    }
+
     const onDoneVibration = () => {
         onDone();
         Vibration.vibrate(1);
@@ -110,7 +117,6 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
                     ref={ref}
                     value={value}
                     onBlur={onBlur}
-                    onFocus={onFocus}
                     maxLength={maxLength}
                     multiline={multiline}
                     cursorColor={colors.black}
@@ -120,6 +126,7 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
                     placeholder={`Enter ${placeholder}`}
                     inputAccessoryViewID={accessoryViewID}
                     placeholderTextColor={placeholderTextColor}
+                    onFocus={trim ? () => trimInput() : onFocus}
                     style={[multiline ? [styles.input, styles.textarea, style, inputFontColor, { width: endIconName == `` ? `100%` : `85%` }, extraStyle] : [styles.input, style, inputFontColor, { width: endIconName == `` ? `100%` : `85%` }, extraStyle], {
                         // borderWidth: 1,
                         // borderColor: colors.white,

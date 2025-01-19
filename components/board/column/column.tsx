@@ -230,7 +230,7 @@ export default function Column({
                                         <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
                                             {column?.category}
                                         </Text>
-                                        <FontAwesome style={{ position: `absolute`, top: 12, left: 95  }} size={12} name={`gears`} color={colors.disabledFont} />
+                                        <FontAwesome style={{ position: `absolute`, top: 12, left: 95, paddingBottom: 5 }} size={12} name={`gears`} color={colors.disabledFont} />
                                     </> : (
                                         <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: selected?.backgroundColor }]}>
                                             <FontAwesome name={`trash`} color={fontColor} size={14} />
@@ -256,7 +256,7 @@ export default function Column({
                                                 0 Item(s)
                                             </Text>
                                         </>}
-                                        <FontAwesome style={{ position: `absolute`, top: 12, right: 95  }} size={12} name={`gears`} color={colors.disabledFont} />
+                                        <FontAwesome style={{ position: `absolute`, top: 12, right: 95, paddingBottom: 5 }} size={12} name={`gears`} color={colors.disabledFont} />
                                     </> : (
                                         <TouchableOpacity onPress={() => closeItem()} style={[titleRowStyles.topButton, { backgroundColor: selected?.backgroundColor }]}>
                                             <FontAwesome name={`ban`} color={fontColor} size={14} />

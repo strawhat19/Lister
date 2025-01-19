@@ -1,22 +1,26 @@
 import Items from './items';
+import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
 import { FontAwesome } from '@expo/vector-icons';
-import { ScrollView } from 'react-native-gesture-handler';
+import { titleRowStyles } from '../column/column';
 import { boardStyles, cardedBorderRight } from '../styles';
-import React, { useContext, useEffect, useState } from 'react';
 import CustomImage from '@/components/custom-image/custom-image';
-import { ItemViewType, Views, ItemViews } from '@/shared/types/types';
+import { ScaleDecorator } from 'react-native-draggable-flatlist';
+import { ScrollView, Swipeable } from 'react-native-gesture-handler';
+import { ItemViewType, Views, ItemViews, ItemType } from '@/shared/types/types';
 import { updateItemFieldsInDatabase } from '@/shared/server/firebase';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { Animated, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { borderRadius, colors, getFontColor, globalStyles, Text, View } from '@/components/theme/Themed';
 import { isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
+import { borderRadius, colors, draggableViewItemBorderRadius, getFontColor, globalStyles, Text, View } from '@/components/theme/Themed';
 
 export const maxItemDescriptionHeight = 251;
 
 export default function ItemView({ backgroundColor }: ItemViewType) {
     let { selected, items, view, setView, editing, setEditing, setSelected, setActiveTopName } = useContext<any>(SharedContext);
 
+    const swipeableRef = useRef<Swipeable>(null);
     const [name, setName] = useState(selected?.name);
     const [image, setImage] = useState(selected?.image);
     const [validImage, setValidImage] = useState(false);
@@ -53,13 +57,17 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
     }
 
     const onSummarySave = async () => {
-        await updateItemFieldsInDatabase(selected?.id, { summary });
-        await setSelected({ ...selected, summary });
+        let cleanedSummary = summary.trim().replace(/\s+/g, ` `);
+        await setSummary(cleanedSummary);
+        await updateItemFieldsInDatabase(selected?.id, { summary: cleanedSummary });
+        await setSelected({ ...selected, summary: cleanedSummary });
     }; 
 
     const onDescriptionSave = async () => {
-        await updateItemFieldsInDatabase(selected?.id, { description });
-        await setSelected({ ...selected, description });
+        let cleanedDescription = description.trim().replace(/\s+/g, ` `);
+        await setDescription(cleanedDescription);
+        await updateItemFieldsInDatabase(selected?.id, { description: cleanedDescription });
+        await setSelected({ ...selected, description: cleanedDescription });
     }; 
     
     const onNameSave = async () => {
@@ -69,8 +77,10 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
     }; 
 
     const onImageSave = async () => {
-        await updateItemFieldsInDatabase(selected?.id, { image });
-        await setSelected({ ...selected, image });
+        let cleanedImage = image.trim().replace(/\s+/g, ` `);
+        await setImage(cleanedImage);
+        await updateItemFieldsInDatabase(selected?.id, { image: cleanedImage });
+        await setSelected({ ...selected, image: cleanedImage });
     }; 
 
     const notValidImage = () => {
@@ -78,13 +88,50 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
         log(`Not Valid Image`);
     }
 
+    const swipeableStatus = (itm = selected) => {        
+        // const renderLeftActions = () => (
+        //     <View style={[titleRowStyles.leftAction, { backgroundColor: itm.complete ? colors.activeColor : colors.success, borderRadius: draggableViewItemBorderRadius - 3, marginRight: 3 }]}>
+        //         <FontAwesome name={itm.complete ? `circle-o` : `check`} color={colors.white} size={18} style={{ paddingHorizontal: 15 }} />
+        //     </View>
+        // );
+
+        // const handleLeftSwipe = (itmSwiped = itm) => {
+        //     swipeableRef.current?.close();
+        //     Vibration.vibrate(1);
+        //     updateItemFieldsInDatabase(itmSwiped?.id, { complete: !itmSwiped.complete } as Partial<ItemType>);
+        // };
+
+        return (
+            // <ScaleDecorator>
+            //     <Swipeable
+            //         friction={1}
+            //         ref={swipeableRef}
+            //         overshootLeft={false}
+            //         overshootRight={false}
+            //         renderLeftActions={renderLeftActions}
+            //         onSwipeableLeftOpen={() => handleLeftSwipe(itm)}
+            //         onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+            //     >
+                    // <Items simple={true} component={(
+                        <View style={[globalStyles.flexRow, { flex: 1, paddingVertical: 3, borderRadius: draggableViewItemBorderRadius - 5, backgroundColor: selected?.complete ? colors.success : colors.activeColor, justifyContent: `center`, gap: 5 }]}>
+                            <FontAwesome name={`check`} size={10} color={getFontColor(selected?.complete ? colors.success : colors.activeColor)} />
+                            <Text style={[styles.detailsFooterText, { fontSize: 10, color: getFontColor(selected?.complete ? colors.success : colors.activeColor), }]}>
+                                {selected?.complete ? `Complete` : `Open`}
+                            </Text>
+                        </View>
+                    // )} />
+            //     </Swipeable>
+            // </ScaleDecorator>
+        )
+    }
+
     const nameInput = () => {
         return <>
             <ForwardRefInput
                 value={name}
-                multiline={true}
+                multiline={false}
                 showLabel={false}
-                numberOfLines={2}
+                numberOfLines={1}
                 placeholder={`Name`}
                 onDoneDismiss={true}
                 scrollEnabled={false}
@@ -188,34 +235,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                         </View>
                     ) : <></>}
                     <View style={{ ...boardStyles.cardRight, height: `100%`, minHeight: `100%`, maxHeight: `100%`, gap: 0, paddingVertical: 0, alignItems: `center`, justifyContent: `center`, backgroundColor: colors.transparent, paddingTop: isValid(selected?.image) ? 60 : 0 }}>
-                        <ForwardRefInput
-                            value={name}
-                            multiline={true}
-                            showLabel={false}
-                            numberOfLines={2}
-                            placeholder={`Name`}
-                            onDoneDismiss={true}
-                            scrollEnabled={false}
-                            onChangeText={setName}
-                            maxLength={maxItemNameLength}
-                            onCancel={() => setName(selected?.name)}
-                            extraStyle={{ backgroundColor: colors.transparent }}
-                            placeholderTextColor={name == `` ? colors.black : fontColor}
-                            doneText={(isValid(name) && name != selected?.name) ? `Save` : `Done`}
-                            cancelText={(isValid(name) && name != selected?.name) ? `Cancel` : `Close`}
-                            cancelColor={(isValid(name) && name != selected?.name) ? colors.error : colors.disabledFont}
-                            doneColor={(isValid(name) && name != selected?.name) ? colors.activeColor : colors.disabledFont}
-                            onDone={(isValid(name) && name != selected?.name) ? () => onNameSave() : () => setName(selected?.name)}
-                            style={{ 
-                                ...itemFontStyles, 
-                                ...styles.itemInput, 
-                                fontSize: 21, 
-                                maxHeight: `auto`, 
-                                minHeight: `auto`, 
-                                backgroundColor: colors.transparent,
-                                fontStyle: name == `` ? `italic` : `normal`,
-                            }}
-                        />
+                        {nameInput()}
                         <ForwardRefInput
                             value={summary}
                             multiline={true}
@@ -358,9 +378,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                     <Text style={[styles.detailsFooterText, { color: fontColor }]}>
                         Status
                     </Text>
-                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
-                        {selected?.complete ? `Complete` : `Open`}
-                    </Text>
+                    {swipeableStatus()}
                 </View>
                 <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
                     <Text style={[styles.detailsFooterText, { color: fontColor }]}>

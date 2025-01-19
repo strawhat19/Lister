@@ -66,15 +66,21 @@ export default function Item({
                                     right: isValid(item?.image) ? (isValid(item?.summary) ? 0 : 1) : -8,
                                     top: (isValid(item?.summary) && isValid(item?.image)) ? 25 : isValid(item?.image) ? -20 : (isValid(item?.summary) ? 15 : -5),
                                 } : {
-                                    borderRightWidth: 2, 
+                                    borderRightWidth: 1, 
                                     alignItems: `center`,
                                     borderColor: fontColor,
                                     justifyContent: `center`, 
                                 }),
                             }]}>
-                                {!isValid(item?.summary) && !isValid(item?.image) && (
-                                    item?.complete && <FontAwesome name={`check`} color={colors.success} size={16} />
-                                )}
+                                {item?.complete ? (
+                                    <FontAwesome name={`check`} color={colors.success} size={16} style={{ 
+                                        ...((isValid(item?.summary) || isValid(item?.image)) ? {
+                                            position: `absolute`, 
+                                            left: -20, 
+                                            top: 3,
+                                        } : {}),
+                                    }} />
+                                ) : <></>}
                                 <Text style={{ ...boardStyles.cardTitle, color: fontColor, fontSize: 18, fontStyle: `italic` }}>
                                     {getIndex != undefined ? getIndex() + 1 : item?.index}
                                 </Text>

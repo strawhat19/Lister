@@ -36,6 +36,7 @@ declare global {
         placeholderTextColor?: string;
         onDoneDismiss?: boolean;
         onDoneVibrate?: boolean;
+        scrollEnabled?: boolean;
       }
 }
 
@@ -61,6 +62,7 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
     onDoneDismiss = false,
     cancelText = `Cancel`,
     onDoneVibrate = false,
+    scrollEnabled = true,
     style = { opactiy: 1 },
     endIconPress = () => {},
     endIconDisabled = false,
@@ -95,7 +97,6 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
         if (saveProgress) onSave();
         Keyboard.dismiss();
         setEditing(false);
-        logMsgLine(`Dismissing Keyboard`);
     }
 
     return (
@@ -115,6 +116,7 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
                     multiline={multiline}
                     cursorColor={colors.black}
                     onChangeText={onChangeText}
+                    scrollEnabled={scrollEnabled}
                     numberOfLines={numberOfLines}
                     placeholder={`Enter ${placeholder}`}
                     inputAccessoryViewID={accessoryViewID}
@@ -126,19 +128,19 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
                 />
                 {endIconName != `` ? (
                     <TouchableOpacity disabled={endIconDisabled} style={[styles.endButton, endIconStyle != null ? endIconStyle : {}]} onPress={() => endIconPress()}>
-                        <FontAwesome name={endIconName} color={endIconColor} size={endIconSize} />
+                        <FontAwesome name={endIconName} color={endIconColor} size={endIconSize} style={{ fontWeight: `bold` }} />
                     </TouchableOpacity>
                 ) : <></>}
             </View>
             <InputAccessoryView nativeID={accessoryViewID}>
                 <View style={styles.accessory}>
                     <TouchableOpacity style={[styles.accessoryButton, { backgroundColor: cancelColor }]} onPress={() => dismissKeyboard(undefined, onCancel)}>
-                        <Text style={{ fontSize: 16, color: colors.lightFont }}>
+                        <Text style={{ fontSize: 16, fontWeight: `bold`, color: colors.lightFont }}>
                             {cancelText}
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity disabled={doneDisabled} style={[styles.accessoryButton, { backgroundColor: doneColor }]} onPress={() => onDone != null ? (onDoneDismiss == true ? onDoneDismissKeyboard(onDoneVibrate) : (onDoneVibrate ? onDoneVibration() : onDone())) : dismissKeyboard(true)}>
-                        <Text style={{ fontSize: 16, color: colors.lightFont, textAlign: `right` }}>
+                        <Text style={{ fontSize: 16, fontWeight: `bold`, color: colors.lightFont, textAlign: `right` }}>
                             {doneText}
                         </Text>
                     </TouchableOpacity>
@@ -187,6 +189,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 0,
         fontWeight: `bold`,
         flexDirection: `row`,
+        borderBottomWidth: 1,
         backgroundColor: colors.listsBG,
         justifyContent: `space-between`,
     },

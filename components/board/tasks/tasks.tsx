@@ -8,11 +8,12 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { delayBeforeScrollingDown, itemHeight, maxTaskNameLength } from '@/shared/variables';
+import { delayBeforeScrollingDown, isValid, itemHeight, maxTaskNameLength } from '@/shared/variables';
 import { colors, globalStyles, taskBorderRadius, Text, View } from '@/components/theme/Themed';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { addTaskToDatabase, db, deleteTaskFromDatabase, getTasksForItem, prepareTaskForDatabase, tasksDatabaseCollection, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
 import { doc, writeBatch } from 'firebase/firestore';
+import LoadingSpinner from '@/components/loading/loading-spinner';
 
 export default function Tasks({ selected }: any) {
     const listRef = useRef(null);
@@ -100,7 +101,7 @@ export default function Tasks({ selected }: any) {
         let isLast: boolean = index == itemTasks?.length ? true : false;
 
         const handleRightSwipe = async (taskID: string = taskItem?.id) => {
-            // swipeableRef.current?.close();
+            swipeableRef.current?.close();
             await deleteTaskFromDatabase(taskID);
         };
 
@@ -175,7 +176,7 @@ export default function Tasks({ selected }: any) {
                     styles.tasksContainer, 
                     { 
                         marginTop: editing ? -15 : 12, 
-                        maxHeight: editing ? 265 : (selected?.image && selected?.image != `` ? 185 : 340), 
+                        maxHeight: editing ? 265 : (isValid(selected?.image) ? 185 : 340), 
                     },
                 ]
             }>
@@ -202,8 +203,9 @@ export default function Tasks({ selected }: any) {
                         }}
                     />
                 ) : (
-                    <View style={{ flex: 1, backgroundColor: colors.transparent, paddingVertical: 10, ...globalStyles.flexRow, alignItems: `flex-start`, justifyContent: `center` }}>
-                        <Text style={{ fontStyle: `italic`, textAlign: `center`, color: colors.taskBG }}>
+                    <View style={{ flex: 1, backgroundColor: colors.transparent, paddingVertical: 10, ...globalStyles.flexRow, alignItems: `flex-start`, justifyContent: `center`, gap: 15 }}>
+                        <LoadingSpinner />
+                        <Text style={{ fontStyle: `italic`, textAlign: `center`, color: colors.taskBG, fontWeight: `bold` }}>
                             0 Task(s)
                         </Text>
                     </View>
@@ -221,15 +223,16 @@ export default function Tasks({ selected }: any) {
                     onCancel={() => setTaskName(``)}
                     onBlur={() => setEditing(false)}
                     onFocus={() => setEditing(true)}
+                    cancelText={taskName == `` ? `Close` : `Cancel`}
                     endIconPress={() => taskToEdit == null ? addTask() : editTask()}
                     cancelColor={taskName == `` ? colors.disabledFont : colors.error}
-                    endIconColor={taskName == `` ? colors.disabledFont : colors.inputBG}
                     doneColor={taskName == `` ? colors.disabledFont : colors.activeColor}
+                    endIconColor={taskName == `` ? colors.disabledFont : colors.inputColor}
                     doneText={taskName == `` ? `Done` : taskToEdit == null ? `Add` : `Save`}
-                    extraStyle={{ color: colors.inputColor, backgroundColor: colors.inputBG }}
                     onDone={taskName == `` ? null : () => taskToEdit == null ? addTask() : editTask()}
                     style={{ width: `80%`, minHeight: itemHeight, ...globalStyles.flexRow, marginBottom: 0, }}
-                    endIconStyle={{ minHeight: itemHeight, maxHeight: itemHeight, backgroundColor: colors.inputBG }}
+                    endIconStyle={{ minHeight: itemHeight, maxHeight: itemHeight, backgroundColor: taskName == `` ? colors.inputBG : colors.activeColor }}
+                    extraStyle={{ color: colors.inputColor, backgroundColor: colors.inputBG, fontWeight: `bold`, fontStyle: taskName == `` ? `italic` : `normal` }}
                 />
             </View>
         </>

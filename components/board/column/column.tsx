@@ -154,14 +154,14 @@ export default function Column({
         };
         
         const renderRightActions = () => (
-            <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.mainBG }]}>
-                <FontAwesome name={`angle-double-left`} color={colors.white} size={22} style={{ paddingHorizontal: 20, fontWeight: `bold` }} />
+            <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.white }]}>
+                <FontAwesome name={`angle-double-left`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
             </View>
         );
         
         const renderLeftActions = () => (
-            <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8, backgroundColor: colors.mainBG }]}>
-                <FontAwesome name={`angle-double-right`} color={colors.white} size={22} style={{ paddingHorizontal: 20, fontWeight: `bold` }} />
+            <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8, backgroundColor: colors.white }]}>
+                <FontAwesome name={`angle-double-right`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
             </View>
         );
 
@@ -201,15 +201,15 @@ export default function Column({
                         <View id={`column_${column?.id}`} style={[
                             {  
                                 paddingTop: 5,
-                                marginTop: 15,
                                 width: `100%`,
                                 backgroundColor, 
                                 marginHorizontal: `auto`,
+                                marginTop: selected == null ? 20 : 15,
                                 opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.55,
                             }, 
                             animatedAdjacent,
                         ]}>
-                            <BlurView intensity={blurIntensity} style={[StyleSheet.absoluteFill, { borderRadius: 12, opacity: 0 }]} />
+                            {/* <BlurView intensity={blurIntensity} style={[StyleSheet.absoluteFill, { borderRadius: 12, opacity: 0 }]} /> */}
                             <View style={{ 
                                 padding: 0,
                                 width: `95%`, 
@@ -233,7 +233,7 @@ export default function Column({
                                             </TouchableOpacity>
                                         ) : <></>
                                     )}
-                                    <Text numberOfLines={1} ellipsizeMode={`tail`} style={[titleRowStyles.title, titleRowStyles.fontColor, { flexBasis: selected?.type == Views.ItemForm ? `65%` : `45%` }]}>
+                                    <Text numberOfLines={1} ellipsizeMode={`tail`} style={[titleRowStyles.title, titleRowStyles.fontColor, { flexBasis: selected?.type == Views.ItemForm ? `65%` : `50%` }]}>
                                         {selected == null ? (
                                             `${column?.name} ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                                 toFixedWithoutRounding(slideIndex + 1, 1)
@@ -243,7 +243,7 @@ export default function Column({
                                     {selected == null ? (
                                         columnItems && columnItems.length > 0 ? (
                                             <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
-                                                {columnItems?.length + ` Item(s)`}
+                                                {columnItems?.length >= 10 ? columnItems?.length : columnItems?.length + ` Item${columnItems?.length > 1 ? `s` : `(s)`}`}
                                             </Text>
                                         ) : <>
                                             <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
@@ -289,7 +289,7 @@ export default function Column({
                                     // </PanGestureHandler>
                                 ) : (
                                     <View style={{ width: `100%`, backgroundColor: colors.transparent, height: `auto`, paddingVertical: 15, ...globalStyles.flexRow, justifyContent: `center`, gap: 15 }}>
-                                        <LoadingSpinner spinning={true} />
+                                        <LoadingSpinner />
                                         <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
                                             {itemsLoading ? loadingMessages.loading : loadingMessages.zero}
                                         </Text>
@@ -322,12 +322,14 @@ export default function Column({
                                                 endIconDisabled={itemName == ``}
                                                 onBlur={() => setAddingItem(false)}
                                                 doneText={itemName == `` ? `Done` : `Add`}
+                                                cancelText={itemName == `` ? `Close` : `Cancel`}
                                                 onDone={itemName == `` ? () => {} : () => addItem()}
-                                                cancelColor={itemName == `` ? colors.transparent : colors.error}
-                                                doneColor={itemName == `` ? colors.transparent : colors.activeColor}
+                                                cancelColor={itemName == `` ? colors.disabledFont : colors.error}
+                                                doneColor={itemName == `` ? colors.disabledFont : colors.activeColor}
                                                 endIconColor={itemName == `` ? colors.disabledFont : colors.inputColor}
                                                 extraStyle={{ 
                                                     width: `83%`, 
+                                                    fontWeight: `bold`,
                                                     color: colors.inputColor, 
                                                     backgroundColor: colors.inputBG, 
                                                     fontStyle: itemName == `` ? `italic` : `normal`,
@@ -387,12 +389,12 @@ export const titleRowStyles = StyleSheet.create({
         flexDirection: `row`,
         alignItems: `center`,
         paddingHorizontal: 10, 
-        borderRadius: borderRadius - 3, 
+        borderRadius: borderRadius, 
     },
     addItemButton: {
         padding: 1, 
         width: `92%`, 
-        borderRadius: borderRadius - 3,
+        borderRadius: borderRadius,
     },
     itemText: {
         fontSize: 18,

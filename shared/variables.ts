@@ -21,9 +21,9 @@ export const paginationSize = 5;
 export const tabBarIconSize = 18;
 export const maxItemNameLength = 15;
 export const maxTaskNameLength = 28;
-export const maxItemSummaryLength = 125;
+export const maxItemSummaryLength = 57;
 export const delayBeforeScrollingDown = 175;
-export const maxItemDescriptionLength = 250;
+export const maxItemDescriptionLength = 240;
 export const defaultBoardID = `3_Column_${BoardTypes.Kanban}`;
 export const SIZE = Dimensions.get(`window`).width / COL - MARGIN;
 

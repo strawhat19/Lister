@@ -46,7 +46,8 @@ export enum BoardTypes {
 
 export enum ItemViews {
     Tasks = `Tasks`,
-    Image = `Image`,
+    Images = `Images`,
+    Details = `Details`,
     Summary = `Summary`,
     Comments = `Comments`,
 }

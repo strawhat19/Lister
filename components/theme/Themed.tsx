@@ -5,7 +5,7 @@ import { Platform, StyleSheet } from 'react-native';
 import { Text as DefaultText, View as DefaultView } from 'react-native';
 
 // Sizing & Spacing
-export const borderRadius = 10;
+export const borderRadius = 4;
 export const itemCardHeight = 150;
 export const taskBorderRadius = 8;
 export const itemSimplifiedCardHeight = `auto`;

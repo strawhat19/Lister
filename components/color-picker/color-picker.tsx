@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import WheelColorPicker from "react-native-wheel-color-picker";
-import { View, Modal, TouchableOpacity, Text, StyleSheet, Animated } from "react-native";
-import { BlurView } from "expo-blur";
-import { colors } from "../theme/Themed";
+import { BlurView } from 'expo-blur';
+import { colors, getFontColor } from '../theme/Themed';
+import { SharedContext } from '@/shared/shared';
+import React, { useState, useRef, useContext } from 'react';
+import WheelColorPicker from 'react-native-wheel-color-picker';
+import { View, Modal, TouchableOpacity, Text, StyleSheet, Animated } from 'react-native';
 
 export default function ColorPicker() {
+  let { selected } = useContext<any>(SharedContext);
+
   const [isPickerVisible, setPickerVisible] = useState(false);
-  const [selectedColor, setSelectedColor] = useState("#ff0000"); // Default color
   const fadeAnim = useRef(new Animated.Value(0)).current; // For fade animation
+  const [selectedColor, setSelectedColor] = useState(selected?.backgroundColor); // Default color
 
   const togglePicker = () => {
     if (isPickerVisible) {
@@ -29,13 +32,15 @@ export default function ColorPicker() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[{ backgroundColor: colors.transparent }]}>
       {/* Selected Color Preview */}
       <TouchableOpacity
         style={[styles.colorPreview, { backgroundColor: selectedColor }]}
         onPress={togglePicker}
       >
-        <Text style={styles.colorText}>Pick a Color</Text>
+        <Text style={[styles.colorText, { color: getFontColor(selectedColor) }]}>
+          Pick a Color
+        </Text>
       </TouchableOpacity>
       {/* Color Picker Modal */}
       <Modal
@@ -55,8 +60,10 @@ export default function ColorPicker() {
             intensity={5}
           />
           {/* Modal Content */}
-          <View style={styles.colorPickerContainer}>
-            <Text style={styles.modalTitle}>Select a Color</Text>
+          <View style={[styles.colorPickerContainer, { backgroundColor: colors.transparent }]}>
+            {/* <Text style={styles.modalTitle}>
+              Select a Color
+            </Text> */}
 
             <WheelColorPicker
               onColorChange={setSelectedColor} // Realtime color change
@@ -71,7 +78,9 @@ export default function ColorPicker() {
               style={styles.closeButton}
               onPress={togglePicker}
             >
-              <Text style={styles.closeButtonText}>Done</Text>
+              <Text style={styles.closeButtonText}>
+                Done
+              </Text>
             </TouchableOpacity>
           </View>
         </Animated.View>

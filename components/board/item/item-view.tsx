@@ -275,6 +275,28 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                 </>}
             </>}
 
+            {view == ItemViews.Details && <>
+                {selected?.type == Views.Column && <View style={{ flex: 1, backgroundColor: colors.transparent }} />}
+                <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
+                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
+                        Status
+                    </Text>
+                    {swipeableStatus()}
+                </View>
+                {devEnv && <ColorPicker />}
+                <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
+                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
+                        Color
+                    </Text>
+                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
+                        {selected?.color ?? selected?.backgroundColor}
+                    </Text>
+                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
+                        {selected?.color ? selected?.backgroundColor : ``}
+                    </Text>
+                </View>
+            </>}
+
             {selected?.type == Views.Item ? <>
                 {view == ItemViews.Details && (
                     <ScrollView 
@@ -376,25 +398,6 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
             </> : <></>}
 
             {view == ItemViews.Details && <>
-                {selected?.type == Views.Column && <View style={{ flex: 1, backgroundColor: colors.transparent }} />}
-                {devEnv && <ColorPicker />}
-                <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
-                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
-                        Color
-                    </Text>
-                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
-                        {selected?.color ?? selected?.backgroundColor}
-                    </Text>
-                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
-                        {selected?.color ? selected?.backgroundColor : ``}
-                    </Text>
-                </View>
-                <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
-                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
-                        Status
-                    </Text>
-                    {swipeableStatus()}
-                </View>
                 {(isValid(selected?.created) || isValid(selected?.updated)) && <>
                     <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 5, justifyContent: `space-between`, }]}>
                         {isValid(selected?.created) && <Text style={[styles.detailsFooterText, { color: fontColor, fontSize: 10 }]}>

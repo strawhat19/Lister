@@ -13,7 +13,7 @@ export const defaultSlideUpHeight = `90%`;
 // export const defaultSlideUpHeight = `65%`;
 
 export default function SlideUp({ maxHeight = defaultSlideUpHeight, backgroundColor = colors.transparent }: any) {
-    let { indx, selected, onSheetChange, closeBottomSheet, blurBGContainerOpacity } = useContext<any>(SharedContext);
+    let { indx, selected, onSheetChange, closeBottomSheet, selectedColor, colorPickerOpen, blurBGContainerOpacity } = useContext<any>(SharedContext);
 
     const [blur,] = useState<any>(0);
     const bottomSheetRef = useRef<BottomSheet>(null);
@@ -46,7 +46,7 @@ export default function SlideUp({ maxHeight = defaultSlideUpHeight, backgroundCo
                 handleIndicatorStyle={[boardStyles.handleStyle, { backgroundColor: selected == null ? colors.transparent : colors.mainBG }]} // Hide handle on web
                 backgroundStyle={{ 
                     ...boardStyles.bottomSheetBackground, 
-                    ...(selected != null && {backgroundColor: selected.backgroundColor ? selected.backgroundColor : backgroundColor }) 
+                    ...(selected != null && { backgroundColor: colorPickerOpen ? selectedColor : (selected.backgroundColor ? selected.backgroundColor : backgroundColor) }), 
                 }}
             >
                 <BottomSheetView style={boardStyles.contentContainer}>

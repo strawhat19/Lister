@@ -13,13 +13,13 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { ItemViewType, Views, ItemViews, ItemType } from '@/shared/types/types';
 import { Animated, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { devEnv, isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
-import { borderRadius, colors, draggableViewItemBorderRadius, getFontColor, globalStyles, Text, View } from '@/components/theme/Themed';
+import { isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
+import { borderRadius, colors, draggableViewItemBorderRadius, findColorCodeToKey, getFontColor, getFontColorForBackground, globalStyles, Text, View } from '@/components/theme/Themed';
 
 export const maxItemDescriptionHeight = 251;
 
-export default function ItemView({ backgroundColor }: ItemViewType) {
-    let { selected, items, view, setView, editing, setEditing, setSelected, setActiveTopName } = useContext<any>(SharedContext);
+export default function ItemView({ }: ItemViewType | any) {
+    let { selected, setSelected, items, view, setView, editing, setEditing, selectedColor, colorPickerOpen, setActiveTopName } = useContext<any>(SharedContext);
 
     const swipeableRef = useRef<Swipeable>(null);
     const [name, setName] = useState(selected?.name);
@@ -29,9 +29,9 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
     const [description, setDescription] = useState(selected?.description);
     const [validSelectedImage, setValidSelectedImage] = useState(isValid(selected?.image));
 
-    const fontColor = getFontColor(selected?.backgroundColor);
     const itemFontStyles = { ...(selected?.fontColor && { color: selected?.fontColor }) };
     const scrollingDetailsEnabled = () => description && typeof description == `string` && (selected?.image && selected?.image != ``);
+    const fontColor = (colorPickerOpen) => colorPickerOpen ? getFontColorForBackground(selectedColor) : getFontColor(selected?.backgroundColor);
 
     useEffect(() => {
         let thisItem;
@@ -125,7 +125,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
         )
     }
 
-    const nameInput = () => {
+    const nameInput = (colorPickerOpen) => {
         return <>
             <ForwardRefInput
                 value={name}
@@ -138,10 +138,10 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                 onChangeText={setName}
                 maxLength={maxItemNameLength}
                 onCancel={() => setName(selected?.name)}
-                extraStyle={{ backgroundColor: colors.transparent }}
-                placeholderTextColor={name == `` ? colors.black : fontColor}
                 doneText={(isValid(name) && name != selected?.name) ? `Save` : `Done`}
                 cancelText={(isValid(name) && name != selected?.name) ? `Cancel` : `Close`}
+                placeholderTextColor={name == `` ? colors.black : fontColor(colorPickerOpen)}
+                extraStyle={{ backgroundColor: colors.transparent, color: fontColor(colorPickerOpen) }}
                 cancelColor={(isValid(name) && name != selected?.name) ? colors.error : colors.disabledFont}
                 doneColor={(isValid(name) && name != selected?.name) ? colors.active : colors.disabledFont}
                 onDone={(isValid(name) && name != selected?.name) ? () => onNameSave() : () => setName(selected?.name)}
@@ -164,7 +164,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                 {selected?.type == Views.Column && <>
                     <View style={[styles.nameInput, globalStyles.flexRow, { paddingLeft: 20 }]}>
                         <FontAwesome name={`pencil`} size={18} color={colors.white} style={{ position: `relative`, top: -5.7, right: -10 }} />
-                        {nameInput()}
+                        {nameInput(colorPickerOpen)}
                     </View>
                 </>}
                 <View style={styles.topTabs}>
@@ -211,8 +211,9 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                     gap: 0,
                     width: `100%`, 
                     alignItems: `center`,
+                    backgroundColor: colors.transparent,
                     paddingTop: selected?.type == Views.Item && isValid(selected?.image) ? 0 : 5,
-                    backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
+                    // backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
                     height: (selected?.type == Views.Column || (editing && selected?.type == Views.Item)) ? 0 : (web() ? 500 : isValid(selected?.image) ? 280 : 135), 
                 }}
             >
@@ -235,7 +236,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                         </View>
                     ) : <></>}
                     <View style={{ ...boardStyles.cardRight, height: `100%`, minHeight: `100%`, maxHeight: `100%`, gap: 0, paddingVertical: 0, alignItems: `center`, justifyContent: `center`, backgroundColor: colors.transparent, paddingTop: isValid(selected?.image) ? 60 : 0 }}>
-                        {nameInput()}
+                        {nameInput(colorPickerOpen)}
                         <ForwardRefInput
                             value={summary}
                             multiline={true}
@@ -246,8 +247,8 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                             onChangeText={setSummary}
                             maxLength={maxItemSummaryLength}
                             onCancel={() => setSummary(selected?.summary)}
-                            extraStyle={{ backgroundColor: colors.transparent }}
-                            placeholderTextColor={summary == `` ? colors.black : fontColor}
+                            placeholderTextColor={summary == `` ? colors.black : fontColor(colorPickerOpen)}
+                            extraStyle={{ backgroundColor: colors.transparent, color: fontColor(colorPickerOpen) }}
                             doneText={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? `Save` : `Done`}
                             cancelText={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? `Cancel` : `Close`}
                             cancelColor={(summary != selected?.summary && (isValid(summary) || summary == ``)) ? colors.error : colors.disabledFont}
@@ -278,22 +279,19 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
             {view == ItemViews.Details && <>
                 {selected?.type == Views.Column && <View style={{ flex: 1, backgroundColor: colors.transparent }} />}
                 <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
-                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
+                    <Text style={[styles.detailsFooterText, { color: fontColor(colorPickerOpen) }]}>
                         Status
                     </Text>
                     {swipeableStatus()}
                 </View>
-                {devEnv && <ColorPicker />}
-                <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 10, justifyContent: `flex-start`, }]}>
-                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
+                <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 10, paddingBottom: 0, justifyContent: `flex-start`, }]}>
+                    <Text style={[styles.detailsFooterText, { color: fontColor(colorPickerOpen) }]}>
                         Color
                     </Text>
-                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
-                        {selected?.color ?? selected?.backgroundColor}
+                    <Text style={[styles.detailsFooterText, { color: fontColor(colorPickerOpen) }]}>
+                        {colorPickerOpen ? findColorCodeToKey(selectedColor, colors) : (selected?.color ?? selected?.backgroundColor)}
                     </Text>
-                    <Text style={[styles.detailsFooterText, { color: fontColor }]}>
-                        {selected?.color ? selected?.backgroundColor : ``}
-                    </Text>
+                    <ColorPicker />
                 </View>
             </>}
 
@@ -303,8 +301,8 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                         enabled={!editing}
                         nestedScrollEnabled={!editing}
                         keyboardShouldPersistTaps={`handled`}
-                        style={{ flex: 1, width: `100%`, backgroundColor: `transparent`, marginVertical: selected?.image ? 10 : 0 }}
                         scrollEnabled={!editing && (scrollingDetailsEnabled() ? description.length >= 420 : description.length >= 620)} 
+                        style={{ flex: 1, width: `100%`, opacity: colorPickerOpen ? 0 : 1,  backgroundColor: `transparent`, marginVertical: selected?.image ? 10 : 0 }}
                     >
                         <ForwardRefInput
                             multiline={true}
@@ -319,7 +317,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                             onFocus={() => setEditing(true)}
                             maxLength={maxItemDescriptionLength}
                             onCancel={() => setDescription(selected?.description)}
-                            placeholderTextColor={description == `` ? colors.black : fontColor}
+                            placeholderTextColor={description == `` ? colors.black : fontColor(colorPickerOpen)}
                             doneText={(description != selected?.description && (isValid(description) || description == ``)) ? `Save` : `Done`}
                             cancelText={(description != selected?.description && (isValid(description) || description == ``)) ? `Cancel` : `Close`}
                             cancelColor={(description != selected?.description && (isValid(description) || description == ``)) ? colors.error : colors.disabledFont}
@@ -378,7 +376,7 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
                                 onCancel={() => resetImage()}
                                 onBlur={() => setEditing(false)}
                                 onFocus={() => setEditing(true)}
-                                placeholderTextColor={image == `` ? colors.black : fontColor}
+                                placeholderTextColor={image == `` ? colors.black : fontColor(colorPickerOpen)}
                                 doneText={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? `Save` : `Done`}
                                 cancelText={((isValid(image) && validImage) || (image == `` && image != selected?.image)) ? `Cancel` : `Close`}
                                 onDone={((isValid(image) && image != selected?.image && validImage) || image == ``) ? () => onImageSave() : () => resetImage()}
@@ -400,20 +398,20 @@ export default function ItemView({ backgroundColor }: ItemViewType) {
             {view == ItemViews.Details && <>
                 {(isValid(selected?.created) || isValid(selected?.updated)) && <>
                     <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 5, justifyContent: `space-between`, }]}>
-                        {isValid(selected?.created) && <Text style={[styles.detailsFooterText, { color: fontColor, fontSize: 10 }]}>
+                        {isValid(selected?.created) && <Text style={[styles.detailsFooterText, { color: fontColor(colorPickerOpen), fontSize: 10 }]}>
                             Created By Rakib on
                         </Text>}
-                        {isValid(selected?.updated) && <Text style={[styles.detailsFooterText, { color: fontColor, fontSize: 10 }]}>
+                        {isValid(selected?.updated) && <Text style={[styles.detailsFooterText, { color: fontColor(colorPickerOpen), fontSize: 10 }]}>
                             Updated By Rakib on
                         </Text>}
                     </View>
                 </>}
                 {(isValid(selected?.created) || isValid(selected?.updated)) && <>
                     <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 5, justifyContent: `space-between`, }]}>
-                        {isValid(selected?.created) && <Text style={[styles.detailsFooterText, { color: fontColor, fontSize: 10 }]}>
+                        {isValid(selected?.created) && <Text style={[styles.detailsFooterText, { color: fontColor(colorPickerOpen), fontSize: 10 }]}>
                             {selected?.created}
                         </Text>}
-                        {isValid(selected?.updated) && <Text style={[styles.detailsFooterText, { color: fontColor, fontSize: 10 }]}>
+                        {isValid(selected?.updated) && <Text style={[styles.detailsFooterText, { color: fontColor(colorPickerOpen), fontSize: 10 }]}>
                             {selected?.updated}
                         </Text>}
                     </View>

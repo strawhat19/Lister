@@ -19,6 +19,7 @@ export const fontFamilies = {
 export const fontFamily = fontFamilies.spacemono;
 
 // Colors
+export const brightColorThreshold = 128;
 export const lightColors = {
   lime: `rgba(0, 255, 0, 1)`,
   neon: `rgba(57, 255, 20, 1)`,
@@ -101,9 +102,9 @@ export const commonColors = {
 export const allColors = {
   ...cardColors,
   ...commonColors,
-  blackGlass: (alpha = 0.5) => `rgba(0, 0, 0, ${alpha})`,
-  darkGlass: (alpha = 0.5) => `rgba(39, 39, 41, ${alpha})`,
-  whiteGlass: (alpha = 0.5) => `rgba(255, 255, 255, ${alpha})`,
+  // blackGlass: (alpha = 0.5) => `rgba(0, 0, 0, ${alpha})`,
+  // darkGlass: (alpha = 0.5) => `rgba(39, 39, 41, ${alpha})`,
+  // whiteGlass: (alpha = 0.5) => `rgba(255, 255, 255, ${alpha})`,
 }
 
 export const fontColors = {
@@ -182,9 +183,58 @@ export const colors = {
   ...themeToUse,
 }
 
-export const isLightColor = (colorString) => Object.values(lightColors).includes(colorString);
-export const getFontColor = (colorString, darkFont = colors.darkFont, lightFont = colors.lightFont) => (
-  (isLightColor(colorString) || colorString == `transparent`) ? darkFont : lightFont
+const filteredColors: Record<string, string> = Object.entries(colors).reduce((acc, [key, value]) => {
+  if (typeof value === "string") {
+      acc[key] = value;
+  }
+  return acc;
+}, {} as Record<string, string>);
+
+export const convertToColorNamesRecord = (colors: Record<string, string>): Record<string, string> => {
+  const result: Record<string, string> = {};
+  const toTitleCase = (str: string): string =>
+      str.replace(/([a-z])([A-Z])/g, "$1 $2") // Convert camelCase to words
+         .replace(/(^|\s)\w/g, match => match.toUpperCase()); // Capitalize each word
+  for (const [key, value] of Object.entries(colors)) {
+    if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value) || /^rgba?\((\d+),\s*(\d+),\s*(\d+)(,\s*\d+(\.\d+)?)?\)$/.test(value)) {
+      result[value] = toTitleCase(key);
+    }
+  }
+  return result;
+}
+
+const colorNamesRecord = convertToColorNamesRecord(filteredColors);
+
+export const isLightColor = (colorCode: string): boolean => {
+  let r: number, g: number, b: number;
+
+  if (Object.values(lightColors).includes(colorCode)) {
+    return true;
+  }
+
+  if (colorCode?.startsWith(`#`)) {
+    colorCode = colorCode.replace(/^#/, ``);
+    if (colorCode.length === 3) colorCode = colorCode.split(``).map(char => char + char).join(``);
+    if (colorCode.length !== 6) return false;
+    r = parseInt(colorCode.substring(0, 2), 16);
+    g = parseInt(colorCode.substring(2, 4), 16);
+    b = parseInt(colorCode.substring(4, 6), 16);
+  } else if (colorCode?.startsWith(`rgba`)) {
+    const match = colorCode.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (!match) return false;
+    r = parseInt(match[1], 10);
+    g = parseInt(match[2], 10);
+    b = parseInt(match[3], 10);
+  } else {
+    return false;
+  }
+
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > brightColorThreshold;
+};
+
+export const getFontColor = (colorCode, darkFont = colors.darkFont, lightFont = colors.lightFont) => (
+  (isLightColor(colorCode) || colorCode == `transparent`) ? darkFont : lightFont
 );
 
 export const findColorCodeToKey = (colorCode: string, colors: Record<string, string | ((alpha: number) => string)>): string | undefined => {
@@ -193,8 +243,83 @@ export const findColorCodeToKey = (colorCode: string, colors: Record<string, str
       return key;
     }
   }
-  return colorCode;
+  return getColorName(colorCode);
 }
+
+export const hexToRgba = (hex: string, alpha: number = 1): string => {
+  hex = hex.replace(/^#/, ``);
+  if (hex.length === 3) {
+    hex = hex.split(``).map(char => char + char).join(``);
+  }
+  if (hex.length !== 6) return;
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+export const rgbaToHex = (rgba: string): string => {
+  const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*([\d\.]+)?\)/);
+  if (!match) {
+    return;
+  }
+  const r = parseInt(match[1], 10);
+  const g = parseInt(match[2], 10);
+  const b = parseInt(match[3], 10);
+  const a = match[4] !== undefined ? Math.round(parseFloat(match[4]) * 255) : 255;
+  const toHex = (value: number) => value.toString(16).padStart(2, "0").toUpperCase();
+  const hex = `#${toHex(r)}${toHex(g)}${toHex(b)}${a < 255 ? toHex(a) : ""}`;
+  return hex;
+};
+
+export const getFontColorForBackground = (colorCode: string): string | undefined => {
+  let r: number, g: number, b: number;
+  if (colorCode?.startsWith(`#`)) {
+      colorCode = colorCode.replace(/^#/, ``);
+      if (colorCode.length === 3) colorCode = colorCode.split(``).map(char => char + char).join(``);
+      if (colorCode.length !== 6) return;
+      r = parseInt(colorCode.substring(0, 2), 16);
+      g = parseInt(colorCode.substring(2, 4), 16);
+      b = parseInt(colorCode.substring(4, 6), 16);
+  } else if (colorCode?.startsWith(`rgba`)) {
+      const match = colorCode.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+      if (!match) return;
+      r = parseInt(match[1], 10);
+      g = parseInt(match[2], 10);
+      b = parseInt(match[3], 10);
+  } else return;
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > brightColorThreshold ? colors.darkFont : colors.lightFont;
+};
+
+export const getColorName = (color: string): string => {
+  let customColorMessage = `Custom Color`;
+  let r: number, g: number, b: number;
+  if (color?.startsWith(`#`)) {
+    color = color.replace(/^#/, "");
+    if (color.length === 3) color = color.split("").map(char => char + char).join("");
+    if (color.length !== 6) return customColorMessage;
+    r = parseInt(color.substring(0, 2), 16);
+    g = parseInt(color.substring(2, 4), 16);
+    b = parseInt(color.substring(4, 6), 16);
+    const hexColor = `#${color.toUpperCase()}`;
+    if (colorNamesRecord[hexColor]) return colorNamesRecord[hexColor];
+  } else if (color?.startsWith(`rgba`)) {
+    const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (!match) return customColorMessage;
+    r = parseInt(match[1], 10);
+    g = parseInt(match[2], 10);
+    b = parseInt(match[3], 10);
+  } else {
+    return customColorMessage;
+  }
+
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  const lightness = brightness > brightColorThreshold ? `Light` : `Dark`;
+  const primaryColor = r > g && r > b ? `Red` : g > r && g > b ? `Green` : b > r && b > g ? `Blue` : `Gray`;
+
+  return `${lightness} ${primaryColor}`;
+};
 
 export const detectIfNameIsColor = async (name: string, lastColor: string) => {
   let colorKey;
@@ -223,7 +348,7 @@ export const detectIfNameIsColor = async (name: string, lastColor: string) => {
 
 const rgbaToHsl = (rgba: string): [number, number, number] => {
   const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-  if (!match) throw new Error("Invalid RGBA color string");
+  if (!match) throw new Error(`Invalid RGBA color string`);
 
   const [r, g, b] = match.slice(1, 4).map((v) => parseInt(v, 10) / 255);
 

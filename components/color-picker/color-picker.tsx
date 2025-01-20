@@ -1,51 +1,65 @@
 import { BlurView } from 'expo-blur';
-import { colors, getFontColor } from '../theme/Themed';
 import { SharedContext } from '@/shared/shared';
-import React, { useState, useRef, useContext } from 'react';
+import React, { useRef, useContext } from 'react';
 import WheelColorPicker from 'react-native-wheel-color-picker';
-import { View, Modal, TouchableOpacity, Text, StyleSheet, Animated } from 'react-native';
+import { updateItemFieldsInDatabase } from '@/shared/server/firebase';
+import { colors, findColorCodeToKey, getFontColorForBackground, hexToRgba } from '../theme/Themed';
+import { View, Modal, TouchableOpacity, Text, StyleSheet, Animated, Vibration } from 'react-native';
 
 export default function ColorPicker() {
-  let { selected } = useContext<any>(SharedContext);
+  let { selected, selectedColor, setSelectedColor, colorPickerOpen, setColorPickerOpen } = useContext<any>(SharedContext);
 
-  const [isPickerVisible, setPickerVisible] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(0)).current; // For fade animation
-  const [selectedColor, setSelectedColor] = useState(selected?.backgroundColor); // Default color
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const onCancelColorChange = () => {
+    setSelectedColor(selected?.backgroundColor);
+    togglePicker();
+  }
+
+  const onSaveColor = async () => {
+    await updateItemFieldsInDatabase(selected?.id, { 
+      backgroundColor: selectedColor, 
+      color: findColorCodeToKey(selectedColor, colors), 
+      // fontColor: getFontColorForBackground(selectedColor),
+    });
+    Vibration.vibrate(1);
+    togglePicker();
+  }
 
   const togglePicker = () => {
-    if (isPickerVisible) {
+    if (colorPickerOpen) {
       // Fade out when closing
       Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 300,
         useNativeDriver: true,
-      }).start(() => setPickerVisible(false));
+      }).start(() => setColorPickerOpen(false));
     } else {
-      setPickerVisible(true);
+      setColorPickerOpen(true);
       // Fade in when opening
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
-      }).start();
+      }).start(() => setSelectedColor(selected?.backgroundColor));
     }
   };
 
   return (
-    <View style={[{ backgroundColor: colors.transparent }]}>
+    <View style={[{ backgroundColor: colors.transparent, flex: 1 }]}>
       {/* Selected Color Preview */}
       <TouchableOpacity
-        style={[styles.colorPreview, { backgroundColor: selectedColor }]}
         onPress={togglePicker}
+        style={[styles.colorPreview, { minHeight: 25, backgroundColor: selectedColor, borderColor: getFontColorForBackground(selectedColor) }]}
       >
-        <Text style={[styles.colorText, { color: getFontColor(selectedColor) }]}>
-          Pick a Color
+        <Text style={[styles.colorText, { color: getFontColorForBackground(selectedColor) }]}>
+          {selectedColor}
         </Text>
       </TouchableOpacity>
       {/* Color Picker Modal */}
       <Modal
         transparent={true}
-        visible={isPickerVisible}
+        visible={colorPickerOpen}
         onRequestClose={togglePicker}
       >
         <Animated.View
@@ -57,7 +71,7 @@ export default function ColorPicker() {
           {/* Blur Background */}
           <BlurView
             style={StyleSheet.absoluteFill}
-            intensity={5}
+            intensity={0}
           />
           {/* Modal Content */}
           <View style={[styles.colorPickerContainer, { backgroundColor: colors.transparent }]}>
@@ -65,23 +79,35 @@ export default function ColorPicker() {
               Select a Color
             </Text> */}
 
-            <WheelColorPicker
-              onColorChange={setSelectedColor} // Realtime color change
-              onColorChangeComplete={(color) => setSelectedColor(color)} // Final color after selection
-              thumbSize={20}
-              sliderSize={20}
-              noSnap={true}
-              row={false}
-            />
+            <View style={{ flex: 1, position: `relative`, top: 25 }}>
+              <WheelColorPicker
+                row={false}
+                noSnap={true}
+                thumbSize={35}
+                sliderSize={25}
+                onColorChange={(hexColor) => setSelectedColor(hexToRgba(hexColor))}
+                onColorChangeComplete={(hexColor) => setSelectedColor(hexToRgba(hexColor))}
+              />
+            </View>
 
             <TouchableOpacity
-              style={styles.closeButton}
-              onPress={togglePicker}
+              onPress={() => onSaveColor()}
+              style={[styles.closeButton, { position: `relative`, bottom: -15, left: 115, backgroundColor: colors.success }]}
             >
-              <Text style={styles.closeButtonText}>
-                Done
+              <Text style={[styles.closeButtonText, { fontWeight: `bold` }]}>
+                ✓
               </Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => onCancelColorChange()}
+              style={[styles.closeButton, { position: `relative`, bottom: -115, left: 115, backgroundColor: colors.error }]}
+            >
+              <Text style={[styles.closeButtonText, { fontWeight: `bold` }]}>
+                X
+              </Text>
+            </TouchableOpacity>
+
           </View>
         </Animated.View>
       </Modal>
@@ -97,24 +123,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   colorPreview: {
-    width: 100,
-    height: 50,
+    width: `100%`,
+    height: `auto`,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 8,
+    borderRadius: 4,
     borderWidth: 1,
-    borderColor: "#ccc",
-    marginBottom: 10,
   },
   colorText: {
-    color: "#000",
-    fontWeight: "bold",
+    fontSize: 12,
+    fontWeight: `bold`,
+    paddingVertical: 0,
+    fontStyle: `italic`,
+    paddingHorizontal: 5,
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: "center",
+    paddingTop: 35,
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Optional: extra dimming
+    justifyContent: "center",
+    backgroundColor: colors.transparent, // Optional: extra dimming
   },
   colorPickerContainer: {
     width: "80%",

@@ -3,11 +3,11 @@ import React, { useContext } from 'react';
 import { isValid } from '@/shared/variables';
 import { SharedContext } from '@/shared/shared';
 import { ItemType } from '@/shared/types/types';
+import { FontAwesome } from '@expo/vector-icons';
 import CustomImage from '@/components/custom-image/custom-image';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { Text, View, borderRadius, colors, isLightColor, itemCardHeight, itemSimplifiedCardHeight } from '@/components/theme/Themed';
-import { FontAwesome } from '@expo/vector-icons';
 
 export default function Item({ 
     item, 
@@ -68,8 +68,8 @@ export default function Item({
                                 } : {
                                     borderRightWidth: 1, 
                                     alignItems: `center`,
-                                    borderColor: fontColor,
                                     justifyContent: `center`, 
+                                    borderColor: fontColor,
                                 }),
                             }]}>
                                 {item?.complete ? (
@@ -90,8 +90,8 @@ export default function Item({
                                 ellipsizeMode={`tail`} 
                                 style={{ 
                                     ...boardStyles.cardTitle, 
-                                    color: fontColor, 
                                     overflowY: `visible`,
+                                    color: fontColor, 
                                     textDecorationLine: item?.complete ? `line-through` : `none`,
                                     ...(isValid(item?.summary) ? {
                                         maxWidth: `90%`, 

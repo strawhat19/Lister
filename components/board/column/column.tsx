@@ -13,7 +13,7 @@ import { ColumnType, Directions, ItemType, ItemViews } from '@/shared/types/type
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { borderRadius, colors, getFontColor, globalStyles, Text, View } from '@/components/theme/Themed';
+import { borderRadius, colors, getFontColor, getFontColorForBackground, globalStyles, Text, View } from '@/components/theme/Themed';
 import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem, db, itemsDatabaseCollection } from '@/shared/server/firebase';
 import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
@@ -25,7 +25,6 @@ export default function Column({
     swipeCarousel,
     animatedAdjacent, 
     blurIntensity = 0, 
-    backgroundColor = colors.transparent, 
 }: ColumnType | any) {
     let { 
         items,
@@ -38,6 +37,8 @@ export default function Column({
         boardColumns,
         itemsLoading,
         activeTopName,
+        selectedColor,
+        colorPickerOpen,
         openBottomSheet,
         closeBottomSheet, 
     } = useContext<any>(SharedContext);
@@ -236,9 +237,9 @@ export default function Column({
                                         </Text>
                                         <FontAwesome style={{ position: `absolute`, top: 12, left: 95, paddingBottom: 5 }} size={12} name={`gears`} color={colors.disabledFont} />
                                     </> : (
-                                        <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: selected?.backgroundColor }]}>
-                                            <FontAwesome name={`trash`} color={fontColor} size={14} />
-                                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: fontColor }]}>
+                                        <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: colorPickerOpen ? selectedColor : selected?.backgroundColor }]}>
+                                            <FontAwesome name={`trash`} size={14} color={colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor} />
+                                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor }]}>
                                                 Delete
                                             </Text>
                                         </TouchableOpacity>
@@ -262,9 +263,9 @@ export default function Column({
                                         </>}
                                         <FontAwesome style={{ position: `absolute`, top: 12, right: 95, paddingBottom: 5 }} size={12} name={`gears`} color={colors.disabledFont} />
                                     </> : (
-                                        <TouchableOpacity onPress={() => closeItem()} style={[titleRowStyles.topButton, { backgroundColor: selected?.backgroundColor }]}>
-                                            <FontAwesome name={`ban`} color={fontColor} size={14} />
-                                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: fontColor }]}>
+                                        <TouchableOpacity onPress={() => closeItem()} style={[titleRowStyles.topButton, { backgroundColor: colorPickerOpen ? selectedColor : selected?.backgroundColor }]}>
+                                            <FontAwesome name={`ban`} size={14} color={colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor} />
+                                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor }]}>
                                                 Close
                                             </Text>
                                         </TouchableOpacity>

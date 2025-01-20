@@ -1,7 +1,7 @@
 import { User } from './models/User';
 import 'react-native-gesture-handler';
 import { defaultColumns } from './database';
-import { View } from '@/components/theme/Themed';
+import { colors, View } from '@/components/theme/Themed';
 import SlideUp from '@/components/slide-up/slide-up';
 import { useSharedValue } from 'react-native-reanimated';
 import { collection, onSnapshot } from 'firebase/firestore';
@@ -33,7 +33,9 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [itemsLoading, setItemsLoading] = useState(true);
   let [usersLoading, setUsersLoading] = useState(true);
   let [tasksLoading, setTasksLoading] = useState(true);
+  let [colorPickerOpen, setColorPickerOpen] = useState(false);
   let [sliderMode, setSliderMode] = useState(SliderModes.Parallax);
+  let [selectedColor, setSelectedColor] = useState(colors.listsBG);
   let [view, setView] = useState<ItemViews | Views>(defaultItemView);
   let [selected, setSelected] = useState<ItemType | ColumnType | null>(null);
   let [boardColumns, setBoardColumns] = useState<BoardType | ColumnType[]>(defaultColumns);
@@ -50,6 +52,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     setEditing(false);
     setSelected(null);
     setView(defaultItemView);
+    setSelectedColor(colors.listsBG);
     if (dismissKeyboard) Keyboard.dismiss();
   }
 
@@ -73,6 +76,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         }
       }
       setSelected(item);
+      setSelectedColor(item?.backgroundColor);
     }
     Vibration.vibrate(1);
   }
@@ -176,6 +180,8 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         itemsLoading, setItemsLoading,
         usersLoading, setUsersLoading,
         activeTopName, setActiveTopName,
+        selectedColor, setSelectedColor,
+        colorPickerOpen, setColorPickerOpen,
       }}
     >
       <GestureHandlerRootView>

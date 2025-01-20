@@ -162,7 +162,7 @@ export const deleteTaskFromDatabase = async (taskID: string) => {
   }
 }
 
-export const updateItemFieldsInDatabase = async (itemID: string, updates: { [key: string]: any }, vibrate = true, logResult = true) => {
+export const updateItemFieldsInDatabase = async (itemID: string, updates: Partial<ItemType>, vibrate = true, logResult = true) => {
   const now = new Date().toLocaleString(`en-US`);
   const fields = { ...updates, updated: now };
   try {
@@ -175,7 +175,7 @@ export const updateItemFieldsInDatabase = async (itemID: string, updates: { [key
   }
 };
 
-export const updateTaskFieldsInDatabase = async (taskID: string, updates: { [key: string]: any }, vibrate = true, logResult = true) => {
+export const updateTaskFieldsInDatabase = async (taskID: string, updates: Partial<TaskType>, vibrate = true, logResult = true) => {
   const now = new Date().toLocaleString(`en-US`);
   const fields = { ...updates, updated: now };
   try {

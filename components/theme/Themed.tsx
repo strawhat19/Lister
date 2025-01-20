@@ -431,8 +431,11 @@ export const globalStyles = StyleSheet.create({
     alignItems: `center`,
     position: `relative`,
     maxHeight: itemHeight,
-    borderRadius: draggableViewItemBorderRadius,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
     backgroundColor: colors.transparent,
+    borderBottomLeftRadius: draggableViewItemBorderRadius,
+    borderBottomRightRadius: draggableViewItemBorderRadius,
 },
 })
 

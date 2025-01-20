@@ -3,7 +3,7 @@ import { Vibration } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { ItemType, TaskType, Views } from '../types/types';
 import { colors, detectIfNameIsColor, isLightColor } from '@/components/theme/Themed';
-import { camelCaseToTitleCase, defaultBoardID, findHighestNumberInArrayByKey, genID, isValid, logMsgLine } from '../variables';
+import { camelCaseToTitleCase, defaultBoardID, findHighestNumberInArrayByKey, genID, isValid, log, logMsgLine } from '../variables';
 import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from 'firebase/firestore';
 
 export enum Environments {
@@ -259,7 +259,7 @@ export const prepareItemForDatabase = async (itm: ItemType, items: ItemType[], l
   return preparedItem;
 }
 
-export const createItem = async (columnItems, listID: string, name, items, closeBottomSheet) => {
+export const createItem = async (columnItems, listID: string, name, items, closeBottomSheet, shouldCloseBottomSheet = true) => {
   if (listID && isValid(listID)) {
     name = name.trim().replace(/\s+/g, ` `);
     
@@ -274,6 +274,8 @@ export const createItem = async (columnItems, listID: string, name, items, close
     let { colorKey, backgroundColor } = await detectIfNameIsColor(name, lastColor);
 
     let isLightBGColor = isLightColor(backgroundColor);
+
+    log(`BG`, backgroundColor);
 
     const itemToAdd = await new ItemType({
       name,
@@ -291,7 +293,7 @@ export const createItem = async (columnItems, listID: string, name, items, close
 
     const newItem = await prepareItemForDatabase(itemToAdd, items, listID);
     await addItemToDatabase(newItem);
-    await closeBottomSheet();
+    if (shouldCloseBottomSheet) await closeBottomSheet();
   }
 }
 

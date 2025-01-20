@@ -145,7 +145,19 @@ export default function Column({
 
         const swipeableRef = useRef<Swipeable>(null);
         const { items: itemsFromDatabase } = useContext<any>(SharedContext);
-     
+        
+        const renderRightActions = () => (
+            <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.white }]}>
+                <FontAwesome name={`angle-double-left`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
+            </View>
+        );
+        
+        const renderLeftActions = () => (
+            <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8, backgroundColor: colors.white }]}>
+                <FontAwesome name={`angle-double-right`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
+            </View>
+        );
+
         const handleSwipe = async (itm: ItemType, direction: Directions) => {
             swipeableRef.current?.close();
             swipeCarousel(direction);
@@ -162,18 +174,6 @@ export default function Column({
 
             await updateItemFieldsInDatabase(itm?.id, { listID: nextListID, index: newIndex });
         };
-        
-        const renderRightActions = () => (
-            <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.white }]}>
-                <FontAwesome name={`angle-double-left`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
-            </View>
-        );
-        
-        const renderLeftActions = () => (
-            <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8, backgroundColor: colors.white }]}>
-                <FontAwesome name={`angle-double-right`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
-            </View>
-        );
 
         return (
             <Animated.View layout={Layout.springify()}>
@@ -293,7 +293,7 @@ export default function Column({
                                                 width: `100%`,
                                                 height: `auto`,
                                                 paddingBottom: 2,
-                                                gap: gridSpacing - 8,
+                                                gap: gridSpacing - 12,
                                                 marginHorizontal: `auto`,
                                                 paddingHorizontal: gridSpacing,
                                             }}

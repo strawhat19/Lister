@@ -64,7 +64,7 @@ export default function Item({
                                 backgroundColor: colors.transparent,
                                 ...((isValid(item?.summary) || isValid(item?.image)) ? {
                                     right: isValid(item?.image) ? (isValid(item?.summary) ? 0 : 1) : -8,
-                                    top: (isValid(item?.summary) && isValid(item?.image)) ? 25 : isValid(item?.image) ? -20 : (isValid(item?.summary) ? 15 : -5),
+                                    top: (isValid(item?.summary) && isValid(item?.image)) ? 5 : isValid(item?.image) ? -20 : (isValid(item?.summary) ? -5 : -5),
                                 } : {
                                     borderRightWidth: 1, 
                                     alignItems: `center`,

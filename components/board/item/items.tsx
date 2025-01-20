@@ -12,7 +12,7 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { colors, globalStyles, draggableViewItemBorderRadius, Text, View, getFontColor } from '@/components/theme/Themed';
 import { defaultBoardID, delayBeforeScrollingDown, isValid, itemHeight, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
-import { addItemToDatabase, addTaskToDatabase, db, deleteItemFromDatabase, deleteTaskFromDatabase, getItemsForColumn, getTasksForItem, itemsDatabaseCollection, prepareItemForDatabase, prepareTaskForDatabase, tasksDatabaseCollection, updateItemFieldsInDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
+import { addItemToDatabase, addTaskToDatabase, createItem, db, deleteItemFromDatabase, deleteTaskFromDatabase, getItemsForColumn, getTasksForItem, itemsDatabaseCollection, prepareItemForDatabase, prepareTaskForDatabase, tasksDatabaseCollection, updateItemFieldsInDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
 
 export default function Items({ simple = false, component }: any) {
     const listRef = useRef(null);
@@ -21,7 +21,7 @@ export default function Items({ simple = false, component }: any) {
     let [itmName, setItmName] = useState(``);
     let [itmToEdit, setItmToEdit] = useState<TaskType | ItemType | null>(null);
     let [draggableItems, setDraggableItems] = useState<TaskType[] | ItemType[]>([]);
-    let { selected, items, tasks, editing, setEditing } = useContext<any>(SharedContext);
+    let { selected, items, tasks, editing, setEditing, closeBottomSheet } = useContext<any>(SharedContext);
 
     const onPressItm = (itm: TaskType | ItemType) => {
         Vibration.vibrate(1);
@@ -86,14 +86,7 @@ export default function Items({ simple = false, component }: any) {
 
     const addItm = async () => {
         if (selected?.type == Views.Column) {
-            const itemToAdd = new ItemType({
-                A: itmName,
-                name: itmName, 
-                boardID: defaultBoardID,
-                listID: selected?.listID,
-            });
-            const newItem = await prepareItemForDatabase(itemToAdd, items, selected?.id);
-            await addItemToDatabase(newItem);
+            await createItem(draggableItems, selected?.id, itmName, items, closeBottomSheet, false);
         }
         if (selected?.type == Views.Item) {
             const taskToAdd = new TaskType({
@@ -114,7 +107,8 @@ export default function Items({ simple = false, component }: any) {
     const renderDraggableItem = useCallback(
         ({ item: itm, drag, isActive, getIndex, draggableItems }: any | RenderItemParams<TaskType | ItemType>) => {
 
-        let index = itm?.index;
+        // let index = itm?.index;
+        let index = getIndex() + 1;
         const swipeableRef = useRef<Swipeable>(null);
         let isFirst: boolean = index == 1 ? true : false;
         let isLast: boolean = index == draggableItems?.length ? true : false;
@@ -148,14 +142,30 @@ export default function Items({ simple = false, component }: any) {
             }
         };
         
+        const swipeableBorderRadius = draggableViewItemBorderRadius - 3;
+
         const renderRightActions = () => (
-            <View style={[titleRowStyles.rightAction, { backgroundColor: colors.red, borderRadius: draggableViewItemBorderRadius - 3, marginLeft: 3 }]}>
+            <View style={[titleRowStyles.rightAction, { 
+                marginLeft: 3, 
+                borderTopLeftRadius: 0, 
+                borderBottomLeftRadius: 0, 
+                backgroundColor: colors.red, 
+                borderTopRightRadius: isFirst ? swipeableBorderRadius : 0, 
+                borderBottomRightRadius: isLast ? swipeableBorderRadius : 0, 
+            }]}>
                 <FontAwesome name={`trash`} color={colors.white} size={18} style={{ paddingHorizontal: 15 }} />
             </View>
         );
         
         const renderLeftActions = () => (
-            <View style={[titleRowStyles.leftAction, { backgroundColor: itm.complete ? colors.active : colors.success, borderRadius: draggableViewItemBorderRadius - 3, marginRight: 3 }]}>
+            <View style={[titleRowStyles.leftAction, { 
+                marginRight: 3, 
+                borderTopRightRadius: 0, 
+                borderBottomRightRadius: 0, 
+                borderTopLeftRadius: isFirst ? swipeableBorderRadius : 0, 
+                borderBottomLeftRadius: isLast ? swipeableBorderRadius : 0, 
+                backgroundColor: itm.complete ? colors.active : colors.success, 
+            }]}>
                 <FontAwesome name={itm.complete ? `circle-o` : `check`} color={colors.white} size={18} style={{ paddingHorizontal: 15 }} />
             </View>
         );
@@ -191,8 +201,8 @@ export default function Items({ simple = false, component }: any) {
                             <View style={{width: `100%`, backgroundColor: colors.transparent, ...globalStyles.flexRow, gap: 15, paddingLeft: 15}}>
                                 <FontAwesome 
                                     size={18} 
-                                    color={fColor} 
                                     name={itm?.complete ? `check` : `circle-o`} 
+                                    color={itm?.complete ? colors.success : fColor} 
                                 />
                                 <Text style={{ textAlign: `center`, fontWeight: `bold`, fontStyle: `italic`, color: fColor, width: 20, height: 20, borderRadius: `100%`, paddingTop: 1.5 }}>
                                     {getIndex() + 1}
@@ -218,7 +228,8 @@ export default function Items({ simple = false, component }: any) {
                     styles.tasksContainer, 
                     { 
                         marginTop: editing ? -15 : selected?.type == Views.Item ? 12 : -3, 
-                        maxHeight: editing ? 265 : (isValid(selected?.image) ? 185 : selected?.type == Views.Item ? 340 : 445), 
+                        marginBottom: selected?.type == Views.Item ? (editing ? 5 : 4) : (editing ? 10 : 12),
+                        maxHeight: editing ? 265 : (isValid(selected?.image) ? 185 : selected?.type == Views.Item ? 340 : 435), 
                     },
                 ]
             }>
@@ -252,7 +263,10 @@ export default function Items({ simple = false, component }: any) {
                     </View>
                 )}
             </View>
-            <View style={[globalStyles.singleLineInput, { position: `relative`, top: -10 }]}>
+            <View style={[globalStyles.singleLineInput, { 
+                marginTop: selected?.type == Views.Column ? 0 : 3,
+                marginBottom: selected?.type == Views.Column ? -5 : 0, 
+            }]}>
                 <ForwardRefInput
                     ref={inputRef}
                     value={itmName}
@@ -260,13 +274,13 @@ export default function Items({ simple = false, component }: any) {
                     endIconName={`save`}
                     onChangeText={setItmName}
                     onCancel={() => setItmName(``)}
+                    endIconDisabled={itmName == ``}
                     onBlur={() => setEditing(false)}
                     onFocus={() => setEditing(true)}
-                    endIconDisabled={itmName == ``}
                     cancelText={itmName == `` ? `Close` : `Cancel`}
                     endIconPress={() => itmToEdit == null ? addItm() : editItm()}
-                    cancelColor={itmName == `` ? colors.disabledFont : colors.error}
                     doneColor={itmName == `` ? colors.disabledFont : colors.active}
+                    cancelColor={itmName == `` ? colors.disabledFont : colors.error}
                     placeholder={`${selected?.type == Views.Item ? `Task` : `Item`} Name`}
                     endIconColor={itmName == `` ? colors.disabledFont : colors.inputColor}
                     doneText={itmName == `` ? `Done` : itmToEdit == null ? `Add` : `Save`}

@@ -9,7 +9,10 @@ import { SharedContext } from '@/shared/shared';
 import React, { useContext, useRef, useState } from 'react';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
-export default function SlideUp({ maxHeight = `90%`, backgroundColor = colors.mainBG }: any) {
+export const defaultSlideUpHeight = `90%`;
+// export const defaultSlideUpHeight = `65%`;
+
+export default function SlideUp({ maxHeight = defaultSlideUpHeight, backgroundColor = colors.transparent }: any) {
     let { indx, selected, onSheetChange, closeBottomSheet, blurBGContainerOpacity } = useContext<any>(SharedContext);
 
     const [blur,] = useState<any>(0);
@@ -39,8 +42,8 @@ export default function SlideUp({ maxHeight = `90%`, backgroundColor = colors.ma
                 onClose={closeBottomSheet}
                 enableHandlePanningGesture={!web()}
                 enableContentPanningGesture={!web()}
-                handleIndicatorStyle={boardStyles.handleStyle} // Hide handle on web
                 enablePanDownToClose={true} // Only enable drag to close on mobile
+                handleIndicatorStyle={[boardStyles.handleStyle, { backgroundColor: selected == null ? colors.transparent : colors.mainBG }]} // Hide handle on web
                 backgroundStyle={{ 
                     ...boardStyles.bottomSheetBackground, 
                     ...(selected != null && {backgroundColor: selected.backgroundColor ? selected.backgroundColor : backgroundColor }) 

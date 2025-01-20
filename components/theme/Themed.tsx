@@ -23,12 +23,12 @@ export const lightColors = {
   lime: `rgba(0, 255, 0, 1)`,
   neon: `rgba(57, 255, 20, 1)`,
   cyan: `rgba(0, 255, 255, 1)`,
-  ccc: `rgba(204, 204, 204, 1)`,
   ash: `rgba(178, 190, 181, 1)`,
   yellow: `rgba(255, 255, 0, 1)`,
   orange: `rgba(255, 165, 0, 1)`,
   pink: `rgba(255, 192, 203, 1)`,
   mango: `rgba(255, 194, 77, 1)`,
+  paste: `rgba(204, 204, 204, 1)`,
   white: `rgba(255, 255, 255, 1)`,
   paper: `rgba(240, 240, 240, 1)`,
   cream: `rgba(255, 253, 208, 1)`,
@@ -113,6 +113,7 @@ export const fontColors = {
 
 export const themeColors = {
   error: allColors.red,
+  warn: allColors.yellow,
   tertiary: allColors.red,
   info: allColors.appleBlue,
   warning: allColors.yellow,
@@ -182,7 +183,9 @@ export const colors = {
 }
 
 export const isLightColor = (colorString) => Object.values(lightColors).includes(colorString);
-export const getFontColor = (colorString, darkFont = colors.darkFont, lightFont = colors.lightFont) => isLightColor(colorString) ? darkFont : lightFont;
+export const getFontColor = (colorString, darkFont = colors.darkFont, lightFont = colors.lightFont) => (
+  (isLightColor(colorString) || colorString == `transparent`) ? darkFont : lightFont
+);
 
 export const findColorCodeToKey = (colorCode: string, colors: Record<string, string | ((alpha: number) => string)>): string | undefined => {
   for (const [key, value] of Object.entries(colors)) {
@@ -330,14 +333,14 @@ export const ThemedColors = {
     text: colors.black,
     tint: colors.light,
     background: colors.white,
-    tabIconDefault: colors.ccc,
+    tabIconDefault: colors.paste,
     tabIconSelected: colors.light,
   },
   dark: {
     tint: colors.dark,
     text: colors.white,
     background: colors.black,
-    tabIconDefault: colors.ccc,
+    tabIconDefault: colors.paste,
     tabIconSelected: colors.dark,
   },
 }

@@ -209,8 +209,10 @@ export default function Column({
                             {  
                                 paddingTop: 5,
                                 width: `100%`,
-                                backgroundColor, 
+                                borderWidth: 0,
                                 marginHorizontal: `auto`,
+                                borderColor: colors.transparent,
+                                backgroundColor: colors.transparent,
                                 marginTop: selected == null ? 20 : 15,
                                 opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.55,
                             }, 
@@ -220,12 +222,14 @@ export default function Column({
                             <View style={{ 
                                 padding: 0,
                                 width: `95%`, 
+                                borderWidth: 0,
                                 borderRadius: 12, 
                                 marginHorizontal: `auto`, 
+                                borderColor: colors.listsBG,
                                 opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.35,
                                 backgroundColor: selected == null ? colors.listsBG : colors.transparent, 
                             }}>
-                                <TouchableOpacity onPress={() => openColumnDetails()} disabled={selected != null} style={[titleRowStyles.titleRow, { paddingVertical: 7, position: `relative` }]}>
+                                <TouchableOpacity onPress={() => openColumnDetails()} disabled={selected != null} style={[titleRowStyles.titleRow, { paddingVertical: 7, position: `relative`, }]}>
                                     {selected == null && column?.category && column?.category?.length > 0 ? <>
                                         <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
                                             {column?.category}
@@ -239,7 +243,7 @@ export default function Column({
                                             </Text>
                                         </TouchableOpacity>
                                     )}
-                                    <Text numberOfLines={1} ellipsizeMode={`tail`} style={[titleRowStyles.title, titleRowStyles.fontColor, { flexBasis: `50%` }]}>
+                                    <Text numberOfLines={1} ellipsizeMode={`tail`} style={[titleRowStyles.title, titleRowStyles.fontColor, { ...(selected != null && {color: getFontColor(colors.mainBG)}), flexBasis: `50%` }]}>
                                         {selected == null ? (
                                             `${column?.name} ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
                                                 toFixedWithoutRounding(slideIndex + 1, 1)
@@ -266,7 +270,7 @@ export default function Column({
                                         </TouchableOpacity>
                                     )}
                                 </TouchableOpacity>
-                                {(columnItems?.length > 0) ? (
+                                {columnItems?.length > 0 ? (
                                     // <PanGestureHandler enabled={!isDragging} activeOffsetX={[-10, 10]} activeOffsetY={[-10, 10]} onGestureEvent={!isDragging ? handleGesture : null}>
                                         <DraggableFlatList
                                             ref={listRef}

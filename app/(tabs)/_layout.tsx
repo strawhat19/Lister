@@ -6,7 +6,7 @@ import { tabBarIconSize } from '@/shared/variables';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useClientOnlyValue } from '@/components/theme/useClientOnlyValue';
 
-export default function TabLayout({ backgroundColor = colors.mainBG }) {
+export default function TabLayout({ backgroundColor = colors.transparent }) {
   const { selected } = useContext<any>(SharedContext);
 
   return (
@@ -27,8 +27,8 @@ export default function TabLayout({ backgroundColor = colors.mainBG }) {
         tabBarStyle: {
           paddingTop: 5,
           minHeight: 60,
-          backgroundColor,
           paddingBottom: 10,
+          backgroundColor: colors.mainBG,
           borderColor: colors.transparent,
           pointerEvents: selected == null ? `auto` : `none`,
         },

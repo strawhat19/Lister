@@ -47,10 +47,9 @@ export const boardStyles = StyleSheet.create({
         width: 75,
         height: 4,
         borderRadius: 3,
-        backgroundColor: colors.mainBG,
     },
     bottomSheetBackground: {
-        backgroundColor: colors.mainBG,
+        backgroundColor: colors.transparent,
     },
     contentContainer: {
         flex: 1,

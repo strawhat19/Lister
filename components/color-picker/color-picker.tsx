@@ -1,13 +1,31 @@
-import React, { useState } from 'react';
-import WheelColorPicker from 'react-native-wheel-color-picker';
-import { View, Modal, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef } from "react";
+import WheelColorPicker from "react-native-wheel-color-picker";
+import { View, Modal, TouchableOpacity, Text, StyleSheet, Animated } from "react-native";
+import { BlurView } from "expo-blur";
+import { colors } from "../theme/Themed";
 
 export default function ColorPicker() {
   const [isPickerVisible, setPickerVisible] = useState(false);
   const [selectedColor, setSelectedColor] = useState("#ff0000"); // Default color
+  const fadeAnim = useRef(new Animated.Value(0)).current; // For fade animation
 
   const togglePicker = () => {
-    setPickerVisible(!isPickerVisible);
+    if (isPickerVisible) {
+      // Fade out when closing
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => setPickerVisible(false));
+    } else {
+      setPickerVisible(true);
+      // Fade in when opening
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
   };
 
   return (
@@ -19,15 +37,24 @@ export default function ColorPicker() {
       >
         <Text style={styles.colorText}>Pick a Color</Text>
       </TouchableOpacity>
-
       {/* Color Picker Modal */}
       <Modal
-        visible={isPickerVisible}
         transparent={true}
-        animationType="slide"
+        visible={isPickerVisible}
         onRequestClose={togglePicker}
       >
-        <View style={styles.modalOverlay}>
+        <Animated.View
+          style={[
+            styles.modalOverlay,
+            { opacity: fadeAnim }, // Fade animation
+          ]}
+        >
+          {/* Blur Background */}
+          <BlurView
+            style={StyleSheet.absoluteFill}
+            intensity={5}
+          />
+          {/* Modal Content */}
           <View style={styles.colorPickerContainer}>
             <Text style={styles.modalTitle}>Select a Color</Text>
 
@@ -47,7 +74,7 @@ export default function ColorPicker() {
               <Text style={styles.closeButtonText}>Done</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </Animated.View>
       </Modal>
     </View>
   );
@@ -76,9 +103,9 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Optional: extra dimming
   },
   colorPickerContainer: {
     width: "80%",

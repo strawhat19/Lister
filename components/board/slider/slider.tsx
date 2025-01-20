@@ -1,12 +1,12 @@
 import Column from '../column/column';
 import { SharedContext } from '@/shared/shared';
-import { colors } from '@/components/theme/Themed';
 import SliderPagination from './pagination/pagination';
 import React, { useContext, useMemo, useRef } from 'react';
+import { colors, globalStyles, Text, View } from '@/components/theme/Themed';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
-export default function Slider({ backgroundColor = colors.mainBG }: any) {
+export default function Slider({ backgroundColor = colors.transparent }: any) {
     const swiping = useRef(false);
     const carouselRef = useRef<ICarouselInstance>(null);
     const scrollOffsetValue = useSharedValue<number>(0);
@@ -62,11 +62,12 @@ export default function Slider({ backgroundColor = colors.mainBG }: any) {
                     onProgressChange={progress}
                     loop={boardColumns?.length > 1}
                     pagingEnabled={selected == null}
+                    containerStyle={{ backgroundColor }}
                     style={{ 
                         // top: 0,
                         // left: 0,
                         // zIndex: 1,                             
-                        backgroundColor,
+                        backgroundColor: colors.mainBG,
                         // width: `100%`,
                         // height: `100%`,
                         // position: `absolute`,

@@ -1,10 +1,7 @@
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import { Dimensions, Alert, Platform, Vibration } from 'react-native';
+import { Alert, Platform, Vibration } from 'react-native';
 import { BoardTypes, IDData, Types, Views } from '@/shared/types/types';
-
-export const COL = 5;
-export const MARGIN = 8;
 
 export const web = () => Platform.OS == `web`;
 export const mobile = () => Platform.OS != `web`;
@@ -25,7 +22,6 @@ export const maxItemSummaryLength = 57;
 export const delayBeforeScrollingDown = 175;
 export const maxItemDescriptionLength = 240;
 export const defaultBoardID = `3_Column_${BoardTypes.Kanban}`;
-export const SIZE = Dimensions.get(`window`).width / COL - MARGIN;
 
 export const showDevFeatures = true;
 export const localDevelopment = process.env.NODE_ENV == `development`;
@@ -78,21 +74,6 @@ export const getTimezone = (date: Date) => {
   const timeZoneString = new Intl.DateTimeFormat(undefined, {timeZoneName: `short`}).format(date);
   const match = timeZoneString.match(/\b([A-Z]{3,5})\b/);
   return match ? match[1] : ``;
-}
-
-export const getOrder = (x: any, y: any) => {
-  'worklet';
-  const row = Math.round(y / SIZE);
-  const col = Math.round(x / SIZE);
-  return row * COL + col;
-}
-
-export const getPosition = (index: any) => {
-  'worklet';
-  return {
-    x: (index % COL) * SIZE,
-    y: Math.floor(index / COL) * SIZE,
-  }
 }
 
 export const generateID = () => {

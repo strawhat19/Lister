@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
+import { MARGIN, getOrder, getPosition} from './draggable-grid';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { getOrder, getPosition, MARGIN } from '@/shared/variables';
 import Animated, { runOnJS, useAnimatedGestureHandler, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 export default function DraggableItem({ children, positions, index }: any) {

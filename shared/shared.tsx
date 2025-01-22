@@ -110,8 +110,9 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
       const itemsCollection = collection(db, itemsDatabaseCollection);
       const unsubscribeFromItemsDatabase = onSnapshot(itemsCollection, snapshot => {
           setItemsLoading(true);
-          const itemsFromDB: any[] = [];
+          let itemsFromDB: any[] = [];
           snapshot.forEach((doc) => itemsFromDB.push({ ...doc.data() } as any));
+          itemsFromDB = itemsFromDB.sort((a, b) => a?.index - b?.index);
           setItems(itemsFromDB);
           if (itemsFromDB.length > 0 && selected != null) {
             let selectedItem = itemsFromDB?.find(itm => itm?.id == selected?.id);
@@ -130,8 +131,9 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
       const tasksCollection = collection(db, tasksDatabaseCollection);
       const unsubscribeFromTasksDatabase = onSnapshot(tasksCollection, snapshot => {
           setTasksLoading(true);
-          const tasksFromDB: any[] = [];
+          let tasksFromDB: any[] = [];
           snapshot.forEach((doc) => tasksFromDB.push({ ...doc.data() } as any));
+          tasksFromDB = tasksFromDB.sort((a, b) => a?.index - b?.index);
           setTasks(tasksFromDB);
           setTasksLoading(false);
           logMsgLine(`${tasksFromDB.length} Task(s) from Database`);

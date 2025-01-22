@@ -43,10 +43,20 @@ export default function TabLayout({ backgroundColor = colors.transparent }) {
           ),
         }}
       />
+      {/* <Tabs.Screen
+        name={`experiments`}
+        options={{ 
+          title: `Notifications`, 
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name={`bell`} size={tabBarIconSize} color={color} />
+          ), 
+        }}
+      /> */}
       <Tabs.Screen
         name={`notifications`}
         options={{ 
           title: `Notifications`, 
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome name={`bell`} size={tabBarIconSize} color={color} />
           ), 
@@ -56,6 +66,7 @@ export default function TabLayout({ backgroundColor = colors.transparent }) {
         name={`settings`}
         options={{ 
           title: `Settings`, 
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome name={`gears`} size={tabBarIconSize} color={color} />
           ), 
@@ -65,6 +76,7 @@ export default function TabLayout({ backgroundColor = colors.transparent }) {
         name={`profile`} 
         options={{ 
           title: `Profile`, 
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome name={`user`} size={tabBarIconSize} color={color} />
           ), 

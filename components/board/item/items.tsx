@@ -10,9 +10,9 @@ import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { Alert, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
+import { delayBeforeScrollingDown, isValid, itemHeight, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
 import { colors, globalStyles, draggableViewItemBorderRadius, Text, View, getFontColor } from '@/components/theme/Themed';
-import { defaultBoardID, delayBeforeScrollingDown, isValid, itemHeight, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
-import { addItemToDatabase, addTaskToDatabase, createItem, db, deleteItemFromDatabase, deleteTaskFromDatabase, getItemsForColumn, getTasksForItem, itemsDatabaseCollection, prepareItemForDatabase, prepareTaskForDatabase, tasksDatabaseCollection, updateItemFieldsInDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
+import { addTaskToDatabase, createItem, db, deleteItemFromDatabase, deleteTaskFromDatabase, getItemsForColumn, getTasksForItem, itemsDatabaseCollection, prepareTaskForDatabase, tasksDatabaseCollection, updateItemFieldsInDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
 
 export default function Items({ simple = false, component }: any) {
     const listRef = useRef(null);
@@ -41,7 +41,8 @@ export default function Items({ simple = false, component }: any) {
 
     const onDragEnd = async (onDragEndData: any) => {
         let { data } = await onDragEndData;
-        await setDraggableItems(data);
+        const updatedData = data.map((itm, itmIndex) => ({ ...itm, index: itmIndex + 1 })).sort((a, b) => a?.index - b?.index);
+        setDraggableItems(updatedData);
         if (data?.length > 0) {
             const batch = writeBatch(db);
             await data.forEach((itm, itmIndex) => {
@@ -241,8 +242,8 @@ export default function Items({ simple = false, component }: any) {
                         style={{ height: `auto` }}
                         nestedScrollEnabled={true}
                         directionalLockEnabled={true}
+                        keyExtractor={(item) => item.id}
                         showsVerticalScrollIndicator={false}
-                        keyExtractor={(item) => item.id.toString()}
                         onDragEnd={async (onDragEndData: any) => await onDragEnd(onDragEndData)}
                         onDragBegin={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                         onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}

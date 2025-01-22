@@ -184,17 +184,17 @@ function MovableItem({
               onSwipeableRightOpen={() => deleteItem(itm?.id)}
               onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
             >
-                {/* <Item
-                    item={itm}
-                    fadeAnim={fadeAnim}
-                    isLast={index == itm.length - 1}
-                    keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
-                /> */}
-                <View style={{ flex: 1, width: `100%`, height: `100%`, minHeight: itemHeight, backgroundColor: itm?.backgroundColor, ...globalStyles.flexRow, justifyContent: `center` }}>
-                    <Text style={{ width: `100%`, height: `auto`, color: isLightColor(itm?.backgroundColor) ? colors.dark : colors.white, fontWeight: `bold`, fontSize: 25, fontStyle: `italic`, textAlign: `center`, }}>
-                        {index + 1}. {itm?.name}
-                    </Text>
-                </View>
+              {/* <Item
+                item={itm}
+                fadeAnim={fadeAnim}
+                isLast={index == itm.length - 1}
+                keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
+              /> */}
+              <View style={{ flex: 1, width: `100%`, height: `100%`, minHeight: itemHeight, backgroundColor: itm?.backgroundColor, ...globalStyles.flexRow, justifyContent: `center` }}>
+                <Text style={{ width: `100%`, height: `auto`, color: isLightColor(itm?.backgroundColor) ? colors.dark : colors.white, fontWeight: `bold`, fontSize: 25, fontStyle: `italic`, textAlign: `center`, }}>
+                  {index + 1}. {itm?.name}
+                </Text>
+              </View>
             </Swipeable>
           </Animated.View>
         </PanGestureHandler>
@@ -232,14 +232,14 @@ export default function ReanimatedItems({ }) {
           >
             {items.map((itm, index) => (
               <MovableItem 
-                    itm={itm} 
-                    id={itm.id} 
-                    key={itm.id} 
-                    index={index} 
-                    scrollY={scrollY} 
-                    positions={positions} 
-                    count={items?.length} 
-                />
+                itm={itm} 
+                id={itm.id} 
+                key={itm.id} 
+                index={index} 
+                scrollY={scrollY} 
+                positions={positions} 
+                count={items?.length} 
+              />
             ))}
           </Animated.ScrollView>
         </SafeAreaView>

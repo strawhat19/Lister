@@ -22,6 +22,7 @@ export const defaultColumnView = ItemViews.Items;
 export default function Column({ 
     column, 
     active, 
+    carouselRef,
     swipeCarousel,
     animatedAdjacent, 
     blurIntensity = 0, 
@@ -179,6 +180,7 @@ export default function Column({
             <Animated.View layout={Layout.springify()}>
                 <Swipeable
                     friction={2}
+                    enabled={false}
                     ref={swipeableRef}
                     overshootLeft={false}
                     overshootRight={false}
@@ -280,6 +282,7 @@ export default function Column({
                                             onDragBegin={onDragBegin}
                                             scrollEnabled={!isDragging}
                                             directionalLockEnabled={true}
+                                            simultaneousHandlers={carouselRef}
                                             keyExtractor={(item) => item.id.toString()}
                                             onScrollBeginDrag={() => setDragging(false)}
                                             onDragEnd={(onDragEndData) => onDragEnd(onDragEndData)}

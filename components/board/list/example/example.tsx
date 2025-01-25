@@ -1,5 +1,5 @@
-import * as Haptics from 'expo-haptics';
 import React, { Component } from 'react';
+// import * as Haptics from 'expo-haptics';
 import { View, TouchableOpacity, Text } from 'react-native'
 import DraggableFlatList from 'react-native-draggable-dynamic-flatlist'
 
@@ -23,12 +23,15 @@ class Example extends Component {
           justifyContent: 'center' 
         }}
         onLongPress={move}
-        onPressOut={moveEnd}>
+        onPressOut={moveEnd}
+      >
         <Text style={{ 
           fontWeight: 'bold', 
           color: 'white',
           fontSize: 32,
-        }}>{item.label}</Text>
+        }}>
+          {item.label}
+        </Text>
       </TouchableOpacity>
     )
   }

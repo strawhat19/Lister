@@ -4,7 +4,7 @@ import { PanGestureHandler } from 'react-native-gesture-handler';
 import { getPosition, ITEM_HEIGHT, MARGIN } from './draggable-list';
 import Animated, { runOnJS, useAnimatedGestureHandler, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-export default function DraggableListItem({ children, index, positions }) {
+export default function DraggableListItem({ items, children, index, positions }) {
   const position = getPosition(positions?.value[index]);
   const translateX = useSharedValue(position.x);
   const translateY = useSharedValue(position.y);
@@ -35,7 +35,7 @@ export default function DraggableListItem({ children, index, positions }) {
       translateY.value = context.startY + event.translationY;
 
       const newIndex = Math.round(translateY.value / (ITEM_HEIGHT + MARGIN));
-      if (newIndex !== positions.value[index] && newIndex >= 0 && newIndex < 10) {
+      if (newIndex !== positions.value[index] && newIndex >= 0 && newIndex < items.length) {
         const currentIndex = positions.value[index];
         positions.value = {
           ...positions.value,
@@ -91,7 +91,7 @@ export default function DraggableListItem({ children, index, positions }) {
   });
 
   return (
-    <PanGestureHandler onGestureEvent={gestureHandler}>
+    <PanGestureHandler onGestureEvent={items.length > 1 ? gestureHandler : () => {}}>
       <Animated.View style={animatedStyle}>
         {children}
       </Animated.View>

@@ -1,48 +1,38 @@
-import React from 'react';
 import * as Haptics from 'expo-haptics';
+import React, { useContext, useEffect } from 'react';
 import { colors, Text } from '../theme/Themed';
+import { SharedContext } from '@/shared/shared';
 import DraggableListItem from './draggable-list-item';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Animated, { useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 
-export const MARGIN = 3.5;
-export const ITEM_HEIGHT = 55;
+export const MARGIN = 3;
+export const ITEM_HEIGHT = 35;
 const { width } = Dimensions.get(`window`);
-
-export const getOrder = (y) => {
-  'worklet';
-  return Math.round(y / (ITEM_HEIGHT + MARGIN));
-};
 
 export const getPosition = (index) => {
   'worklet';
   return {
-    x: -165,
+    x: -168,
     y: index * (ITEM_HEIGHT + MARGIN),
   };
 };
 
-const generateID = () => Math.random().toString(36).substr(2, 9);
-const generateUniqueItems = (amount) => {
-  return Array.from({ length: amount }, (_, i) => ({
-    id: generateID(),
-    label: `Item ${i + 1}`,
-  }));
-};
-
-const items = generateUniqueItems(20);
-const colorsToUse = [colors.appleBlue, colors.appleRed, colors.appleGreen];
-const getBGPatternColor = (idx) => colorsToUse[idx % colorsToUse.length];
-
 export default function DraggableList() {
-  // const scrollY = useSharedValue(0);
-  // const scrollViewRef = useAnimatedRef();
+  const { items } = useContext<any>(SharedContext);
 
   const positions = useSharedValue(
     Object.assign({}, ...items.map((_, idx) => ({ [idx]: idx })))
   );
+
+  useEffect(() => {
+    positions.value = Object.assign(
+      {},
+      ...items.map((_, idx) => ({ [idx]: idx }))
+    );
+  }, [items]);
 
   return (
     <SafeAreaProvider style={styles.container}>
@@ -56,16 +46,16 @@ export default function DraggableList() {
                 onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 onLongPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
               >
-                <DraggableListItem index={idx} positions={positions}>
+                <DraggableListItem index={idx} positions={positions} items={items}>
                   <View
                     id={`draggableItem-${item.id}`}
                     style={[
                       styles.item,
-                      { backgroundColor: getBGPatternColor(idx) },
+                      { backgroundColor: item?.backgroundColor },
                     ]}
                   >
                     <Text style={styles.text}>
-                      {item.label}
+                      {item.name}
                     </Text>
                   </View>
                 </DraggableListItem>

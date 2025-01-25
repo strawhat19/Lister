@@ -1,8 +1,9 @@
 import Column from '../column/column';
+import { web } from '@/shared/variables';
 import { SharedContext } from '@/shared/shared';
+import { colors } from '@/components/theme/Themed';
 import SliderPagination from './pagination/pagination';
 import React, { useContext, useMemo, useRef } from 'react';
-import { colors, globalStyles, Text, View } from '@/components/theme/Themed';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
@@ -51,7 +52,9 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
 
     return (
         // <PanGestureHandler onGestureEvent={(event) => log(`carousel gesture`, event)}>
-            <>
+            web() ? (
+                <div>Hello</div>
+            ) : <>
                 <Carousel
                     width={width}
                     height={height}

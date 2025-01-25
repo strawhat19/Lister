@@ -75,8 +75,8 @@ export default function DraggableListItem({ children, index, positions }) {
   });
 
   const animatedStyle = useAnimatedStyle((): any => {
-    const scale = isGestureActive.value ? 1.05 : 1;
-    const zIndex = isGestureActive.value ? 99999 : 1;
+    const scale = isGestureActive.value ? 1.03 : 1;
+    const zIndex = isGestureActive.value ? 1000 : 0;
     return {
       zIndex,
       width: `100%`,

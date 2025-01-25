@@ -7,9 +7,9 @@ import { View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 
-export const MARGIN = 5.5;
+export const MARGIN = 3.5;
 export const ITEM_HEIGHT = 55;
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get(`window`);
 
 export const getOrder = (y) => {
   'worklet';
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.black,
   },
   item: {
-    borderRadius: 8,
+    borderRadius: 5,
     width: width * 0.9,
     height: ITEM_HEIGHT,
     alignItems: `center`,

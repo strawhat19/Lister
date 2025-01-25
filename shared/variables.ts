@@ -24,7 +24,7 @@ export const maxItemDescriptionLength = 240;
 export const defaultBoardID = `3_Column_${BoardTypes.Kanban}`;
 
 export const showDevFeatures = true;
-export const localDevelopment = process.env.NODE_ENV == `development`;
+export const localDevelopment = process.env.EXPO_PUBLIC_NODE_ENV == `development`;
 export const urlHostIncludes = (string) => window.location.host.includes(string);
 export const devEnv = (web() ? (urlHostIncludes(`local`) || urlHostIncludes(`:`)) : localDevelopment) ? showDevFeatures : false;
 

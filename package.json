@@ -40,7 +40,6 @@
     "react-lazy-load-image-component": "^1.6.3",
     "react-native": "0.76.6",
     "react-native-dnd-board": "^0.0.9",
-    "react-native-dotenv": "^3.4.11",
     "react-native-draggable": "^3.3.0",
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-gesture-handler": "~2.20.2",

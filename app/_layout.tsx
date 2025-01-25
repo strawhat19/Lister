@@ -1,10 +1,12 @@
 import 'react-native-reanimated';
+import 'react-native-gesture-handler';
 
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import Shared from '@/shared/shared';
 import { Themes } from '@/shared/types/types';
+// import { registerRootComponent } from 'expo';
 import * as SplashScreen from 'expo-splash-screen';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useColorScheme } from '@/components/theme/useColorScheme';
@@ -56,3 +58,5 @@ export default function RootLayout() {
     </Shared>
   )
 }
+
+// registerRootComponent(RootLayout);

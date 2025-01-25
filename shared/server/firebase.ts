@@ -27,13 +27,13 @@ export enum DatabaseTableNames {
 }
 
 const firebaseConfig = {
-  appId: process.env.FIREBASE_APPID,
-  apiKey: process.env.FIREBASE_APIKEY,
-  projectId: process.env.FIREBASE_PROJECTID,
-  authDomain: process.env.FIREBASE_AUTHDOMAIN,
-  storageBucket: process.env.FIREBASE_STORAGEBUCKET,
-  measurementId: process.env.FIREBASE_MEASUREMENTID,
-  messagingSenderId: process.env.FIREBASE_MESSAGINGSENDERID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APPID,
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_APIKEY,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECTID,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTHDOMAIN,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGEBUCKET,
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENTID,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGINGSENDERID,
 }
 
 const app = initializeApp(firebaseConfig);

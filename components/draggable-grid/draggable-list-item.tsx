@@ -1,26 +1,29 @@
 import * as Haptics from 'expo-haptics';
-import React from 'react';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  useAnimatedGestureHandler,
-  withTiming,
-  useAnimatedReaction,
-  runOnJS,
-} from 'react-native-reanimated';
-import { getPosition, ITEM_HEIGHT, MARGIN } from './draggable-list';
 import { Platform } from 'react-native';
+import { PanGestureHandler } from 'react-native-gesture-handler';
+import { getPosition, ITEM_HEIGHT, MARGIN } from './draggable-list';
+import Animated, { runOnJS, useAnimatedGestureHandler, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 export default function DraggableListItem({ children, index, positions }) {
-  const position = getPosition(positions.value[index]);
+  const position = getPosition(positions?.value[index]);
   const translateX = useSharedValue(position.x);
   const translateY = useSharedValue(position.y);
+  const isGestureActive = useSharedValue(false);
+
+  useAnimatedReaction(
+    () => positions?.value[index],
+    (newIndex) => {
+      const { x, y } = getPosition(newIndex);
+      translateX.value = withTiming(x);
+      translateY.value = withTiming(y);
+    }
+  );
 
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_, context) => {
       context.startX = translateX.value;
       context.startY = translateY.value;
+      isGestureActive.value = true;
       if (Platform.OS === `ios`) {
         runOnJS(Haptics.impactAsync)(
           Haptics.ImpactFeedbackStyle.Heavy
@@ -52,7 +55,7 @@ export default function DraggableListItem({ children, index, positions }) {
       }
     },
     onEnd: () => {
-      const { x, y } = getPosition(positions.value[index]);
+      const { x, y } = getPosition(positions?.value[index]);
       translateX.value = withTiming(x);
       translateY.value = withTiming(y);
       if (Platform.OS === `ios`) {
@@ -62,6 +65,7 @@ export default function DraggableListItem({ children, index, positions }) {
       }
     },
     onFinish: () => {
+      isGestureActive.value = false;
       if (Platform.OS === `ios`) {
         runOnJS(Haptics.impactAsync)(
           Haptics.ImpactFeedbackStyle.Heavy
@@ -70,28 +74,27 @@ export default function DraggableListItem({ children, index, positions }) {
     }
   });
 
-  useAnimatedReaction(
-    () => positions.value[index],
-    (newIndex) => {
-      const { x, y } = getPosition(newIndex);
-      translateX.value = withTiming(x);
-      translateY.value = withTiming(y);
+  const animatedStyle = useAnimatedStyle((): any => {
+    const scale = isGestureActive.value ? 1.05 : 1;
+    const zIndex = isGestureActive.value ? 99999 : 1;
+    return {
+      zIndex,
+      width: `100%`,
+      position: `absolute`,
+      height: ITEM_HEIGHT + MARGIN,
+      transform: [
+        { scale },
+        { translateX: translateX.value },
+        { translateY: translateY.value },
+      ],
     }
-  );
-
-  const animatedStyle = useAnimatedStyle((): any => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-    ],
-    width: '50%',
-    position: 'absolute',
-    height: ITEM_HEIGHT + MARGIN,
-  }));
+  });
 
   return (
     <PanGestureHandler onGestureEvent={gestureHandler}>
-      <Animated.View style={animatedStyle}>{children}</Animated.View>
+      <Animated.View style={animatedStyle}>
+        {children}
+      </Animated.View>
     </PanGestureHandler>
   );
 }

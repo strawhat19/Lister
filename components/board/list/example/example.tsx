@@ -4,7 +4,6 @@ import { View, TouchableOpacity, Text } from 'react-native'
 import DraggableFlatList from 'react-native-draggable-dynamic-flatlist'
 
 class Example extends Component {
-
   state = {
     data: [...Array(20)].map((d, index) => ({
       key: `item-${index}`,

@@ -46,7 +46,7 @@ function listToObject(list) {
   return object;
 }
 
-const itemHeight = 70;
+const itemHeight = 35;
 const SCROLL_HEIGHT_THRESHOLD = itemHeight;
 
 function MovableItem({
@@ -91,23 +91,21 @@ function MovableItem({
     onActive(event) {
       const positionY = event.absoluteY + scrollY.value;
 
-      if (positionY <= scrollY.value + SCROLL_HEIGHT_THRESHOLD) {
-        const contentHeight = count * itemHeight;
-        const containerHeight = dimensions.height - insets.top - insets.bottom;
-        const maxScroll = -1 * ((contentHeight * scrollSensitivity) - containerHeight);
-        scrollY.value = withTiming(maxScroll, { duration: 1500 });
-      } else if (positionY >= scrollY.value + dimensions.height - SCROLL_HEIGHT_THRESHOLD) {
-        const contentHeight = count * itemHeight;
-        const containerHeight = dimensions.height - insets.top - insets.bottom;
-        const maxScroll = (contentHeight * scrollSensitivity) - containerHeight;
-        scrollY.value = withTiming(maxScroll, { duration: 1500 });
-      } else {
-        cancelAnimation(scrollY);
-      }
+      // if (positionY <= scrollY.value + SCROLL_HEIGHT_THRESHOLD) {
+      //   const contentHeight = count * itemHeight;
+      //   const containerHeight = dimensions.height - insets.top - insets.bottom;
+      //   const maxScroll = -1 * ((contentHeight * scrollSensitivity) - containerHeight);
+      //   scrollY.value = withTiming(maxScroll, { duration: 1500 });
+      // } else if (positionY >= scrollY.value + dimensions.height - SCROLL_HEIGHT_THRESHOLD) {
+      //   const contentHeight = count * itemHeight;
+      //   const containerHeight = dimensions.height - insets.top - insets.bottom;
+      //   const maxScroll = (contentHeight * scrollSensitivity) - containerHeight;
+      //   scrollY.value = withTiming(maxScroll, { duration: 1500 });
+      // } else {
+      //   cancelAnimation(scrollY);
+      // }
 
-      top.value = withTiming(positionY - itemHeight, {
-        duration: 16,
-      });
+      top.value = positionY - itemHeight;
 
       const newPosition = clamp(
         Math.floor(positionY / itemHeight),
@@ -129,6 +127,8 @@ function MovableItem({
         }
       }
     },
+
+    // onEnd
 
     onFinish() {
       top.value = positions.value[id] * itemHeight;

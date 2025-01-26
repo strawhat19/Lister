@@ -57,11 +57,11 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
             ) : <>
                 <Carousel
                     width={width}
+                    enabled={true}
                     height={height}
                     ref={carouselRef}
                     mode={sliderMode}
                     data={boardColumns}
-                    enabled={selected == null}
                     onProgressChange={progress}
                     loop={boardColumns?.length > 1}
                     pagingEnabled={selected == null}
@@ -70,11 +70,11 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
                         // top: 0,
                         // left: 0,
                         // zIndex: 1,                             
-                        backgroundColor: colors.mainBG,
                         // width: `100%`,
                         // height: `100%`,
                         // position: `absolute`,
                         // pointerEvents: `auto`,
+                        backgroundColor: colors.mainBG,
                         // backgroundColor: colors.transparent, 
                     }}
                     defaultScrollOffsetValue={scrollOffsetValue}

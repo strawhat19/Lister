@@ -8,19 +8,22 @@ import CustomImage from '@/components/custom-image/custom-image';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { Text, View, borderRadius, colors, isLightColor, itemCardHeight, itemSimplifiedCardHeight } from '@/components/theme/Themed';
+import { useIsActive } from 'react-native-reorderable-list';
 
 export default function Item({ 
     item, 
+    index,
     drag = undefined, 
     isActive = undefined, 
     getIndex = undefined, isLast 
 }: any | RenderItemParams<ItemType>) {
     let { selected, fadeAnim, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
 
+    isActive = useIsActive();
     const fontColor = (item?.complete || isLightColor(item?.backgroundColor)) ? colors.darkFont : colors.lightFont;
 
     return (
-        <ScaleDecorator activeScale={1.01}>
+        // <ScaleDecorator activeScale={1.01}>
             <TouchableOpacity
                 onLongPress={drag}
                 disabled={isActive != undefined ? isActive : false}
@@ -29,7 +32,7 @@ export default function Item({
             >
                 <Animated.View
                     id={`card-${item?.id}`}
-                    style={{ flex: 1, width: `100%`, backgroundColor: item?.backgroundColor, borderRadius, opacity: fadeAnim }}
+                    style={{ flex: 1, width: `100%`, backgroundColor: item?.backgroundColor, borderRadius, opacity: selected == null ? 1 : 0 }}
                 >
                     <View style={{ 
                         ...boardStyles.card, 
@@ -82,7 +85,8 @@ export default function Item({
                                     }} />
                                 ) : <></>}
                                 <Text style={{ ...boardStyles.cardTitle, color: fontColor, fontSize: 18, fontStyle: `italic` }}>
-                                    {getIndex != undefined ? getIndex() + 1 : item?.index}
+                                    {/* {getIndex != undefined ? getIndex() + 1 : item?.index} */}
+                                    {index + 1}
                                 </Text>
                             </View>
                             <Text 
@@ -123,7 +127,7 @@ export default function Item({
                     </View>
                 </Animated.View>
             </TouchableOpacity>
-        </ScaleDecorator>
+        // {/* </ScaleDecorator> */}
     )
 }
 

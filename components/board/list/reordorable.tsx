@@ -1,30 +1,25 @@
 import * as Haptics from 'expo-haptics';
-import React, { memo, useState } from 'react';
+import React, { memo, useContext, useState } from 'react';
+import { colors } from '@/components/theme/Themed';
 import { ListRenderItemInfo, Pressable, StyleSheet, Text } from 'react-native';
+import ReorderableList, { ReorderableListReorderEvent, reorderItems, useReorderableDrag, useIsActive } from 'react-native-reorderable-list';
+import { SharedContext } from '@/shared/shared';
+import { ItemType } from '@/shared/types/types';
 
-import ReorderableList, {
-  ReorderableListReorderEvent,
-  reorderItems,
-  useReorderableDrag,
-} from 'react-native-reorderable-list';
+// interface CardProps { id: string; color: string; height: number; }
 
-interface CardProps {
-  id: string;
-  color: string;
-  height: number;
-}
+// const rand = () => Math.floor(Math.random() * 200);
 
-const rand = () => Math.floor(Math.random() * 256);
+// const seedData: CardProps[] = Array(20)
+//   .fill(null)
+//   .map((_, i) => ({
+//     height: 35,
+//     id: i.toString(),
+//     color: `rgb(${rand()}, ${rand()}, ${rand()})`,
+//   }));
 
-const seedData: CardProps[] = Array(20)
-  .fill(null)
-  .map((_, i) => ({
-    id: i.toString(),
-    color: `rgb(${rand()}, ${rand()}, ${rand()})`,
-    height: Math.max(60, Math.floor(Math.random() * 100)),
-  }));
-
-const Card: React.FC<CardProps> = memo(({id, color, height}) => {
+const Card: React.FC<ItemType> = memo(({id, name, backgroundColor}) => {
+  const isActive = useIsActive();
   const drag = useReorderableDrag();
 
   const activateDrag = () => {
@@ -33,43 +28,48 @@ const Card: React.FC<CardProps> = memo(({id, color, height}) => {
   }
 
   return (
-    <Pressable style={[styles.card, {height}]} onLongPress={() => activateDrag()}>
-      <Text style={[styles.text, {color}]}>
-        Card {id}
+    <Pressable onLongPress={() => activateDrag()} style={[styles.card, { height: isActive ? 40 : 35, backgroundColor: backgroundColor, }]} >
+      <Text style={[styles.text, { color: colors.white }]}>
+        {name}
       </Text>
     </Pressable>
   );
 });
 
 const Reorderable = () => {
-  const [data, setData] = useState(seedData);
+  const { items } = useContext<any>(SharedContext);
+  const [data, setData] = useState(items);
 
   const handleReorder = ({from, to}: ReorderableListReorderEvent) => {
     setData(value => reorderItems(value, from, to));
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   };
 
-  const renderItem = ({item}: ListRenderItemInfo<CardProps>) => (
-    <Card {...item} />
-  );
+  const renderItem = ({item}: ListRenderItemInfo<ItemType>) => {
+    delete item.key;
+    return (
+      <Card {...item} />
+    )
+  };
 
   return (
     <ReorderableList
       data={data}
+      shouldUpdateActiveItem
       renderItem={renderItem}
       onReorder={handleReorder}
       keyExtractor={item => item.id}
+      style={{ backgroundColor: colors.black }}
     />
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    justifyContent: 'center',
+    borderBottomColor: colors.black,
   },
   text: {
     fontSize: 20,

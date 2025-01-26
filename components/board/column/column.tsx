@@ -8,13 +8,14 @@ import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Animated, { Layout } from 'react-native-reanimated';
 import LoadingSpinner from '@/components/loading/loading-spinner';
+import { RenderItemParams } from 'react-native-draggable-flatlist';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
+import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { ColumnType, Directions, ItemType, ItemViews } from '@/shared/types/types';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
-import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
+import { Alert, LayoutAnimation, ListRenderItemInfo, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
+import { getItemsForColumn, deleteItemFromDatabase, createItem, db, itemsDatabaseCollection, updateItemFieldsInDatabase } from '@/shared/server/firebase';
+import ReorderableList, { ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
 import { borderRadius, colors, getFontColor, getFontColorForBackground, globalStyles, Text, View } from '@/components/theme/Themed';
-import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem, db, itemsDatabaseCollection } from '@/shared/server/firebase';
 import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, log, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export const defaultColumnView = ItemViews.Items;
@@ -60,6 +61,72 @@ export default function Column({
         log(`onPlaceHolderIndexChange`, onPlaceHolderIndexChangeData);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
+
+    const Card: React.FC<any> = memo(({id, index, item}) => {
+        const isActive = useIsActive();
+        const drag = useReorderableDrag();
+        const swipeableRef = useRef<Swipeable>(null);
+      
+        const activateDrag = () => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+          drag();
+        }
+
+        const renderRightActions = () => (
+            <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.white }]}>
+                <FontAwesome name={`angle-double-left`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
+            </View>
+        );
+        
+        const renderLeftActions = () => (
+            <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8, backgroundColor: colors.white }]}>
+                <FontAwesome name={`angle-double-right`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
+            </View>
+        );
+
+        const handleSwipe = async (itm: ItemType, direction: Directions) => {
+            swipeableRef.current?.close();
+            swipeCarousel(direction);
+            
+            const nextIndex = column.index + (-1 * direction);
+            const nextColIndex = nextIndex > boardColumns?.length ? 1 : nextIndex < 1 ? boardColumns?.length : nextIndex;
+            const nextColumn = boardColumns?.find(col => col.index == nextColIndex);
+            const nextListID = nextColumn?.id;
+
+            let itemsForNextColumn = getItemsForColumn(items, nextListID);
+            let newIndex = itemsForNextColumn?.length + 1;
+            let highestColumnIndex = await findHighestNumberInArrayByKey(itemsForNextColumn, `index`);
+            if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
+
+            await updateItemFieldsInDatabase(itm?.id, { listID: nextListID, index: newIndex });
+        };
+      
+        return (
+            <Animated.View key={id} layout={Layout.springify()}>
+                <Swipeable
+                    friction={2}
+                    enabled={true}
+                    ref={swipeableRef}
+                    overshootLeft={false}
+                    overshootRight={false}
+                    renderLeftActions={renderLeftActions}
+                    renderRightActions={renderRightActions}
+                    onSwipeableRightOpen={() => handleSwipe(item, Directions.Left)}
+                    onSwipeableLeftOpen={() => handleSwipe(item, Directions.Right)}
+                    onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                >
+                    <Item
+                        item={item}
+                        index={index}
+                        isActive={isActive}
+                        drag={activateDrag}
+                        isLast={index == columnItems.length}
+                        keyExtractor={(item: ItemType) => item.id}
+                    />
+                </Swipeable>
+            </Animated.View>
+        );
+    });
     
     const closeItem = () => {
         Vibration.vibrate(1);
@@ -79,7 +146,7 @@ export default function Column({
     useEffect(() => {
         let itemsForColumn = getItemsForColumn(items, column?.id);
         setColumnItems(itemsForColumn);
-        scrollToEnd();
+        // scrollToEnd();
     }, [items])
 
     const onCancel = async () => {
@@ -96,8 +163,8 @@ export default function Column({
 
     const addItem = async () => {
         await setItemName(``);
-        await scrollToEnd();
         await createItem(columnItems, column.id, itemName, items, closeBottomSheet);
+        await scrollToEnd();
     }
 
     const deleteItem = async (itemID: string = selected?.id) => {
@@ -142,11 +209,72 @@ export default function Column({
         }
     }
 
-    const renderDraggableItem = useCallback((dragItemParams: RenderItemParams<ItemType> | any) => {
-        let { item, drag, isActive, getIndex } = dragItemParams;
+    // const renderDraggableItem = useCallback((dragItemParams: RenderItemParams<ItemType> | any) => {
+    //     let { item, drag, isActive, getIndex } = dragItemParams;
 
-        const swipeableRef = useRef<Swipeable>(null);
-        const { items: itemsFromDatabase } = useContext<any>(SharedContext);
+    //     const swipeableRef = useRef<Swipeable>(null);
+    //     const { items: itemsFromDatabase } = useContext<any>(SharedContext);
+        
+    //     const renderRightActions = () => (
+    //         <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.white }]}>
+    //             <FontAwesome name={`angle-double-left`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
+    //         </View>
+    //     );
+        
+    //     const renderLeftActions = () => (
+    //         <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8, backgroundColor: colors.white }]}>
+    //             <FontAwesome name={`angle-double-right`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
+    //         </View>
+    //     );
+
+    //     const handleSwipe = async (itm: ItemType, direction: Directions) => {
+    //         swipeableRef.current?.close();
+    //         swipeCarousel(direction);
+            
+    //         const nextIndex = column.index + (-1 * direction);
+    //         const nextColIndex = nextIndex > boardColumns?.length ? 1 : nextIndex < 1 ? boardColumns?.length : nextIndex;
+    //         const nextColumn = boardColumns?.find(col => col.index == nextColIndex);
+    //         const nextListID = nextColumn?.id;
+
+    //         let itemsForNextColumn = getItemsForColumn(itemsFromDatabase, nextListID);
+    //         let newIndex = itemsForNextColumn?.length + 1;
+    //         let highestColumnIndex = await findHighestNumberInArrayByKey(itemsForNextColumn, `index`);
+    //         if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
+
+    //         await updateItemFieldsInDatabase(itm?.id, { listID: nextListID, index: newIndex });
+    //     };
+
+    //     return (
+    //         <Animated.View layout={Layout.springify()}>
+    //             <Swipeable
+    //                 friction={2}
+    //                 enabled={true}
+    //                 ref={swipeableRef}
+    //                 overshootLeft={false}
+    //                 overshootRight={false}
+    //                 renderLeftActions={renderLeftActions}
+    //                 renderRightActions={renderRightActions}
+    //                 onSwipeableRightOpen={() => handleSwipe(item, Directions.Left)}
+    //                 onSwipeableLeftOpen={() => handleSwipe(item, Directions.Right)}
+    //                 onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+    //             >
+    //                 <Item
+    //                     item={item}
+    //                     drag={drag}
+    //                     getIndex={getIndex}
+    //                     isActive={isActive}
+    //                     isLast={getIndex() == columnItems.length - 1}
+    //                     keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
+    //                 />
+    //             </Swipeable>
+    //         </Animated.View>
+    //     )
+    // }, [])
+    const renderDraggableItem = (dragItemParams: RenderItemParams<ItemType> | any) => {
+        let { item, drag, isActive } = dragItemParams;
+
+        // const swipeableRef = useRef<Swipeable>(null);
+        // const { items: itemsFromDatabase } = useContext<any>(SharedContext);
         
         const renderRightActions = () => (
             <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.white }]}>
@@ -161,20 +289,20 @@ export default function Column({
         );
 
         const handleSwipe = async (itm: ItemType, direction: Directions) => {
-            swipeableRef.current?.close();
+            // swipeableRef.current?.close();
             swipeCarousel(direction);
             
-            const nextIndex = column.index + (-1 * direction);
-            const nextColIndex = nextIndex > boardColumns?.length ? 1 : nextIndex < 1 ? boardColumns?.length : nextIndex;
-            const nextColumn = boardColumns?.find(col => col.index == nextColIndex);
-            const nextListID = nextColumn?.id;
+            // const nextIndex = column.index + (-1 * direction);
+            // const nextColIndex = nextIndex > boardColumns?.length ? 1 : nextIndex < 1 ? boardColumns?.length : nextIndex;
+            // const nextColumn = boardColumns?.find(col => col.index == nextColIndex);
+            // const nextListID = nextColumn?.id;
 
-            let itemsForNextColumn = getItemsForColumn(itemsFromDatabase, nextListID);
-            let newIndex = itemsForNextColumn?.length + 1;
-            let highestColumnIndex = await findHighestNumberInArrayByKey(itemsForNextColumn, `index`);
-            if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
+            // let itemsForNextColumn = getItemsForColumn(itemsFromDatabase, nextListID);
+            // let newIndex = itemsForNextColumn?.length + 1;
+            // let highestColumnIndex = await findHighestNumberInArrayByKey(itemsForNextColumn, `index`);
+            // if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
 
-            await updateItemFieldsInDatabase(itm?.id, { listID: nextListID, index: newIndex });
+            // await updateItemFieldsInDatabase(itm?.id, { listID: nextListID, index: newIndex });
         };
 
         return (
@@ -182,7 +310,7 @@ export default function Column({
                 <Swipeable
                     friction={2}
                     enabled={true}
-                    ref={swipeableRef}
+                    // ref={swipeableRef}
                     overshootLeft={false}
                     overshootRight={false}
                     renderLeftActions={renderLeftActions}
@@ -194,15 +322,74 @@ export default function Column({
                     <Item
                         item={item}
                         drag={drag}
-                        getIndex={getIndex}
-                        isActive={isActive}
-                        isLast={getIndex() == columnItems.length - 1}
+                        // getIndex={getIndex}
+                        // isActive={isActive}
+                        // isLast={getIndex() == columnItems.length - 1}
                         keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
                     />
                 </Swipeable>
             </Animated.View>
         )
-    }, [])
+    }
+
+    // async function onReordered(fromIndex: number, toIndex: number) {
+    //     const copy = [...columnItems];
+    //     const removed = copy.splice(fromIndex, 1);
+    //     copy.splice(toIndex, 0, removed[0]);
+    //     setColumnItems(copy);
+    // }
+
+    // function renderItem(info: DragListRenderItemInfo<any>) {
+    //     const { item, onDragStart, onDragEnd, isActive } = info;
+    
+    //     return (
+            // <TouchableOpacity
+            //     key={item}
+            //     onPressOut={onDragEnd}
+            //     onLongPress={onDragStart}
+            //     style={{ flex: 1, width: `100%`, height: 35, justifyContent: `center`, alignItems: `center`, backgroundColor: colors.black, opacity: isActive ? 0.5 : 1 }}
+            // >
+            //     <Text style={{ color: colors.white, textAlign: `center`, fontSize: 22 }}>
+            //         {item.name}
+            //     </Text>
+            // </TouchableOpacity>
+    //     );
+    // }
+    
+    const renderItem = ({item, index}: ListRenderItemInfo<ItemType>) => {
+        delete item.key;
+        return (
+            <Card {...item} key={item.id} index={index} item={item} />
+        )
+    };
+
+    const onReorder = ({from, to}: ReorderableListReorderEvent) => {
+        setColumnItems(value => {
+            let updatedItems = reorderItems(value, from, to);
+            const batch = writeBatch(db);
+            updatedItems.forEach((itm, itmIndex) => {
+                const now = new Date().toLocaleString(`en-US`);
+                const itemRef = doc(db, itemsDatabaseCollection, itm?.id);
+                batch.update(itemRef, { index: itmIndex + 1, updated: now });
+            })
+            // Vibration.vibrate(1);
+            batch.commit();
+            return updatedItems;
+        });
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+
+    };
+
+    // useEffect(() => {
+    //     const batch = writeBatch(db);
+    //     columnItems.forEach((itm, itmIndex) => {
+    //         const now = new Date().toLocaleString(`en-US`);
+    //         const itemRef = doc(db, itemsDatabaseCollection, itm?.id);
+    //         batch.update(itemRef, { index: itmIndex + 1, updated: now });
+    //     })
+    //     Vibration.vibrate(1);
+    //     batch.commit();
+    // }, [columnItems])
 
     return (
         <>
@@ -276,20 +463,24 @@ export default function Column({
                                 </TouchableOpacity>
                                 {columnItems?.length > 0 ? (
                                     // <PanGestureHandler enabled={!isDragging} activeOffsetX={[-10, 10]} activeOffsetY={[-10, 10]} onGestureEvent={!isDragging ? handleGesture : null}>
-                                        <DraggableFlatList
+                                        <ReorderableList
                                             ref={listRef}
-                                            bounces={true}
+                                            // bounces={true}
                                             data={columnItems}
-                                            pagingEnabled={true}
-                                            onDragBegin={onDragBegin}
-                                            scrollEnabled={!isDragging}
-                                            directionalLockEnabled={true}
-                                            keyExtractor={(item) => item.key}
-                                            simultaneousHandlers={carouselRef}
-                                            onScrollBeginDrag={() => setDragging(false)}
-                                            onDragEnd={(onDragEndData) => onDragEnd(onDragEndData)}
-                                            renderItem={(onDragItem: RenderItemParams<ItemType>) => renderDraggableItem(onDragItem)}
-                                            onPlaceholderIndexChange={(onPlaceHolderIndexChangeData) => onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
+                                            onReorder={onReorder}
+                                            renderItem={renderItem}
+                                            // pagingEnabled={true}
+                                            // shouldUpdateActiveItem
+                                            // onDragBegin={onDragBegin}
+                                            // scrollEnabled={!isDragging}
+                                            // directionalLockEnabled={true}
+                                            keyExtractor={(item) => item.id}
+                                            // simultaneousHandlers={carouselRef}
+                                            // onScrollBeginDrag={() => setDragging(false)}
+                                            // onDragEnd={(onDragEndData) => onDragEnd(onDragEndData)}
+                                            // renderItem={(onDragItem: any) => renderDraggableItem(onDragItem)}
+                                            // onHoverChanged={(onPlaceHolderIndexChangeData) => onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
+                                            // onPlaceholderIndexChange={(onPlaceHolderIndexChangeData) => onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
                                             style={{ 
                                                 height: `auto`, 
                                                 maxHeight: addingItem ? ((height - paginationHeightMargin) - 175) : height - paginationHeightMargin, 
@@ -375,6 +566,15 @@ export default function Column({
 }
 
 export const titleRowStyles = StyleSheet.create({
+    card: {
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        justifyContent: 'center',
+        borderBottomColor: colors.black,
+      },
+      text: {
+        fontSize: 20,
+      },
     titleRow: {
         width: `100%`, 
         display: `flex`, 

@@ -27,11 +27,16 @@ const seedData: CardProps[] = Array(20)
 const Card: React.FC<CardProps> = memo(({id, color, height}) => {
   const drag = useReorderableDrag();
 
+  const activateDrag = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    drag();
+  }
+
   return (
-    <Pressable style={[styles.card, {height}]} onLongPress={drag}>
-        <Text style={[styles.text, {color}]}>
-            Card {id}
-        </Text>
+    <Pressable style={[styles.card, {height}]} onLongPress={() => activateDrag()}>
+      <Text style={[styles.text, {color}]}>
+        Card {id}
+      </Text>
     </Pressable>
   );
 });

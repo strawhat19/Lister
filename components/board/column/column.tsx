@@ -15,7 +15,7 @@ import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flat
 import { Alert, LayoutAnimation, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { borderRadius, colors, getFontColor, getFontColorForBackground, globalStyles, Text, View } from '@/components/theme/Themed';
 import { getItemsForColumn, deleteItemFromDatabase, updateItemFieldsInDatabase, createItem, db, itemsDatabaseCollection } from '@/shared/server/firebase';
-import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, log, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export const defaultColumnView = ItemViews.Items;
 
@@ -57,6 +57,7 @@ export default function Column({
     const [columnItems, setColumnItems] = useState<ItemType[]>([]);
 
     const onPlaceHolderIndexChange = (onPlaceHolderIndexChangeData: any) => {
+        log(`onPlaceHolderIndexChange`, onPlaceHolderIndexChangeData);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
     
@@ -180,7 +181,7 @@ export default function Column({
             <Animated.View layout={Layout.springify()}>
                 <Swipeable
                     friction={2}
-                    enabled={false}
+                    enabled={true}
                     ref={swipeableRef}
                     overshootLeft={false}
                     overshootRight={false}
@@ -279,11 +280,12 @@ export default function Column({
                                             ref={listRef}
                                             bounces={true}
                                             data={columnItems}
+                                            pagingEnabled={true}
                                             onDragBegin={onDragBegin}
                                             scrollEnabled={!isDragging}
                                             directionalLockEnabled={true}
+                                            keyExtractor={(item) => item.key}
                                             simultaneousHandlers={carouselRef}
-                                            keyExtractor={(item) => item.id.toString()}
                                             onScrollBeginDrag={() => setDragging(false)}
                                             onDragEnd={(onDragEndData) => onDragEnd(onDragEndData)}
                                             renderItem={(onDragItem: RenderItemParams<ItemType>) => renderDraggableItem(onDragItem)}

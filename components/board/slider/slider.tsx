@@ -46,62 +46,43 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
             // Unlock swiping after animation completes (adjust based on animation duration)
             setTimeout(() => {
                 swiping.current = false;
-            }, 50); // Adjust the duration to match the carousel animation speed
+            }, 0); // Adjust the duration to match the carousel animation speed
         }
     }
 
     return (
-        // <PanGestureHandler onGestureEvent={(event) => log(`carousel gesture`, event)}>
-            web() ? (
-                <div>Hello</div>
-            ) : <>
-                <Carousel
-                    width={width}
-                    enabled={true}
-                    height={height}
-                    ref={carouselRef}
-                    mode={sliderMode}
-                    data={boardColumns}
-                    onProgressChange={progress}
-                    loop={boardColumns?.length > 1}
-                    pagingEnabled={selected == null}
-                    containerStyle={{ backgroundColor }}
-                    style={{ 
-                        // top: 0,
-                        // left: 0,
-                        // zIndex: 1,                             
-                        // width: `100%`,
-                        // height: `100%`,
-                        // position: `absolute`,
-                        // pointerEvents: `auto`,
-                        backgroundColor: colors.mainBG,
-                        // backgroundColor: colors.transparent, 
-                    }}
-                    defaultScrollOffsetValue={scrollOffsetValue}
-                    modeConfig={{ parallaxScrollingScale: 0.99, parallaxAdjacentItemScale: 0.55 }}
-                    renderItem={({ index, item: column }: any) => (
-                        // <GestureHandlerRootView>
-                            // <PanGestureHandler onGestureEvent={(event) => log(`carousel gesture`, event)}>
-                                // <>
-                                    <Column
-                                        key={index}
-                                        column={column}
-                                        height={height}
-                                        fadeAnim={fadeAnim}
-                                        columnRefs={columnRefs}
-                                        carouselRef={carouselRef}
-                                        swipeCarousel={swipeCarousel}
-                                        columnRef={columnRefs[column.id]}
-                                        active={(slideIndex + 1) == column.index}
-                                    />
-                                // </>
-                            // </PanGestureHandler>
-                        // </GestureHandlerRootView>
-                    )}
-                />
+        web() ? (
+            <div>Hello</div>
+        ) : <>
+            <Carousel
+                width={width}
+                height={height}
+                ref={carouselRef}
+                mode={sliderMode}
+                data={boardColumns}
+                onProgressChange={progress}
+                loop={boardColumns?.length > 1}
+                pagingEnabled={selected == null}
+                containerStyle={{ backgroundColor }}
+                style={{ backgroundColor: colors.mainBG,}}
+                defaultScrollOffsetValue={scrollOffsetValue}
+                modeConfig={{ parallaxScrollingScale: 0.99, parallaxAdjacentItemScale: 0.55 }}
+                renderItem={({ index, item: column }: any) => (
+                    <Column
+                        key={index}
+                        column={column}
+                        height={height}
+                        fadeAnim={fadeAnim}
+                        columnRefs={columnRefs}
+                        carouselRef={carouselRef}
+                        swipeCarousel={swipeCarousel}
+                        columnRef={columnRefs[column.id]}
+                        active={(slideIndex + 1) == column.index}
+                    />
+                )}
+            />
 
-                <SliderPagination carouselRef={carouselRef} />
-            </>
-        // </PanGestureHandler>
+            <SliderPagination carouselRef={carouselRef} />
+        </>
     )
 }

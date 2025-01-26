@@ -12,7 +12,7 @@ import { updateItemFieldsInDatabase } from '@/shared/server/firebase';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { ItemViewType, Views, ItemViews, ItemType } from '@/shared/types/types';
-import { Animated, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
+import { Animated, Pressable, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
 import { borderRadius, colors, draggableViewItemBorderRadius, findColorCodeToKey, getFontColor, getFontColorForBackground, globalStyles, Text, View } from '@/components/theme/Themed';
 
@@ -168,39 +168,39 @@ export default function ItemView({ }: ItemViewType | any) {
                     </View>
                 </>}
                 <View style={styles.topTabs}>
-                    <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Details)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Details ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
+                    <Pressable onPress={() => onTopTogglePress(ItemViews.Details)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Details ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
                         <FontAwesome name={`align-left`} size={18} color={colors.white} />
                         <Text style={{ fontWeight: `bold` }}>
                             {ItemViews.Details}
                         </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                     {selected?.type == Views.Column && <>
-                        <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Items)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Items ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
+                        <Pressable onPress={() => onTopTogglePress(ItemViews.Items)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Items ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
                             <FontAwesome name={`list`} size={18} color={colors.white} />
                             <Text style={{ fontWeight: `bold` }}>
                                 {ItemViews.Items}
                             </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Settings)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Settings ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
+                        </Pressable>
+                        <Pressable onPress={() => onTopTogglePress(ItemViews.Settings)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Settings ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
                             <FontAwesome name={`gears`} size={18} color={colors.white} />
                             <Text style={{ fontWeight: `bold` }}>
                                 {ItemViews.Settings}
                             </Text>
-                        </TouchableOpacity>
+                        </Pressable>
                     </>}
                     {selected?.type == Views.Item && <>
-                        <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Tasks)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Tasks ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
+                        <Pressable onPress={() => onTopTogglePress(ItemViews.Tasks)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Tasks ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
                             <FontAwesome name={`list`} size={18} color={colors.white} />
                             <Text style={{ fontWeight: `bold` }}>
                                 {ItemViews.Tasks}
                             </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => onTopTogglePress(ItemViews.Images)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Images ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
+                        </Pressable>
+                        <Pressable onPress={() => onTopTogglePress(ItemViews.Images)} style={[boardStyles.rowItem, styles.topTabButtons, { backgroundColor: view == ItemViews.Images ? (selected?.backgroundColor == colors.appleBlue ? colors.navy : colors.appleBlue) : colors.black }]}>
                             <FontAwesome name={`image`} size={18} color={colors.white} />
                             <Text style={{ fontWeight: `bold` }}>
                                 {ItemViews.Images}
                             </Text>
-                        </TouchableOpacity>
+                        </Pressable>
                     </>}
                 </View>
             </> : <></>}

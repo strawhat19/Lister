@@ -8,7 +8,7 @@ import CustomImage from '@/components/custom-image/custom-image';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { Text, View, borderRadius, colors, isLightColor, itemCardHeight, itemSimplifiedCardHeight } from '@/components/theme/Themed';
-import { useIsActive } from 'react-native-reorderable-list';
+// import { useIsActive } from 'react-native-reorderable-list';
 
 export default function Item({ 
     item, 
@@ -19,7 +19,7 @@ export default function Item({
 }: any | RenderItemParams<ItemType>) {
     let { selected, fadeAnim, openBottomSheet, closeBottomSheet } = useContext<any>(SharedContext);
 
-    isActive = useIsActive();
+    // isActive = useIsActive();
     const fontColor = (item?.complete || isLightColor(item?.backgroundColor)) ? colors.darkFont : colors.lightFont;
 
     return (

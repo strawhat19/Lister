@@ -8,22 +8,20 @@ import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Animated, { Layout } from 'react-native-reanimated';
 import LoadingSpinner from '@/components/loading/loading-spinner';
-import { RenderItemParams } from 'react-native-draggable-flatlist';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { ColumnType, Directions, ItemType, ItemViews } from '@/shared/types/types';
-import { Alert, LayoutAnimation, ListRenderItemInfo, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { getItemsForColumn, deleteItemFromDatabase, createItem, db, itemsDatabaseCollection, updateItemFieldsInDatabase } from '@/shared/server/firebase';
-import ReorderableList, { ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
+import { Alert, ListRenderItemInfo, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { borderRadius, colors, getFontColor, getFontColorForBackground, globalStyles, Text, View } from '@/components/theme/Themed';
-import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, log, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+import ReorderableList, { ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
+import { getItemsForColumn, deleteItemFromDatabase, createItem, db, itemsDatabaseCollection, updateItemFieldsInDatabase } from '@/shared/server/firebase';
+import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export const defaultColumnView = ItemViews.Items;
 
 export default function Column({ 
     column, 
     active, 
-    carouselRef,
     swipeCarousel,
     animatedAdjacent, 
     blurIntensity = 0, 
@@ -33,9 +31,7 @@ export default function Column({
         height, 
         setView,
         selected,
-        isDragging,
         slideIndex,
-        setDragging, 
         boardColumns,
         itemsLoading,
         activeTopName,
@@ -56,11 +52,6 @@ export default function Column({
     const [itemName, setItemName] = useState(``);
     const [addingItem, setAddingItem] = useState(false);
     const [columnItems, setColumnItems] = useState<ItemType[]>([]);
-
-    const onPlaceHolderIndexChange = (onPlaceHolderIndexChangeData: any) => {
-        log(`onPlaceHolderIndexChange`, onPlaceHolderIndexChangeData);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    }
 
     const Card: React.FC<any> = memo(({id, index, item}) => {
         const isActive = useIsActive();
@@ -132,11 +123,6 @@ export default function Column({
         Vibration.vibrate(1);
         closeBottomSheet();
     }
-    
-    const onDragBegin = () => {
-        setDragging(true);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    }
 
     const openColumnDetails = () => {
         setView(ItemViews.Items);
@@ -146,7 +132,7 @@ export default function Column({
     useEffect(() => {
         let itemsForColumn = getItemsForColumn(items, column?.id);
         setColumnItems(itemsForColumn);
-        // scrollToEnd();
+        scrollToEnd();
     }, [items])
 
     const onCancel = async () => {
@@ -191,170 +177,6 @@ export default function Column({
             { cancelable: true },
         )
     }
-
-    const onDragEnd = async (onDragEndData: any) => {
-        await LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-        await setDragging(false);
-        let { data } = await onDragEndData;
-        await setColumnItems(data);
-        if (data?.length > 0) {
-            const batch = writeBatch(db);
-            await data.forEach((itm, itmIndex) => {
-                const now = new Date().toLocaleString(`en-US`);
-                const itemRef = doc(db, itemsDatabaseCollection, itm?.id);
-                batch.update(itemRef, { index: itmIndex + 1, updated: now });
-            })
-            await Vibration.vibrate(1);
-            await batch.commit();
-        }
-    }
-
-    // const renderDraggableItem = useCallback((dragItemParams: RenderItemParams<ItemType> | any) => {
-    //     let { item, drag, isActive, getIndex } = dragItemParams;
-
-    //     const swipeableRef = useRef<Swipeable>(null);
-    //     const { items: itemsFromDatabase } = useContext<any>(SharedContext);
-        
-    //     const renderRightActions = () => (
-    //         <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.white }]}>
-    //             <FontAwesome name={`angle-double-left`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
-    //         </View>
-    //     );
-        
-    //     const renderLeftActions = () => (
-    //         <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8, backgroundColor: colors.white }]}>
-    //             <FontAwesome name={`angle-double-right`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
-    //         </View>
-    //     );
-
-    //     const handleSwipe = async (itm: ItemType, direction: Directions) => {
-    //         swipeableRef.current?.close();
-    //         swipeCarousel(direction);
-            
-    //         const nextIndex = column.index + (-1 * direction);
-    //         const nextColIndex = nextIndex > boardColumns?.length ? 1 : nextIndex < 1 ? boardColumns?.length : nextIndex;
-    //         const nextColumn = boardColumns?.find(col => col.index == nextColIndex);
-    //         const nextListID = nextColumn?.id;
-
-    //         let itemsForNextColumn = getItemsForColumn(itemsFromDatabase, nextListID);
-    //         let newIndex = itemsForNextColumn?.length + 1;
-    //         let highestColumnIndex = await findHighestNumberInArrayByKey(itemsForNextColumn, `index`);
-    //         if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
-
-    //         await updateItemFieldsInDatabase(itm?.id, { listID: nextListID, index: newIndex });
-    //     };
-
-    //     return (
-    //         <Animated.View layout={Layout.springify()}>
-    //             <Swipeable
-    //                 friction={2}
-    //                 enabled={true}
-    //                 ref={swipeableRef}
-    //                 overshootLeft={false}
-    //                 overshootRight={false}
-    //                 renderLeftActions={renderLeftActions}
-    //                 renderRightActions={renderRightActions}
-    //                 onSwipeableRightOpen={() => handleSwipe(item, Directions.Left)}
-    //                 onSwipeableLeftOpen={() => handleSwipe(item, Directions.Right)}
-    //                 onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-    //             >
-    //                 <Item
-    //                     item={item}
-    //                     drag={drag}
-    //                     getIndex={getIndex}
-    //                     isActive={isActive}
-    //                     isLast={getIndex() == columnItems.length - 1}
-    //                     keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
-    //                 />
-    //             </Swipeable>
-    //         </Animated.View>
-    //     )
-    // }, [])
-    const renderDraggableItem = (dragItemParams: RenderItemParams<ItemType> | any) => {
-        let { item, drag, isActive } = dragItemParams;
-
-        // const swipeableRef = useRef<Swipeable>(null);
-        // const { items: itemsFromDatabase } = useContext<any>(SharedContext);
-        
-        const renderRightActions = () => (
-            <View style={[titleRowStyles.rightAction, { borderRadius, marginLeft: 8, backgroundColor: colors.white }]}>
-                <FontAwesome name={`angle-double-left`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
-            </View>
-        );
-        
-        const renderLeftActions = () => (
-            <View style={[titleRowStyles.leftAction, { borderRadius, marginRight: 8, backgroundColor: colors.white }]}>
-                <FontAwesome name={`angle-double-right`} color={colors.darkFont} size={35} style={{ paddingHorizontal: 15, fontWeight: `bold` }} />
-            </View>
-        );
-
-        const handleSwipe = async (itm: ItemType, direction: Directions) => {
-            // swipeableRef.current?.close();
-            swipeCarousel(direction);
-            
-            // const nextIndex = column.index + (-1 * direction);
-            // const nextColIndex = nextIndex > boardColumns?.length ? 1 : nextIndex < 1 ? boardColumns?.length : nextIndex;
-            // const nextColumn = boardColumns?.find(col => col.index == nextColIndex);
-            // const nextListID = nextColumn?.id;
-
-            // let itemsForNextColumn = getItemsForColumn(itemsFromDatabase, nextListID);
-            // let newIndex = itemsForNextColumn?.length + 1;
-            // let highestColumnIndex = await findHighestNumberInArrayByKey(itemsForNextColumn, `index`);
-            // if (highestColumnIndex >= newIndex) newIndex = highestColumnIndex + 1;
-
-            // await updateItemFieldsInDatabase(itm?.id, { listID: nextListID, index: newIndex });
-        };
-
-        return (
-            <Animated.View layout={Layout.springify()}>
-                <Swipeable
-                    friction={2}
-                    enabled={true}
-                    // ref={swipeableRef}
-                    overshootLeft={false}
-                    overshootRight={false}
-                    renderLeftActions={renderLeftActions}
-                    renderRightActions={renderRightActions}
-                    onSwipeableRightOpen={() => handleSwipe(item, Directions.Left)}
-                    onSwipeableLeftOpen={() => handleSwipe(item, Directions.Right)}
-                    onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                >
-                    <Item
-                        item={item}
-                        drag={drag}
-                        // getIndex={getIndex}
-                        // isActive={isActive}
-                        // isLast={getIndex() == columnItems.length - 1}
-                        keyExtractor={(item: ItemType) => `${item.id}-${item.key}-${item.listID}`}
-                    />
-                </Swipeable>
-            </Animated.View>
-        )
-    }
-
-    // async function onReordered(fromIndex: number, toIndex: number) {
-    //     const copy = [...columnItems];
-    //     const removed = copy.splice(fromIndex, 1);
-    //     copy.splice(toIndex, 0, removed[0]);
-    //     setColumnItems(copy);
-    // }
-
-    // function renderItem(info: DragListRenderItemInfo<any>) {
-    //     const { item, onDragStart, onDragEnd, isActive } = info;
-    
-    //     return (
-            // <TouchableOpacity
-            //     key={item}
-            //     onPressOut={onDragEnd}
-            //     onLongPress={onDragStart}
-            //     style={{ flex: 1, width: `100%`, height: 35, justifyContent: `center`, alignItems: `center`, backgroundColor: colors.black, opacity: isActive ? 0.5 : 1 }}
-            // >
-            //     <Text style={{ color: colors.white, textAlign: `center`, fontSize: 22 }}>
-            //         {item.name}
-            //     </Text>
-            // </TouchableOpacity>
-    //     );
-    // }
     
     const renderItem = ({item, index}: ListRenderItemInfo<ItemType>) => {
         delete item.key;
@@ -372,196 +194,151 @@ export default function Column({
                 const itemRef = doc(db, itemsDatabaseCollection, itm?.id);
                 batch.update(itemRef, { index: itmIndex + 1, updated: now });
             })
-            // Vibration.vibrate(1);
             batch.commit();
             return updatedItems;
         });
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-
     };
 
-    // useEffect(() => {
-    //     const batch = writeBatch(db);
-    //     columnItems.forEach((itm, itmIndex) => {
-    //         const now = new Date().toLocaleString(`en-US`);
-    //         const itemRef = doc(db, itemsDatabaseCollection, itm?.id);
-    //         batch.update(itemRef, { index: itmIndex + 1, updated: now });
-    //     })
-    //     Vibration.vibrate(1);
-    //     batch.commit();
-    // }, [columnItems])
-
     return (
-        <>
-            {/* <GestureHandlerRootView> */}
-                {/* <PanGestureHandler enabled={!isDragging} onGestureEvent={!isDragging ? handleGesture : null}> */}
-                    {/* <> */}
-                        <View id={`column_${column?.id}`} style={[
-                            {  
-                                paddingTop: 5,
-                                width: `100%`,
-                                borderWidth: 0,
-                                marginHorizontal: `auto`,
-                                borderColor: colors.transparent,
-                                backgroundColor: colors.transparent,
-                                marginTop: selected == null ? 20 : 15,
-                                opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.55,
-                            }, 
-                            animatedAdjacent,
-                        ]}>
-                            <BlurView intensity={blurIntensity} style={[StyleSheet.absoluteFill, { borderRadius: 12 }]} />
-                            <View style={{ 
-                                padding: 0,
-                                width: `95%`, 
-                                borderWidth: 0,
-                                borderRadius: 12, 
-                                marginHorizontal: `auto`, 
-                                borderColor: colors.listsBG,
-                                opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.35,
-                                backgroundColor: selected == null ? colors.listsBG : colors.transparent, 
-                            }}>
-                                <TouchableOpacity onPress={() => openColumnDetails()} disabled={selected != null} style={[titleRowStyles.titleRow, { paddingVertical: 7, position: `relative`, }]}>
-                                    {selected == null && column?.category && column?.category?.length > 0 ? <>
-                                        <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
-                                            {column?.category}
-                                        </Text>
-                                        <FontAwesome style={{ position: `absolute`, top: 12, left: 95, paddingBottom: 5 }} size={12} name={`gears`} color={colors.disabledFont} />
-                                    </> : (
-                                        <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: colorPickerOpen ? selectedColor : selected?.backgroundColor }]}>
-                                            <FontAwesome name={`trash`} size={14} color={colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor} />
-                                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor }]}>
-                                                Delete
-                                            </Text>
-                                        </TouchableOpacity>
-                                    )}
-                                    <Text numberOfLines={1} ellipsizeMode={`tail`} style={[titleRowStyles.title, titleRowStyles.fontColor, { ...(selected != null && {color: getFontColor(colors.mainBG)}), flexBasis: `50%` }]}>
-                                        {selected == null ? (
-                                            `${column?.name} ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
-                                                toFixedWithoutRounding(slideIndex + 1, 1)
-                                            )}`
-                                        ) : activeTopName}
-                                    </Text>
-                                    {selected == null ? <>
-                                        {columnItems && columnItems.length > 0 ? <>
-                                            <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
-                                                {columnItems?.length >= 10 ? columnItems?.length : columnItems?.length + ` Item${columnItems?.length > 1 ? `s` : `(s)`}`}
-                                            </Text>
-                                        </> : <>
-                                            <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
-                                                0 Item(s)
-                                            </Text>
-                                        </>}
-                                        <FontAwesome style={{ position: `absolute`, top: 12, right: 95, paddingBottom: 5 }} size={12} name={`gears`} color={colors.disabledFont} />
-                                    </> : (
-                                        <TouchableOpacity onPress={() => closeItem()} style={[titleRowStyles.topButton, { backgroundColor: colorPickerOpen ? selectedColor : selected?.backgroundColor }]}>
-                                            <FontAwesome name={`ban`} size={14} color={colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor} />
-                                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor }]}>
-                                                Close
-                                            </Text>
-                                        </TouchableOpacity>
-                                    )}
-                                </TouchableOpacity>
-                                {columnItems?.length > 0 ? (
-                                    // <PanGestureHandler enabled={!isDragging} activeOffsetX={[-10, 10]} activeOffsetY={[-10, 10]} onGestureEvent={!isDragging ? handleGesture : null}>
-                                        <ReorderableList
-                                            ref={listRef}
-                                            // bounces={true}
-                                            data={columnItems}
-                                            onReorder={onReorder}
-                                            renderItem={renderItem}
-                                            // pagingEnabled={true}
-                                            // shouldUpdateActiveItem
-                                            // onDragBegin={onDragBegin}
-                                            // scrollEnabled={!isDragging}
-                                            // directionalLockEnabled={true}
-                                            keyExtractor={(item) => item.id}
-                                            // simultaneousHandlers={carouselRef}
-                                            // onScrollBeginDrag={() => setDragging(false)}
-                                            // onDragEnd={(onDragEndData) => onDragEnd(onDragEndData)}
-                                            // renderItem={(onDragItem: any) => renderDraggableItem(onDragItem)}
-                                            // onHoverChanged={(onPlaceHolderIndexChangeData) => onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
-                                            // onPlaceholderIndexChange={(onPlaceHolderIndexChangeData) => onPlaceHolderIndexChange(onPlaceHolderIndexChangeData)}
-                                            style={{ 
-                                                height: `auto`, 
-                                                maxHeight: addingItem ? ((height - paginationHeightMargin) - 175) : height - paginationHeightMargin, 
-                                            }}
-                                            contentContainerStyle={{
-                                                width: `100%`,
-                                                height: `auto`,
-                                                paddingBottom: 2,
-                                                gap: gridSpacing - 12,
-                                                marginHorizontal: `auto`,
-                                                paddingHorizontal: gridSpacing,
-                                            }}
-                                        />
-                                    // </PanGestureHandler>
-                                ) : (
-                                    <View style={{ width: `100%`, backgroundColor: colors.transparent, height: `auto`, paddingVertical: 15, ...globalStyles.flexRow, justifyContent: `center`, gap: 15 }}>
-                                        {itemsLoading ? <LoadingSpinner /> : <></>}
-                                        <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
-                                            {itemsLoading ? loadingMessages.loading : loadingMessages.zero}
-                                        </Text>
-                                    </View>
-                                )}
-                                <View id={`${column.id}-footer`} style={{ backgroundColor: colors.transparent, paddingTop: 5, paddingVertical: 10, width: `100%`, alignItems: `center`, justifyContent: `center`, display: `flex`, gap: 5 }}>
-                                    {/* {!addingItem ? (
-                                        <TouchableOpacity onPress={() => onAddItem()} style={{ ...titleRowStyles.addItemButton, ...globalStyles.flexRow, backgroundColor: colors.navy, opacity: selected == null ? 1 : 0, justifyContent: `space-around` }}>
-                                            <FontAwesome name={`bars`} color={colors.lightBlue} size={20} />
-                                            <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontSize: 16, paddingVertical: 10 }]}>
-                                                + Add Item
-                                            </Text>
-                                            <FontAwesome name={`bars`} color={colors.lightBlue} size={20} />
-                                        </TouchableOpacity>
-                                    ) : ( */}
-                                        <View style={[globalStyles.singleLineInput, titleRowStyles.addItemButton, { marginTop: 5, justifyContent: `center`, marginHorizontal: `auto`, opacity: selected == null ? 1 : 0 }]}>
-                                            <ForwardRefInput
-                                                width={`100%`}
-                                                value={itemName}
-                                                showLabel={false}
-                                                endIconName={`save`}
-                                                onDoneVibrate={true}
-                                                placeholder={`Item Name`}
-                                                onFocus={() => onFocus()}
-                                                onChangeText={setItemName}
-                                                onCancel={() => onCancel()}
-                                                maxLength={maxItemNameLength}
-                                                onDoneDismiss={itemName == ``}
-                                                endIconPress={() => addItem()}
-                                                endIconDisabled={itemName == ``}
-                                                onBlur={() => setAddingItem(false)}
-                                                doneText={itemName == `` ? `Done` : `Add`}
-                                                cancelText={itemName == `` ? `Close` : `Cancel`}
-                                                onDone={itemName == `` ? () => {} : () => addItem()}
-                                                cancelColor={itemName == `` ? colors.disabledFont : colors.error}
-                                                doneColor={itemName == `` ? colors.disabledFont : colors.active}
-                                                endIconColor={itemName == `` ? colors.disabledFont : colors.inputColor}
-                                                extraStyle={{ 
-                                                    width: `83%`, 
-                                                    fontWeight: `bold`,
-                                                    color: colors.inputColor, 
-                                                    backgroundColor: colors.inputBG, 
-                                                    fontStyle: itemName == `` ? `italic` : `normal`,
-                                                }}
-                                                style={{ 
-                                                    marginBottom: 0, 
-                                                    minHeight: itemHeight, 
-                                                    ...globalStyles.flexRow, 
-                                                }}
-                                                endIconStyle={{ 
-                                                    minHeight: itemHeight, 
-                                                    maxHeight: itemHeight, 
-                                                    backgroundColor: itemName == `` ? colors.inputBG : colors.active, 
-                                                }}
-                                            />
-                                        </View>
-                                    {/* )} */}
-                                </View>
-                            </View>
-                        </View>
-                    {/* </> */}
-                {/* </PanGestureHandler> */}
-            {/* </GestureHandlerRootView> */}
-        </>
+        <View id={`column_${column?.id}`} style={[
+            {  
+                paddingTop: 5,
+                width: `100%`,
+                borderWidth: 0,
+                marginHorizontal: `auto`,
+                borderColor: colors.transparent,
+                backgroundColor: colors.transparent,
+                marginTop: selected == null ? 20 : 15,
+                opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.55,
+            }, 
+            animatedAdjacent,
+        ]}>
+            <BlurView intensity={blurIntensity} style={[StyleSheet.absoluteFill, { borderRadius: 12 }]} />
+            <View style={{ 
+                padding: 0,
+                width: `95%`, 
+                borderWidth: 0,
+                borderRadius: 12, 
+                marginHorizontal: `auto`, 
+                borderColor: colors.listsBG,
+                opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.35,
+                backgroundColor: selected == null ? colors.listsBG : colors.transparent, 
+            }}>
+                <TouchableOpacity onPress={() => openColumnDetails()} disabled={selected != null} style={[titleRowStyles.titleRow, { paddingVertical: 7, position: `relative`, }]}>
+                    {selected == null && column?.category && column?.category?.length > 0 ? <>
+                        <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
+                            {column?.category}
+                        </Text>
+                        <FontAwesome style={{ position: `absolute`, top: 12, left: 95, paddingBottom: 5 }} size={12} name={`gears`} color={colors.disabledFont} />
+                    </> : (
+                        <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: colorPickerOpen ? selectedColor : selected?.backgroundColor }]}>
+                            <FontAwesome name={`trash`} size={14} color={colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor} />
+                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor }]}>
+                                Delete
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                    <Text numberOfLines={1} ellipsizeMode={`tail`} style={[titleRowStyles.title, titleRowStyles.fontColor, { ...(selected != null && {color: getFontColor(colors.mainBG)}), flexBasis: `50%` }]}>
+                        {selected == null ? (
+                            `${column?.name} ${Number.isInteger(slideIndex + 1) ? slideIndex + 1 : (
+                                toFixedWithoutRounding(slideIndex + 1, 1)
+                            )}`
+                        ) : activeTopName}
+                    </Text>
+                    {selected == null ? <>
+                        {columnItems && columnItems.length > 0 ? <>
+                            <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
+                                {columnItems?.length >= 10 ? columnItems?.length : columnItems?.length + ` Item${columnItems?.length > 1 ? `s` : `(s)`}`}
+                            </Text>
+                        </> : <>
+                            <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
+                                0 Item(s)
+                            </Text>
+                        </>}
+                        <FontAwesome style={{ position: `absolute`, top: 12, right: 95, paddingBottom: 5 }} size={12} name={`gears`} color={colors.disabledFont} />
+                    </> : (
+                        <TouchableOpacity onPress={() => closeItem()} style={[titleRowStyles.topButton, { backgroundColor: colorPickerOpen ? selectedColor : selected?.backgroundColor }]}>
+                            <FontAwesome name={`ban`} size={14} color={colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor} />
+                            <Text style={[{ textAlign: `center`, fontSize: 16, fontWeight: `bold`, color: colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor }]}>
+                                Close
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                </TouchableOpacity>
+                {columnItems?.length > 0 ? (
+                    <ReorderableList
+                        ref={listRef}
+                        data={columnItems}
+                        onReorder={onReorder}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id}
+                        style={{ 
+                            height: `auto`, 
+                            maxHeight: addingItem ? ((height - paginationHeightMargin) - 175) : height - paginationHeightMargin, 
+                        }}
+                        contentContainerStyle={{
+                            width: `100%`,
+                            height: `auto`,
+                            paddingBottom: 2,
+                            gap: gridSpacing - 12,
+                            marginHorizontal: `auto`,
+                            paddingHorizontal: gridSpacing,
+                        }}
+                    />
+                ) : (
+                    <View style={{ width: `100%`, backgroundColor: colors.transparent, height: `auto`, paddingVertical: 15, ...globalStyles.flexRow, justifyContent: `center`, gap: 15 }}>
+                        {itemsLoading ? <LoadingSpinner /> : <></>}
+                        <Text style={[boardStyles.cardTitle, { textAlign: `center`, fontStyle: `italic`, fontSize: 16 }]}>
+                            {itemsLoading && items.length == 0 ? loadingMessages.loading : loadingMessages.zero}
+                        </Text>
+                    </View>
+                )}
+                <View id={`${column.id}-footer`} style={{ backgroundColor: colors.transparent, paddingTop: 5, paddingVertical: 10, width: `100%`, alignItems: `center`, justifyContent: `center`, display: `flex`, gap: 5 }}>
+                    <View style={[globalStyles.singleLineInput, titleRowStyles.addItemButton, { marginTop: 5, justifyContent: `center`, marginHorizontal: `auto`, opacity: selected == null ? 1 : 0 }]}>
+                        <ForwardRefInput
+                            width={`100%`}
+                            value={itemName}
+                            showLabel={false}
+                            endIconName={`save`}
+                            onDoneVibrate={true}
+                            placeholder={`Item Name`}
+                            onFocus={() => onFocus()}
+                            onChangeText={setItemName}
+                            onCancel={() => onCancel()}
+                            maxLength={maxItemNameLength}
+                            onDoneDismiss={itemName == ``}
+                            endIconPress={() => addItem()}
+                            endIconDisabled={itemName == ``}
+                            onBlur={() => setAddingItem(false)}
+                            doneText={itemName == `` ? `Done` : `Add`}
+                            cancelText={itemName == `` ? `Close` : `Cancel`}
+                            onDone={itemName == `` ? () => {} : () => addItem()}
+                            cancelColor={itemName == `` ? colors.disabledFont : colors.error}
+                            doneColor={itemName == `` ? colors.disabledFont : colors.active}
+                            endIconColor={itemName == `` ? colors.disabledFont : colors.inputColor}
+                            extraStyle={{ 
+                                width: `83%`, 
+                                fontWeight: `bold`,
+                                color: colors.inputColor, 
+                                backgroundColor: colors.inputBG, 
+                                fontStyle: itemName == `` ? `italic` : `normal`,
+                            }}
+                            style={{ 
+                                marginBottom: 0, 
+                                minHeight: itemHeight, 
+                                ...globalStyles.flexRow, 
+                            }}
+                            endIconStyle={{ 
+                                minHeight: itemHeight, 
+                                maxHeight: itemHeight, 
+                                backgroundColor: itemName == `` ? colors.inputBG : colors.active, 
+                            }}
+                        />
+                    </View>
+                </View>
+            </View>
+        </View>
     )
 }
 

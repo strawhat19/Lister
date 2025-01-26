@@ -10,7 +10,7 @@ import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { Alert, ListRenderItemInfo, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { delayBeforeScrollingDown, isValid, itemHeight, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
+import { delayBeforeScrollingDown, isValid, itemHeight, log, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
 import { colors, globalStyles, draggableViewItemBorderRadius, Text, View, getFontColor } from '@/components/theme/Themed';
 import { addTaskToDatabase, createItem, db, deleteItemFromDatabase, deleteTaskFromDatabase, getItemsForColumn, getTasksForItem, itemsDatabaseCollection, prepareTaskForDatabase, tasksDatabaseCollection, updateItemFieldsInDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
 import ReorderableList, { ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
@@ -26,7 +26,8 @@ export default function Items({ simple = false, component }: any) {
     let { selected, items, tasks, editing, setEditing, closeBottomSheet } = useContext<any>(SharedContext);
 
     const onPressItm = (itm: TaskType | ItemType) => {
-        Vibration.vibrate(1);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        // Vibration.vibrate(1);
         onEditItem(itm);
     }
 
@@ -59,7 +60,8 @@ export default function Items({ simple = false, component }: any) {
     // }
 
     const deleteItemWithConfirmation = (itemID: string) => {
-        Vibration.vibrate(1);
+        // Vibration.vibrate(1);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         Alert.alert(
             `Delete Item`,
             `Are you sure you want to delete this item?`,
@@ -80,7 +82,8 @@ export default function Items({ simple = false, component }: any) {
     }
 
     const onEditItem = async (itm) => {
-        await Vibration.vibrate(1);
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        // await Vibration.vibrate(1);
         await setEditing(true);
         await setItmToEdit(itm);
         await setItmName(itm?.name);
@@ -88,6 +91,7 @@ export default function Items({ simple = false, component }: any) {
     }
 
     const addItm = async () => {
+        await setItmName(``);
         // setDraggableItems(prevItems => .filter(itm => itm.id != itmID));
         if (selected?.type == Views.Column) {
             await createItem(draggableItems, selected?.id, itmName, items, closeBottomSheet, false);
@@ -102,7 +106,6 @@ export default function Items({ simple = false, component }: any) {
             const newTask = await prepareTaskForDatabase(taskToAdd, tasks, selected?.id);
             await addTaskToDatabase(newTask);
         }
-        await setItmName(``);
         await setTimeout(() => {
             listRef.current?.scrollToEnd({ animated: true });
         }, delayBeforeScrollingDown);
@@ -135,14 +138,17 @@ export default function Items({ simple = false, component }: any) {
             }
         };
 
-        const handleLeftSwipe = (itmSwiped = itm) => {
+        const handleLeftSwipe = (item) => {
+            log(`left swipe on`, item.id);
             swipeableRef.current?.close();
-            Vibration.vibrate(1);
-            if (itm?.type == Views.Task) {
-                updateTaskFieldsInDatabase(itmSwiped?.id, { complete: !itmSwiped.complete } as Partial<TaskType | ItemType>);
+            // Vibration.vibrate(1);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+
+            if (item?.type == Views.Task) {
+                updateTaskFieldsInDatabase(item?.id, { complete: !item.complete } as Partial<TaskType | ItemType>);
             }
-            if (itm?.type == Views.Item) {
-                updateItemFieldsInDatabase(itmSwiped?.id, { complete: !itmSwiped.complete } as Partial<TaskType | ItemType>);
+            if (item?.type == Views.Item) {
+                updateItemFieldsInDatabase(item?.id, { complete: !item.complete } as Partial<TaskType | ItemType>);
             }
         };
         
@@ -258,7 +264,8 @@ export default function Items({ simple = false, component }: any) {
 
         const handleLeftSwipe = (itmSwiped = item) => {
             swipeableRef.current?.close();
-            Vibration.vibrate(1);
+            // Vibration.vibrate(1);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
             if (item?.type == Views.Task) {
                 updateTaskFieldsInDatabase(itmSwiped?.id, { complete: !itmSwiped.complete } as Partial<TaskType | ItemType>);
             }
@@ -303,7 +310,7 @@ export default function Items({ simple = false, component }: any) {
                     overshootRight={false}
                     renderLeftActions={renderLeftActions}
                     renderRightActions={renderRightActions}
-                    onSwipeableLeftOpen={() => handleLeftSwipe(item?.id)}
+                    onSwipeableLeftOpen={() => handleLeftSwipe(item)}
                     onSwipeableRightOpen={() => handleRightSwipe(item?.id)}
                     onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 >
@@ -386,6 +393,7 @@ export default function Items({ simple = false, component }: any) {
                             renderItem={renderItem}
                             style={{ height: `auto` }}
                             keyExtractor={(item) => item.id}
+                            showsVerticalScrollIndicator={false}
                             contentContainerStyle={{
                                 gap: 3,
                                 width: `100%`,

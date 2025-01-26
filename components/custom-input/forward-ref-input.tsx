@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import React, { forwardRef, useContext, useId } from 'react';
@@ -86,7 +87,8 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
 
     const onDoneVibration = () => {
         onDone();
-        Vibration.vibrate(1);
+        // Vibration.vibrate(1);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
 
     const onDoneDismissKeyboard = (onDoneVibrate) => {

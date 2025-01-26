@@ -1,10 +1,12 @@
 import { User } from '../models/User';
-import { Vibration } from 'react-native';
+import * as Haptics from 'expo-haptics';
+// import { Vibration } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { ItemType, TaskType, Views } from '../types/types';
 import { colors, detectIfNameIsColor, isLightColor } from '@/components/theme/Themed';
-import { camelCaseToTitleCase, defaultBoardID, findHighestNumberInArrayByKey, genID, isValid, log, logMsgLine } from '../variables';
 import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { camelCaseToTitleCase, defaultBoardID, findHighestNumberInArrayByKey, genID, isValid, log, logMsgLine } from '../variables';
+import { Vibration } from 'react-native';
 
 export enum Environments {
   beta = `beta_`,
@@ -87,7 +89,8 @@ export const taskConverter = {
 
 export const addUserToDatabase = async (usr: User) => {
   try {
-    await Vibration.vibrate(1);
+    // await Vibration.vibrate(1);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     const userReference = await doc(db, usersDatabaseCollection, usr?.id).withConverter(userConverter);
     await setDoc(userReference, usr as User);
     logMsgLine(`Added User "${usr?.name}" to Database`);
@@ -98,7 +101,8 @@ export const addUserToDatabase = async (usr: User) => {
 
 export const addItemToDatabase = async (itm: ItemType) => {
   try {
-    await Vibration.vibrate(1);
+    // await Vibration.vibrate(1);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     const itemReference = doc(db, itemsDatabaseCollection, itm?.id).withConverter(itemConverter);
     await setDoc(itemReference, itm as ItemType);
     logMsgLine(`Added Item #${itm?.count} "${itm?.name}" to Database`);
@@ -109,7 +113,8 @@ export const addItemToDatabase = async (itm: ItemType) => {
 
 export const addTaskToDatabase = async (tsk: TaskType) => {
   try {
-    await Vibration.vibrate(1);
+    // await Vibration.vibrate(1);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     const taskReference = await doc(db, tasksDatabaseCollection, tsk?.id).withConverter(taskConverter);
     await setDoc(taskReference, tsk as TaskType);
     logMsgLine(`Added Task #${tsk?.count} "${tsk?.name}" to Database`);
@@ -119,14 +124,16 @@ export const addTaskToDatabase = async (tsk: TaskType) => {
 }
 
 export const cloneItemToDatabase = async (itm: ItemType, items: ItemType[], nextListID: string) => {
-  await Vibration.vibrate(1);
+  // await Vibration.vibrate(1);
+  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   const clonedItem = await prepareItemForDatabase(itm, items, nextListID);
   await addItemToDatabase(clonedItem);
 }
 
 export const deleteItemFromDatabase = async (itemID: string, cascade: boolean = true) => {
   try {
-    await Vibration.vibrate(1);
+    // await Vibration.vibrate(1);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
     if (cascade) {
       const tasksQuery = await getDocs(
@@ -150,7 +157,8 @@ export const deleteItemFromDatabase = async (itemID: string, cascade: boolean = 
 
 export const deleteTaskFromDatabase = async (taskID: string) => {
   try {
-    await Vibration.vibrate(1);
+    // await Vibration.vibrate(1);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     const taskRef = await doc(db, tasksDatabaseCollection, taskID).withConverter(taskConverter);
     const deletedTaskSnapshot = await getDoc(taskRef);
     const deletedTask = deletedTaskSnapshot.exists() ? deletedTaskSnapshot.data() : null;
@@ -167,11 +175,12 @@ export const updateItemFieldsInDatabase = async (itemID: string, updates: Partia
   const fields = { ...updates, updated: now };
   try {
     const itemRef = await doc(db, itemsDatabaseCollection, itemID).withConverter(itemConverter);
-    if (vibrate) await Vibration.vibrate(1);
+    if (vibrate) await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    // if (vibrate) await Vibration.vibrate(1);
     await updateDoc(itemRef, fields);
     if (logResult) logMsgLine(`Item Fields Updated in Database`, fields);
   } catch (error) {
-    logMsgLine(`Error Updating Item Fields`, { error, fields });
+    logMsgLine(`Error Updating Item ${itemID} Fields`, { error, fields });
   }
 };
 
@@ -180,11 +189,12 @@ export const updateTaskFieldsInDatabase = async (taskID: string, updates: Partia
   const fields = { ...updates, updated: now };
   try {
     const taskRef = await doc(db, tasksDatabaseCollection, taskID).withConverter(taskConverter);
-    if (vibrate) await Vibration.vibrate(1);
+    if (vibrate) await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    // if (vibrate) await Vibration.vibrate(1);
     await updateDoc(taskRef, fields);
     if (logResult) logMsgLine(`Task Fields Updated in Database`, fields);
   } catch (error) {
-    logMsgLine(`Error Updating Task Fields`, { error, fields });
+    logMsgLine(`Error Updating Task ${taskID} Fields`, { error, fields });
   }
 };
 

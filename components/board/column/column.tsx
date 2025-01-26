@@ -120,7 +120,7 @@ export default function Column({
     });
     
     const closeItem = () => {
-        Vibration.vibrate(1);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         closeBottomSheet();
     }
 
@@ -136,13 +136,15 @@ export default function Column({
     }, [items])
 
     const onCancel = async () => {
-        await Vibration.vibrate(1);
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        // await Vibration.vibrate(1);
         await setItemName(``);
         await setAddingItem(false);
     }
 
     const onFocus = async () => {
-        await Vibration.vibrate(1);
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        // await Vibration.vibrate(1);
         await setAddingItem(true);
         await scrollToEnd();
     }
@@ -166,7 +168,7 @@ export default function Column({
     }
 
     const deleteItemWithConfirmation = (itemID: string = selected?.id) => {
-        Vibration.vibrate(1);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         Alert.alert(
             `Delete Item`,
             `Are you sure you want to delete this item?`,
@@ -209,7 +211,7 @@ export default function Column({
                 marginHorizontal: `auto`,
                 borderColor: colors.transparent,
                 backgroundColor: colors.transparent,
-                marginTop: selected == null ? 20 : 15,
+                marginTop: selected == null ? 0 : 15,
                 opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.55,
             }, 
             animatedAdjacent,
@@ -218,6 +220,7 @@ export default function Column({
             <View style={{ 
                 padding: 0,
                 width: `95%`, 
+                // maxHeight: 525,
                 borderWidth: 0,
                 borderRadius: 12, 
                 marginHorizontal: `auto`, 

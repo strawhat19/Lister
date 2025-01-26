@@ -6,6 +6,8 @@ export type Type = {
 
 export enum SliderModes {
     Parallax = `parallax`,
+    Vertical = `vertical-stack`,
+    Horizontal = `horizontal-stack`,
 }
 
 export type DataNoID = {

@@ -21,7 +21,7 @@ export default function SliderPagination({ carouselRef }: any) {
             pointerEvents: `none`, 
             opacity: selected == null ? 1 : 0, 
             backgroundColor: colors.transparent, 
-            marginTop: -1 * (paginationHeightMargin - 127), 
+            marginTop: -1 * (paginationHeightMargin - 112), 
         }}>
             <Pagination.Basic
                 data={boardColumns}

@@ -53,7 +53,8 @@ export default function ItemView({ }: ItemViewType | any) {
     }
 
     const onTopTogglePress = (viewType: ItemViews | Views) => {
-        Vibration.vibrate(1);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        // Vibration.vibrate(1);
         setView(viewType);
     }
 
@@ -98,7 +99,8 @@ export default function ItemView({ }: ItemViewType | any) {
 
         const handleSwipe = (itmSwiped = itm) => {
             swipeableRef.current?.close();
-            Vibration.vibrate(1);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            // Vibration.vibrate(1);
             updateItemFieldsInDatabase(itmSwiped?.id, { complete: !itmSwiped.complete } as Partial<ItemType>);
         };
 

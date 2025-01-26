@@ -1,8 +1,9 @@
 import { User } from './models/User';
 import 'react-native-gesture-handler';
+import * as Haptics from 'expo-haptics';
 import { defaultColumns } from './database';
-import { colors, View } from '@/components/theme/Themed';
 import SlideUp from '@/components/slide-up/slide-up';
+import { colors, View } from '@/components/theme/Themed';
 import { useSharedValue } from 'react-native-reanimated';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { createContext, useEffect, useRef, useState } from 'react';
@@ -78,7 +79,8 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
       setSelected(item);
       setSelectedColor(item?.backgroundColor);
     }
-    Vibration.vibrate(1);
+    // Vibration.vibrate(1);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   }
 
   const enterFadeBlur = () => {
@@ -154,7 +156,6 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
     <SharedContext.Provider 
       value={{ // Globally Shared State Data
         width,
-        height,
         progress,
         fadeAnim,
         exitFadeBlur,
@@ -170,6 +171,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         tasks, setTasks,
         openBottomSheet,
         closeBottomSheet,
+        height: height - 35,
         editing, setEditing,
         selected, setSelected,
         blurBGContainerOpacity,

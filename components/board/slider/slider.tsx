@@ -1,9 +1,12 @@
 import Column from '../column/column';
+import * as Haptics from 'expo-haptics';
 import { web } from '@/shared/variables';
+import { TouchableOpacity } from 'react-native';
 import { SharedContext } from '@/shared/shared';
-import { colors } from '@/components/theme/Themed';
+import { SliderModes } from '@/shared/types/types';
 import SliderPagination from './pagination/pagination';
 import React, { useContext, useMemo, useRef } from 'react';
+import { colors, Text, View } from '@/components/theme/Themed';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
@@ -21,6 +24,7 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
         sliderMode,
         boardColumns,
         setSlideIndex,
+        setSliderMode,
     } = useContext<any>(SharedContext);
 
     const columnRefs = useMemo(() => {
@@ -34,6 +38,11 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
         const absoluteProgress = progress.value;
         runOnJS(setSlideIndex)(absoluteProgress);
     }, [progress])
+
+    const onBoardRowPress = () => {
+        // setSliderMode(SliderModes.Horizontal);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
 
     const swipeCarousel = (translationX) => {
         if (selected == null && !swiping.current) { // Ensure no swiping lock
@@ -54,17 +63,28 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
         web() ? (
             <div>Hello</div>
         ) : <>
+            {selected == null && (
+                <View style={{ width: `100%`, backgroundColor: colors.mainBG, justifyContent: `center`, alignItems: `center`, paddingTop: 20 }}>
+                    <TouchableOpacity onPress={() => onBoardRowPress()} style={{ width: `100%`, backgroundColor: colors.mainBG, justifyContent: `center`, alignItems: `center`, paddingVertical: 5, }}>
+                        <Text style={{ fontSize: 22, fontStyle: `italic`, fontWeight: `bold`, color: colors.white }}>
+                            Board
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
             <Carousel
                 width={width}
                 height={height}
                 ref={carouselRef}
                 mode={sliderMode}
                 data={boardColumns}
+                enabled={selected == null}
                 onProgressChange={progress}
                 loop={boardColumns?.length > 1}
                 pagingEnabled={selected == null}
                 containerStyle={{ backgroundColor }}
-                style={{ backgroundColor: colors.mainBG,}}
+                style={{ backgroundColor: colors.mainBG, }}
                 defaultScrollOffsetValue={scrollOffsetValue}
                 modeConfig={{ parallaxScrollingScale: 0.99, parallaxAdjacentItemScale: 0.55 }}
                 renderItem={({ index, item: column }: any) => (

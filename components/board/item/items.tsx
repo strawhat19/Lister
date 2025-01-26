@@ -75,8 +75,8 @@ export default function Items({ simple = false, component }: any) {
         await setItmName(``);
         await setEditing(true);
         await setItmToEdit(null);
-        if (selected?.type == Views.Item) updateTaskFieldsInDatabase(itmToEdit?.id, { name: itmName });
-        if (selected?.type == Views.Column) updateItemFieldsInDatabase(itmToEdit?.id, { name: itmName });
+        if (selected?.type == Views.Item) updateTaskFieldsInDatabase(itmToEdit?.id, { name: itmName, A: itmName });
+        if (selected?.type == Views.Column) updateItemFieldsInDatabase(itmToEdit?.id, { name: itmName, A: itmName });
     }
 
     const onEditItem = async (itm) => {
@@ -88,6 +88,7 @@ export default function Items({ simple = false, component }: any) {
     }
 
     const addItm = async () => {
+        // setDraggableItems(prevItems => .filter(itm => itm.id != itmID));
         if (selected?.type == Views.Column) {
             await createItem(draggableItems, selected?.id, itmName, items, closeBottomSheet, false);
         }
@@ -241,6 +242,7 @@ export default function Items({ simple = false, component }: any) {
 
         const handleRightSwipe = async (itmID: string = item?.id) => {
             swipeableRef.current?.close();
+            setDraggableItems(prevItems => prevItems.filter(itm => itm.id != itmID));
             if (item?.type == Views.Task) {
                 await deleteTaskFromDatabase(itmID);
             }
@@ -301,8 +303,8 @@ export default function Items({ simple = false, component }: any) {
                     overshootRight={false}
                     renderLeftActions={renderLeftActions}
                     renderRightActions={renderRightActions}
-                    onSwipeableLeftOpen={() => handleLeftSwipe(item)}
-                    onSwipeableRightOpen={() => handleRightSwipe(item)}
+                    onSwipeableLeftOpen={() => handleLeftSwipe(item?.id)}
+                    onSwipeableRightOpen={() => handleRightSwipe(item?.id)}
                     onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 >
                     <TouchableOpacity

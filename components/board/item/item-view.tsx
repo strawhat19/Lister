@@ -72,7 +72,7 @@ export default function ItemView({ }: ItemViewType | any) {
     }; 
     
     const onNameSave = async () => {
-        if (selected?.type == Views.Item) await updateItemFieldsInDatabase(selected?.id, { name });
+        if (selected?.type == Views.Item) await updateItemFieldsInDatabase(selected?.id, { name, A: name });
         await setSelected({ ...selected, name });
         await setActiveTopName(name);
     }; 

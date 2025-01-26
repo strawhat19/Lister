@@ -144,7 +144,7 @@ export const deleteItemFromDatabase = async (itemID: string, cascade: boolean = 
 
     logMsgLine(`Deleted Item "${deletedItem?.name}" from Database`);
   } catch (error) {
-    logMsgLine(`Error Deleting Item from Database ${itemsDatabaseCollection}`, error);
+    logMsgLine(`Error Deleting Item ${itemID} from Database ${itemsDatabaseCollection}`, error);
   }
 }
 
@@ -158,7 +158,7 @@ export const deleteTaskFromDatabase = async (taskID: string) => {
 
     logMsgLine(`Deleted Task "${deletedTask?.name}" from Database`);
   } catch (error) {
-    logMsgLine(`Error Deleting Task ${taskID}  from Database ${tasksDatabaseCollection}`, error);
+    logMsgLine(`Error Deleting Task ${taskID} from Database ${tasksDatabaseCollection}`, error);
   }
 }
 

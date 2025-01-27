@@ -16,6 +16,7 @@ import { borderRadius, colors, getFontColor, getFontColorForBackground, globalSt
 import ReorderableList, { ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
 import { getItemsForColumn, deleteItemFromDatabase, createItem, db, itemsDatabaseCollection, updateItemFieldsInDatabase } from '@/shared/server/firebase';
 import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
+import { FontAwesome6 } from '@expo/vector-icons';
 
 export const defaultColumnView = ItemViews.Items;
 
@@ -235,7 +236,7 @@ export default function Column({
                         <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
                             {column?.category}
                         </Text>
-                        <FontAwesome style={{ position: `absolute`, top: 12, left: 95, paddingBottom: 5 }} size={12} name={`gears`} color={colors.disabledFont} />
+                        <FontAwesome6 style={{ position: `absolute`, top: 12, left: 95, paddingBottom: 5 }} size={12} name={`bars-progress`} color={colors.disabledFont} />
                     </> : (
                         <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: colorPickerOpen ? selectedColor : selected?.backgroundColor }]}>
                             <FontAwesome name={`trash`} size={14} color={colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor} />

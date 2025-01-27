@@ -10,7 +10,7 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Animated, Keyboard, useWindowDimensions } from 'react-native';
-import { animationOptions, log, logMsgLine, useDatabase } from './variables';
+import { animationOptions, devEnv, log, logMsgLine, useDatabase } from './variables';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { itemsDatabaseCollection, db, tasksDatabaseCollection } from './server/firebase';
 import { BoardType, ColumnType, ItemType, ItemViews, TaskType, Views } from '@/shared/types/types';
@@ -20,7 +20,7 @@ configureReanimatedLogger({ strict: false, level: ReanimatedLogLevel.error });
 export const SharedContext = createContext({});
 
 export const defaultItemView = ItemViews.Tasks;
-export const defaultUser = { uid: 1, name: `Default`, role: roles.Developer.name, level: roles.Developer.level };
+export const defaultUser = devEnv ? { id: `User_1`, uid: `User_1`, name: `Default`, role: roles.Owner.name, level: roles.Owner.level } : null;
 
 export default function Shared({ children }: { children: React.ReactNode; }) {
   const router = useRouter();
@@ -41,10 +41,10 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [itemsLoading, setItemsLoading] = useState(true);
   let [usersLoading, setUsersLoading] = useState(true);
   let [tasksLoading, setTasksLoading] = useState(true);
-  let [user, setUser] = useState<User | null | any>(null);
   let [colorPickerOpen, setColorPickerOpen] = useState(false);
-  let [sliderModeParallax, setSliderModeParallax] = useState(true);
+  let [user, setUser] = useState<User | null | any>(defaultUser);
   let [selectedColor, setSelectedColor] = useState(colors.listsBG);
+  let [sliderModeParallax, setSliderModeParallax] = useState(false);
   let [view, setView] = useState<ItemViews | Views>(defaultItemView);
   let [boardColumns, setBoardColumns] = useState<BoardType | ColumnType[]>(defaultColumns);
   let [activeTopName, setActiveTopName] = useState(boardColumns[slideIndex]?.name);

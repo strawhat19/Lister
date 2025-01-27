@@ -5,6 +5,7 @@ import { colors } from '@/components/theme/Themed';
 import { tabBarIconSize } from '@/shared/variables';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useClientOnlyValue } from '@/components/theme/useClientOnlyValue';
+import { FontAwesome6 } from '@expo/vector-icons';
 
 export default function TabLayout({ backgroundColor = colors.transparent }) {
   const { user, selected } = useContext<any>(SharedContext);
@@ -37,22 +38,33 @@ export default function TabLayout({ backgroundColor = colors.transparent }) {
       <Tabs.Screen
         name={`index`}
         options={{
-          title: `Kanban`,
+          title: `Boards`,
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <FontAwesome name={`id-card`} size={tabBarIconSize} color={color} />
+            <FontAwesome6 name={`bars-progress`} size={tabBarIconSize} color={color} />
           ),
         }}
       />
-      {/* <Tabs.Screen
-        name={`experiments`}
+      <Tabs.Screen
+        name={`items`}
         options={{ 
-          title: `Notifications`, 
+          title: `Items`, 
+          headerShown: false,
           tabBarIcon: ({ color }) => (
-            <FontAwesome name={`bell`} size={tabBarIconSize} color={color} />
+            <FontAwesome6 name={`bars-staggered`} size={tabBarIconSize} color={color} />
           ), 
         }}
-      /> */}
+      />
+      <Tabs.Screen
+        name={`search`}
+        options={{ 
+          title: `Search`, 
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome6 name={`magnifying-glass`} size={tabBarIconSize} color={color} />
+          ), 
+        }}
+      />
       <Tabs.Screen
         name={`notifications`}
         options={{ 
@@ -64,22 +76,22 @@ export default function TabLayout({ backgroundColor = colors.transparent }) {
         }}
       />
       <Tabs.Screen
-        name={`settings`}
-        options={{ 
-          title: `Settings`, 
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name={`gears`} size={tabBarIconSize} color={color} />
-          ), 
-        }}
-      />
-      <Tabs.Screen
         name={`profile`} 
         options={{ 
           title: `Profile`, 
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome name={`user`} size={tabBarIconSize} color={color} />
+          ), 
+        }}
+      />
+      <Tabs.Screen
+        name={`settings`}
+        options={{ 
+          title: `Settings`, 
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name={`gears`} size={tabBarIconSize} color={color} />
           ), 
         }}
       />

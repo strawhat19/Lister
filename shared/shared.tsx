@@ -8,11 +8,11 @@ import { useSharedValue } from 'react-native-reanimated';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Animated, Keyboard, useWindowDimensions } from 'react-native';
 import { animationOptions, log, logMsgLine, useDatabase } from './variables';
-import { Animated, Keyboard, useWindowDimensions, Vibration } from 'react-native';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { itemsDatabaseCollection, db, tasksDatabaseCollection } from './server/firebase';
-import { BoardType, ColumnType, ItemType, ItemViews, SliderModes, TaskType, Views } from '@/shared/types/types';
+import { BoardType, ColumnType, ItemType, ItemViews, TaskType, Views } from '@/shared/types/types';
 
 configureReanimatedLogger({ strict: false, level: ReanimatedLogLevel.error });
 
@@ -30,17 +30,19 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [items, setItems] = useState<ItemType[]>([]);
   let [tasks, setTasks] = useState<TaskType[]>([]);
   let [user, setUser] = useState<User | null>(null);
+  let [board, setBoard] = useState<BoardType>(null);
+  let [boards, setBoards] = useState<BoardType[]>([]);
   let [users, setUsers] = useState<User[] | null>([]);
   let [itemsLoading, setItemsLoading] = useState(true);
   let [usersLoading, setUsersLoading] = useState(true);
   let [tasksLoading, setTasksLoading] = useState(true);
   let [colorPickerOpen, setColorPickerOpen] = useState(false);
-  let [sliderMode, setSliderMode] = useState(SliderModes.Parallax);
+  let [sliderModeParallax, setSliderModeParallax] = useState(true);
   let [selectedColor, setSelectedColor] = useState(colors.listsBG);
   let [view, setView] = useState<ItemViews | Views>(defaultItemView);
-  let [selected, setSelected] = useState<ItemType | ColumnType | null>(null);
   let [boardColumns, setBoardColumns] = useState<BoardType | ColumnType[]>(defaultColumns);
   let [activeTopName, setActiveTopName] = useState(boardColumns[slideIndex]?.name);
+  let [selected, setSelected] = useState<BoardType | ColumnType | ItemType | null>(null);
 
   const progress = useSharedValue<number>(0);
   const { width, height } = useWindowDimensions();
@@ -167,17 +169,18 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         blur, setBlur,
         onSheetChange,
         users, setUsers,
+        board, setBoard,
         items, setItems,
         tasks, setTasks,
         openBottomSheet,
         closeBottomSheet,
+        boards, setBoards,
         height: height - 35,
         editing, setEditing,
         selected, setSelected,
         blurBGContainerOpacity,
         isDragging, setDragging,
         modalOpen, setModalOpen,
-        sliderMode, setSliderMode,
         slideIndex, setSlideIndex,
         boardColumns, setBoardColumns,
         tasksLoading, setTasksLoading,
@@ -186,6 +189,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         activeTopName, setActiveTopName,
         selectedColor, setSelectedColor,
         colorPickerOpen, setColorPickerOpen,
+        sliderModeParallax, setSliderModeParallax,
       }}
     >
       <GestureHandlerRootView>

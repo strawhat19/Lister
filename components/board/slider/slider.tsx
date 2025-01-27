@@ -21,10 +21,10 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
         progress, 
         fadeAnim, 
         slideIndex, 
-        sliderMode,
         boardColumns,
         setSlideIndex,
-        setSliderMode,
+        sliderModeParallax, 
+        setSliderModeParallax,
     } = useContext<any>(SharedContext);
 
     const columnRefs = useMemo(() => {
@@ -40,7 +40,7 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
     }, [progress])
 
     const onBoardRowPress = () => {
-        // setSliderMode(SliderModes.Horizontal);
+        setSliderModeParallax(!sliderModeParallax);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
 
@@ -77,7 +77,6 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
                 width={width}
                 height={height}
                 ref={carouselRef}
-                mode={sliderMode}
                 data={boardColumns}
                 enabled={selected == null}
                 onProgressChange={progress}
@@ -86,6 +85,7 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
                 containerStyle={{ backgroundColor }}
                 style={{ backgroundColor: colors.mainBG, }}
                 defaultScrollOffsetValue={scrollOffsetValue}
+                mode={sliderModeParallax == true ? SliderModes.Parallax : undefined}
                 modeConfig={{ parallaxScrollingScale: 0.99, parallaxAdjacentItemScale: 0.55 }}
                 renderItem={({ index, item: column }: any) => (
                     <Column

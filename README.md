@@ -1,5 +1,8 @@
 # Lister
 
+![iOS](https://img.shields.io/badge/platform-iOS-000.svg?logo=apple)
+![Android](https://img.shields.io/badge/platform-Android-3ddc84.svg?logo=android)
+
 ![License](https://img.shields.io/github/license/strawhat19/Lister)
 ![State](https://img.shields.io/github/deployments/strawhat19/Lister/Production)
 ![Total Lines](https://img.shields.io/tokei/lines/github/strawhat19/Lister)

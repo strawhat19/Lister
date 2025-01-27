@@ -217,7 +217,7 @@ export const prepareTaskForDatabase = async (tsk: TaskType, tasks: TaskType[], i
 
   const { id, uuid, date } = await genID(type, newKey);
 
-  const { uid, name: creator } = user;
+  const { uid, name: creator, role: creatorRole } = user;
 
   const preparedTask = await new TaskType({ 
     ...tsk,
@@ -227,10 +227,12 @@ export const prepareTaskForDatabase = async (tsk: TaskType, tasks: TaskType[], i
     uuid,
     itemID,
     creator,
+    creatorRole,
     key: newKey,
     count: newKey,
     created: date,
     updated: date,
+    creatorID: uid,
     index: newIndex, 
     boardID: defaultBoardID,
   })
@@ -289,7 +291,7 @@ export const createItem = async (columnItems, listID: string, name, items, close
 
     let isLightBGColor = isLightColor(backgroundColor);
 
-    const { uid, name: creator } = user;
+    const { uid, name: creator, role: creatorRole } = user;
 
     const itemToAdd = await new ItemType({
       uid,
@@ -300,6 +302,8 @@ export const createItem = async (columnItems, listID: string, name, items, close
       image: ``,
       tasks: [],
       summary: ``,
+      creatorRole,
+      creatorID: uid,
       description: ``,
       backgroundColor,
       boardID: defaultBoardID,

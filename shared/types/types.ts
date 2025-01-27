@@ -1,4 +1,5 @@
 import { colors } from '@/components/theme/Themed';
+import { roles, Roles } from '../models/User';
 
 export type Type = {
     type: Types | Views; 
@@ -128,12 +129,14 @@ export class BoardType {
     name: string;
     count?: number = 1;
     creator?: string = ``;
+    creatorID?: string = ``;
     active?: boolean = true;
     focused?: boolean = false;
     archived?: boolean = false;
     complete?: boolean = false;
     boardType?: BoardTypes = BoardTypes.Kanban;
     color?: typeof colors | string = colors.mainBG;
+    creatorRole?: Roles | string = roles.Subscriber.name;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
     backgroundColor?: keyof typeof colors | string = colors.mainBG;
@@ -166,9 +169,11 @@ export class ColumnType {
     category: string;
     count?: number = 1;
     creator?: string = ``;
+    creatorID?: string = ``;
     complete?: boolean = false;
     colorsEnabled?: boolean = true;
     color?: typeof colors | string = colors.listsBG;
+    creatorRole?: Roles | string = roles.Subscriber.name;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
     backgroundColor?: keyof typeof colors | string = colors.listsBG;
@@ -203,9 +208,11 @@ export class ItemType {
     fontColor?: string;
     summary: string = ``;
     creator?: string = ``;
+    creatorID?: string = ``;
     description: string = ``;
     complete?: boolean = false;
     color?: typeof colors | string = colors.active;
+    creatorRole?: Roles | string = roles.Subscriber.name;
     orientation?: string | Orientations = Orientations.Portrait;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
@@ -240,8 +247,10 @@ export class TaskType {
     // Data
     name: string = ``;
     creator?: string = ``;
+    creatorID?: string = ``;
     complete?: boolean = false;
     color?: typeof colors | string = colors.mainBG;
+    creatorRole?: Roles | string = roles.Subscriber.name;
     created?: string | Date = new Date().toLocaleString(`en-US`);
     updated?: string | Date = new Date().toLocaleString(`en-US`);
     backgroundColor?: keyof typeof colors | string = colors.mainBG;

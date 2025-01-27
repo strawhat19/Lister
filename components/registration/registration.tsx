@@ -1,27 +1,29 @@
 import Logo from '../theme/logo/logo';
 import * as Haptics from 'expo-haptics';
-import { useContext, useEffect, useState } from 'react';
+import { Views } from '@/shared/types/types';
+import { useContext, useState } from 'react';
 import { SharedContext } from '@/shared/shared';
 import { FontAwesome } from '@expo/vector-icons';
+import { roles, User } from '@/shared/models/User';
 import { titleRowStyles } from '../board/column/column';
-import { appName, genID, itemHeight, log } from '@/shared/variables';
 import ForwardRefInput from '../custom-input/forward-ref-input';
 import { colors, globalStyles, Text, View } from '../theme/Themed';
-import { KeyboardAvoidingView, Platform, TextInput, TouchableOpacity } from 'react-native';
-import { User } from '@/shared/models/User';
-import { Views } from '@/shared/types/types';
+import { appName, capWords, genID, itemHeight, log } from '@/shared/variables';
+import { KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 
 export enum AuthStates {
     SignIn = `Sign In`,
     SignUp = `Sign Up`,
     NoUsers = `No Users`,
+    SignOut = `Sign Out`,
     SignedIn = `Signed In`,
+    SignedOut = `Signed Out`,
     ResetPassword = `Reset Password`,
     ForgotPassword = `Forgot Password`,
 }
 
 export default function Registration({ }) {
-    const { user, setUser } = useContext<any>(SharedContext);
+    const { user, setUser, userLoading } = useContext<any>(SharedContext);
 
     let [email, setEmail] = useState(``);
     let [typing, setTyping] = useState(false);
@@ -39,10 +41,27 @@ export default function Registration({ }) {
     }
     
     const onSign = (authState: AuthStates) => {
-        let newUsrID = genID(Views.User, 1);
-        let usr = new User({ id: newUsrID.id, email, password, name: email, title: newUsrID.title, uuid: newUsrID.uuid, uid: newUsrID.uuid });
+        let usr = null;
+        if (authState == AuthStates.SignUp || authState == AuthStates.SignIn) {
+            let newUsrID = genID(Views.User, 1);
+            let { id, uuid, title } = newUsrID;
+            let defaultRole = roles.Subscriber;
+            usr = new User({ 
+                id, 
+                uuid, 
+                email, 
+                title, 
+                password, 
+                uid: uuid, 
+                name: capWords(email), 
+                role: defaultRole.name,
+                level: defaultRole.level,
+            });
+        }
         log(`On ${authState}`, usr);
         setUser(usr);
+        setEmail(``);
+        setPassword(``);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     }
 
@@ -60,7 +79,7 @@ export default function Registration({ }) {
                             {appName}
                         </Text>
                     </View>
-                    {user == null && (
+                    {user == null ? (
                         <View style={{ backgroundColor: colors.transparent, justifyContent: `center`, alignItems: `center` }}>
                             <View style={[globalStyles.singleLineInput, titleRowStyles.addItemButton, { marginTop: 5, justifyContent: `center`, marginHorizontal: `auto` }]}>
                                 <ForwardRefInput
@@ -169,6 +188,17 @@ export default function Registration({ }) {
                                 </View>
                             )}
                         </View>
+                    ) : (
+                        !userLoading && (
+                            <View style={[globalStyles.flexRow, { paddingHorizontal: 15, backgroundColor: colors.transparent, gap: 15 }]}>
+                                <TouchableOpacity onPress={() => onSign(AuthStates.SignOut)} style={[globalStyles.flexRow, { backgroundColor: colors.navy, width: `100%`, paddingHorizontal: 10, borderRadius: 5, minHeight: itemHeight - 5, marginTop: 15, justifyContent: `center`, gap: 5 }]}>
+                                    <FontAwesome name={`user-plus`} color={colors.white} />
+                                    <Text style={{ fontSize: 14, fontStyle: `italic`, fontWeight: `bold`, width: `auto`, textAlign: `center`, color: colors.white }}>
+                                        {AuthStates.SignOut}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        )
                     )}
                 </View>
             </View>

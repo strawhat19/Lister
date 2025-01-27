@@ -278,6 +278,7 @@ export default function Column({
                         onReorder={onReorder}
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id}
+                        // onIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                         style={{ 
                             height: `auto`, 
                             maxHeight: addingItem ? ((height - paginationHeightMargin) - 175) : height - paginationHeightMargin, 

@@ -152,6 +152,7 @@ export const defaultItems: ItemType[] = Object.values(itemObjects);
 export const defaultColumns: ColumnType[] = [
   { 
     index: 1, 
+    uid: `Default`,
     name: `Items`, 
     type: Views.Column,
     boardID: defaultBoardID,
@@ -186,6 +187,7 @@ export const defaultColumns: ColumnType[] = [
   }, 
   { 
     index: 2, 
+    uid: `Default`,
     name: `Active`, 
     type: Views.Column,
     boardID: defaultBoardID,
@@ -197,6 +199,7 @@ export const defaultColumns: ColumnType[] = [
   },
   { 
     index: 3, 
+    uid: `Default`,
     name: `Complete`, 
     type: Views.Column,
     boardID: defaultBoardID,

@@ -7,7 +7,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useClientOnlyValue } from '@/components/theme/useClientOnlyValue';
 
 export default function TabLayout({ backgroundColor = colors.transparent }) {
-  const { selected } = useContext<any>(SharedContext);
+  const { user, selected } = useContext<any>(SharedContext);
 
   return (
     <Tabs
@@ -30,6 +30,7 @@ export default function TabLayout({ backgroundColor = colors.transparent }) {
           paddingBottom: 10,
           backgroundColor: colors.mainBG,
           borderColor: colors.transparent,
+          display: user == null ? `none` : `flex`,
           pointerEvents: selected == null ? `auto` : `none`,
         },
       }}>

@@ -61,6 +61,7 @@ export enum ItemViews {
 }
 
 export enum Views {
+    User = `User`,
     Item = `Item`,
     Task = `Task`,
     Board = `Board`,
@@ -81,7 +82,7 @@ export class IDData {
     date: Date | string;
     type: Views | Types;
     uuid: string | number | any;
-    title: string | number;
+    title: string | number | any;
     currentDateTimeStamp: string;
     currentDateTimeStampNoSpaces: string;
     constructor(data: Partial<IDData>) {
@@ -110,15 +111,16 @@ export class BoardType {
     B?: any;
     C?: any;
     key?: any;
+    uid!: string;
     index?: number;
     id: string | number | any;
     uuid?: string | number | any;
     type?: string | Views | Types = Views.Board;
 
     // Relational
-    items?: ItemType[] = [];
-    columns?: ColumnType[] = [];
-    userID!: string | number | any;
+    items?: ItemType[];
+    columns?: ColumnType[];
+    userID?: string | number | any;
     listIDs?: string[] | number[] = [];
     itemIDs?: string[] | number[] = [];
 
@@ -126,6 +128,9 @@ export class BoardType {
     name: string;
     count?: number = 1;
     creator?: string = ``;
+    active?: boolean = true;
+    focused?: boolean = false;
+    archived?: boolean = false;
     complete?: boolean = false;
     boardType?: BoardTypes = BoardTypes.Kanban;
     color?: typeof colors | string = colors.mainBG;
@@ -144,13 +149,14 @@ export class ColumnType {
     B?: any;
     C?: any;
     key?: any;
+    uid!: string;
     index?: number;
     id: string | number | any;
     uuid?: string | number | any;
     type?: string | Views | Types = Views.Column;
     
     // Relational
-    items: ItemType[] = [];
+    items: ItemType[];
     listID?: string | number;
     boardID!: string | number;
     itemIDs?: string[] | number[] = [];
@@ -178,6 +184,7 @@ export class ItemType {
     B?: any;
     C?: any;
     key?: any;
+    uid!: string;
     index?: number;
     count?: number = 1;
     id: string | number | any;
@@ -185,7 +192,7 @@ export class ItemType {
     type?: string | Views | Types = Views.Item;
 
     // Relational
-    tasks?: TaskType[] = [];
+    tasks?: TaskType[];
     listID!: number | string;
     boardID?: number | string;
     taskIDs?: number[] | string[] = [];
@@ -218,6 +225,7 @@ export class TaskType {
     B?: any;
     C?: any;
     key?: any;
+    uid!: string;
     index?: number;
     count?: number = 1;
     id: string | number | any;

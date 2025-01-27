@@ -3,6 +3,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Alert, Platform, Vibration } from 'react-native';
 import { BoardTypes, IDData, Types, Views } from '@/shared/types/types';
 
+export const appName = `Lister`;
+
 export const web = () => Platform.OS == `web`;
 export const mobile = () => Platform.OS != `web`;
 
@@ -208,10 +210,10 @@ export const genID = (type: Types | Views = Types.Data, index = 1): IDData => {
   let now = new Date();
   let uuid = generateUniqueID();
   let date = now.toLocaleString(`en-US`);
-  let currentDateTimeStamp = formatDate(now);
-  let currentDateTimeStampNoSpaces = formatDate(now, `timezoneNoSpaces`);
-  let title = `${index} ${type} ${currentDateTimeStamp} ${uuid}`;
-  let id = `${index}_${type}_${currentDateTimeStampNoSpaces}_${uuid}`;
+  let currentDateTimeStamp = formatDate(now, undefined, true);
+  let currentDateTimeStampNoSpaces = formatDate(now, `timezoneNoSpaces`, true);
+  let title = `${type} ${index} ${currentDateTimeStamp} ${uuid}`;
+  let id = `${type}_${index}_${currentDateTimeStampNoSpaces}_${uuid}`;
   return new IDData({
     id,
     date,
@@ -243,7 +245,7 @@ export const findHighestNumberInArrayByKey = async ( arrayOfObjects: any[], key:
   }
 }
 
-export const formatDate = (date: any, specificPortion?: any) => {
+export const formatDate = (date: any, specificPortion?: any, noTimezone = false) => {
   let hours = date.getHours();
   let minutes = date.getMinutes();
   let ampm = hours >= 12 ? `PM` : `AM`;
@@ -260,11 +262,11 @@ export const formatDate = (date: any, specificPortion?: any) => {
   } else if (specificPortion == `date`) {
     completedDate = (date.getMonth() + 1) + `-` + date.getDate() + `-` + date.getFullYear();
   } else if (specificPortion == `timezone`) {
-    completedDate = strTime + ` ` + (date.getMonth() + 1) + `-` + date.getDate() + `-` + date.getFullYear() + ` ` + timezone;
+    completedDate = strTime + ` ` + (date.getMonth() + 1) + `-` + date.getDate() + `-` + date.getFullYear() + (noTimezone ? `` : (` ` + timezone));
   } else if (specificPortion == `timezoneNoSpaces`) {
-    completedDate = strTimeNoSpaces + `_` + (date.getMonth() + 1) + `-` + date.getDate() + `-` + date.getFullYear() + `_` + timezone;
+    completedDate = strTimeNoSpaces + `_` + (date.getMonth() + 1) + `-` + date.getDate() + `-` + date.getFullYear() + (noTimezone ? `` : (`_` + timezone));
   } else {
-    completedDate = strTime + ` ` + (date.getMonth() + 1) + `-` + date.getDate() + `-` + date.getFullYear() + ` ` + timezone;
+    completedDate = strTime + ` ` + (date.getMonth() + 1) + `-` + date.getDate() + `-` + date.getFullYear() + (noTimezone ? `` : (` ` + timezone));
   }
 
   return completedDate;

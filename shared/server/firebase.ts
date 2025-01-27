@@ -198,7 +198,7 @@ export const updateTaskFieldsInDatabase = async (taskID: string, updates: Partia
   }
 };
 
-export const prepareTaskForDatabase = async (tsk: TaskType, tasks: TaskType[], itemID: string) => {
+export const prepareTaskForDatabase = async (tsk: TaskType, tasks: TaskType[], itemID: string, user: User) => {
   let tasksForItem = getTasksForItem(tasks, itemID);
 
   let type = Views.Task;
@@ -217,12 +217,16 @@ export const prepareTaskForDatabase = async (tsk: TaskType, tasks: TaskType[], i
 
   const { id, uuid, date } = await genID(type, newKey);
 
+  const { uid, name: creator } = user;
+
   const preparedTask = await new TaskType({ 
     ...tsk,
     id, 
+    uid,
     type,
     uuid,
     itemID,
+    creator,
     key: newKey,
     count: newKey,
     created: date,
@@ -269,7 +273,7 @@ export const prepareItemForDatabase = async (itm: ItemType, items: ItemType[], l
   return preparedItem;
 }
 
-export const createItem = async (columnItems, listID: string, name, items, closeBottomSheet, shouldCloseBottomSheet = true) => {
+export const createItem = async (columnItems, listID: string, name, items, closeBottomSheet, shouldCloseBottomSheet = true, user: User) => {
   if (listID && isValid(listID)) {
     name = name.trim().replace(/\s+/g, ` `);
     
@@ -285,11 +289,13 @@ export const createItem = async (columnItems, listID: string, name, items, close
 
     let isLightBGColor = isLightColor(backgroundColor);
 
-    log(`BG`, backgroundColor);
+    const { uid, name: creator } = user;
 
     const itemToAdd = await new ItemType({
+      uid,
       name,
       listID,
+      creator,
       A: name,
       image: ``,
       tasks: [],

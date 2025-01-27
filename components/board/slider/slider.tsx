@@ -15,6 +15,7 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
     const carouselRef = useRef<ICarouselInstance>(null);
     const scrollOffsetValue = useSharedValue<number>(0);
     let { 
+        user,
         width, 
         height,
         selected,
@@ -62,7 +63,10 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
     return (
         web() ? (
             <div>Hello</div>
-        ) : <>
+        ) : user == null ? <>
+        
+        </> : 
+        <>
             {selected == null && (
                 <View style={{ width: `100%`, backgroundColor: colors.mainBG, justifyContent: `center`, alignItems: `center`, paddingTop: 20 }}>
                     <TouchableOpacity onPress={() => onBoardRowPress()} style={{ width: `100%`, backgroundColor: colors.mainBG, justifyContent: `center`, alignItems: `center`, paddingVertical: 5, }}>
@@ -103,6 +107,6 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
             />
 
             <SliderPagination carouselRef={carouselRef} />
-        </>
+        </> 
     )
 }

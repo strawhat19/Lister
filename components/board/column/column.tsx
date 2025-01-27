@@ -11,7 +11,7 @@ import LoadingSpinner from '@/components/loading/loading-spinner';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { ColumnType, Directions, ItemType, ItemViews } from '@/shared/types/types';
-import { Alert, ListRenderItemInfo, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
+import { Alert, ListRenderItemInfo, StyleSheet, TouchableOpacity } from 'react-native';
 import { borderRadius, colors, getFontColor, getFontColorForBackground, globalStyles, Text, View } from '@/components/theme/Themed';
 import ReorderableList, { ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
 import { getItemsForColumn, deleteItemFromDatabase, createItem, db, itemsDatabaseCollection, updateItemFieldsInDatabase } from '@/shared/server/firebase';
@@ -27,6 +27,7 @@ export default function Column({
     blurIntensity = 0, 
 }: ColumnType | any) {
     let { 
+        user,
         items,
         height, 
         setView,
@@ -39,6 +40,7 @@ export default function Column({
         colorPickerOpen,
         openBottomSheet,
         closeBottomSheet, 
+        sliderModeParallax,
     } = useContext<any>(SharedContext);
 
     const listRef = useRef(null);
@@ -151,7 +153,7 @@ export default function Column({
 
     const addItem = async () => {
         await setItemName(``);
-        await createItem(columnItems, column.id, itemName, items, closeBottomSheet);
+        await createItem(columnItems, column.id, itemName, items, closeBottomSheet, undefined, user);
         await scrollToEnd();
     }
 
@@ -212,7 +214,7 @@ export default function Column({
                 borderColor: colors.transparent,
                 backgroundColor: colors.transparent,
                 marginTop: selected == null ? 0 : 15,
-                opacity: (active || !Number.isInteger(slideIndex + 1)) ? 1 : 0.55,
+                opacity: (!sliderModeParallax || (active || !Number.isInteger(slideIndex + 1))) ? 1 : 0.55,
             }, 
             animatedAdjacent,
         ]}>

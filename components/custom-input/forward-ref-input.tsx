@@ -1,9 +1,9 @@
 import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import React, { forwardRef, useContext, useId } from 'react';
 import { colors, getFontColor, globalStyles, Text, View } from '../theme/Themed';
-import { Keyboard, TextInput, StyleSheet, InputAccessoryView, TouchableOpacity, Vibration } from 'react-native';
+import React, { forwardRef, useContext, useEffect, useId, useState } from 'react';
+import { Keyboard, TextInput, StyleSheet, InputAccessoryView, TouchableOpacity } from 'react-native';
 
 declare global {
     interface ForwardRefInputProps {
@@ -34,15 +34,24 @@ declare global {
         cancelColor?: string;
         endIconColor?: string;
         placeholderTextColor?: string;
+        textContentType?: string | any;
+        autoCapitalize?: string | any;
+        keyboardType?: string | any;
+        autoComplete?: string | any;
+        secureTextEntry?: boolean;
         onDoneDismiss?: boolean;
         onDoneVibrate?: boolean;
         scrollEnabled?: boolean;
+        borderRadius?: number;
+        inputComponent?: any;
         trim?: boolean;
-      }
+        gap?: number;
+    }
 }
 
 const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
     value,
+    gap = 5,
     maxLength,
     placeholder,
     trim = false,
@@ -51,6 +60,7 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
     width = `100%`,
     onCancel = null,
     endIconSize = 18,
+    borderRadius = 5,
     endIconName = ``,
     showLabel = true,
     multiline = false,
@@ -62,12 +72,18 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
     endIconStyle = null,
     doneDisabled = false,
     onDoneDismiss = false,
-    cancelText = `Cancel`,
-    onDoneVibrate = false,
     scrollEnabled = true,
+    cancelText = `Cancel`,
+    autoComplete = `off`,
+    onDoneVibrate = false,
     style = { opactiy: 1 },
     endIconPress = () => {},
+    secureTextEntry = false,
+    keyboardType = `default`,
     endIconDisabled = false,
+    textContentType = `none`,
+    inputComponent = undefined,
+    autoCapitalize = `sentences`,
     doneColor = colors.disabledFont,
     cancelColor = colors.disabledFont,
     endIconColor = colors.disabledFont,
@@ -114,28 +130,33 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
                     {placeholder}
                 </Text>
             )}
-            <View style={{ width: `100%`, display: `flex`, flexDirection: `row`, gap: 5, borderColor: colors.transparent, borderWidth: 0, backgroundColor: colors.transparent, }}>
-                <TextInput
-                    ref={ref}
-                    value={value}
-                    onBlur={onBlur}
-                    maxLength={maxLength}
-                    multiline={multiline}
-                    cursorColor={colors.black}
-                    onChangeText={onChangeText}
-                    scrollEnabled={scrollEnabled}
-                    numberOfLines={numberOfLines}
-                    placeholder={`Enter ${placeholder}`}
-                    inputAccessoryViewID={accessoryViewID}
-                    placeholderTextColor={placeholderTextColor}
-                    onFocus={trim ? () => trimInput() : onFocus}
-                    style={[multiline ? [styles.input, styles.textarea, style, inputFontColor, { width: endIconName == `` ? `100%` : `85%` }, extraStyle] : [styles.input, style, inputFontColor, { width: endIconName == `` ? `100%` : `85%` }, extraStyle], {
-                        // borderWidth: 1,
-                        // borderColor: colors.white,
-                    }]}
-                />
+            <View style={{ width: `100%`, display: `flex`, flexDirection: `row`, gap, borderColor: colors.transparent, borderWidth: 0, backgroundColor: colors.transparent, }}>
+                {inputComponent == undefined ? (
+                    <TextInput
+                        ref={ref}
+                        value={value}
+                        onBlur={onBlur}
+                        editable={true}
+                        maxLength={maxLength}
+                        multiline={multiline}
+                        cursorColor={colors.black}
+                        autoComplete={autoComplete}
+                        keyboardType={keyboardType}
+                        onChangeText={onChangeText}
+                        scrollEnabled={scrollEnabled}
+                        numberOfLines={numberOfLines}
+                        autoCapitalize={autoCapitalize}
+                        textContentType={textContentType}
+                        secureTextEntry={secureTextEntry}
+                        placeholder={`Enter ${placeholder}`}
+                        inputAccessoryViewID={accessoryViewID}
+                        placeholderTextColor={placeholderTextColor}
+                        onFocus={trim ? () => trimInput() : onFocus}
+                        style={[multiline ? [styles.input, styles.textarea, style, inputFontColor, { borderRadius: gap == 0 ? 0 : borderRadius, borderTopLeftRadius: borderRadius, width: endIconName == `` ? `100%` : `85%` }, extraStyle] : [styles.input, style, inputFontColor, { borderRadius: gap == 0 ? 0 : borderRadius, borderTopLeftRadius: borderRadius, width: endIconName == `` ? `100%` : `85%` }, extraStyle]]}
+                    />
+                ) : inputComponent}
                 {endIconName != `` ? (
-                    <TouchableOpacity disabled={endIconDisabled} style={[styles.endButton, endIconStyle != null ? endIconStyle : {}]} onPress={() => endIconPress()}>
+                    <TouchableOpacity disabled={endIconDisabled} style={[styles.endButton, { borderRadius: gap == 0 ? 0 : borderRadius, borderTopRightRadius: borderRadius }, endIconStyle != null ? endIconStyle : {}]} onPress={() => endIconPress()}>
                         <FontAwesome name={endIconName} color={endIconColor} size={endIconSize} style={{ fontWeight: `bold` }} />
                     </TouchableOpacity>
                 ) : <></>}
@@ -173,7 +194,6 @@ const styles = StyleSheet.create({
         maxHeight: 30, 
         height: `100%`, 
         maxWidth: `15%`, 
-        borderRadius: 5,
         paddingVertical: 5, 
         paddingHorizontal: 1, 
         ...globalStyles.flexRow, 
@@ -185,7 +205,6 @@ const styles = StyleSheet.create({
         width: `100%`,
         height: `auto`,
         borderWidth: 1,
-        borderRadius: 5,
         marginBottom: 15,
         color: colors.white,
         paddingHorizontal: 10,

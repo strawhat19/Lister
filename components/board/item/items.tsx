@@ -5,16 +5,16 @@ import { titleRowStyles } from '../column/column';
 import { doc, writeBatch } from 'firebase/firestore';
 import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Directions, ItemType, TaskType, Views } from '@/shared/types/types';
-import ForwardRefInput from '@/components/custom-input/forward-ref-input';
-import { Alert, ListRenderItemInfo, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
-import { delayBeforeScrollingDown, isValid, itemHeight, log, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
-import { colors, globalStyles, draggableViewItemBorderRadius, Text, View, getFontColor } from '@/components/theme/Themed';
-import { addTaskToDatabase, createItem, db, deleteItemFromDatabase, deleteTaskFromDatabase, getItemsForColumn, getTasksForItem, itemsDatabaseCollection, prepareTaskForDatabase, tasksDatabaseCollection, updateItemFieldsInDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
-import ReorderableList, { ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
 import Animated, { Layout } from 'react-native-reanimated';
+import ForwardRefInput from '@/components/custom-input/forward-ref-input';
+import { Directions, ItemType, TaskType, Views } from '@/shared/types/types';
+import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { Alert, ListRenderItemInfo, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
+import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
+import { colors, globalStyles, draggableViewItemBorderRadius, Text, View, getFontColor } from '@/components/theme/Themed';
+import { delayBeforeScrollingDown, isValid, itemHeight, log, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
+import ReorderableList, { ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
+import { addTaskToDatabase, createItem, db, deleteItemFromDatabase, deleteTaskFromDatabase, getItemsForColumn, getTasksForItem, itemsDatabaseCollection, prepareTaskForDatabase, tasksDatabaseCollection, updateItemFieldsInDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
 
 export default function Items({ simple = false, component }: any) {
     const listRef = useRef(null);
@@ -23,7 +23,7 @@ export default function Items({ simple = false, component }: any) {
     let [itmName, setItmName] = useState(``);
     let [itmToEdit, setItmToEdit] = useState<TaskType | ItemType | null>(null);
     let [draggableItems, setDraggableItems] = useState<TaskType[] | ItemType[] | any[]>([]);
-    let { selected, items, tasks, editing, setEditing, closeBottomSheet } = useContext<any>(SharedContext);
+    let { user, selected, items, tasks, editing, setEditing, closeBottomSheet } = useContext<any>(SharedContext);
 
     const onPressItm = (itm: TaskType | ItemType) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -94,7 +94,7 @@ export default function Items({ simple = false, component }: any) {
         await setItmName(``);
         // setDraggableItems(prevItems => .filter(itm => itm.id != itmID));
         if (selected?.type == Views.Column) {
-            await createItem(draggableItems, selected?.id, itmName, items, closeBottomSheet, false);
+            await createItem(draggableItems, selected?.id, itmName, items, closeBottomSheet, false, user);
         }
         if (selected?.type == Views.Item) {
             const taskToAdd = new TaskType({
@@ -103,7 +103,7 @@ export default function Items({ simple = false, component }: any) {
                 itemID: selected?.id,
                 listID: selected?.listID,
             });
-            const newTask = await prepareTaskForDatabase(taskToAdd, tasks, selected?.id);
+            const newTask = await prepareTaskForDatabase(taskToAdd, tasks, selected?.id, user);
             await addTaskToDatabase(newTask);
         }
         await setTimeout(() => {

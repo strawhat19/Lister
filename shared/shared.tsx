@@ -2,6 +2,7 @@ import { User } from './models/User';
 import 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 import { defaultColumns } from './database';
+import { useRouter, useSegments } from 'expo-router';
 import SlideUp from '@/components/slide-up/slide-up';
 import { colors, View } from '@/components/theme/Themed';
 import { useSharedValue } from 'react-native-reanimated';
@@ -20,6 +21,9 @@ export const SharedContext = createContext({});
 export const defaultItemView = ItemViews.Tasks;
 
 export default function Shared({ children }: { children: React.ReactNode; }) {
+  const router = useRouter();
+  const segments = useSegments();
+
   let [indx, setIndx] = useState(0);
   let [beta, setBeta] = useState(false);
   let [blur, setBlur] = useState<any>(100);
@@ -29,13 +33,13 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   let [isDragging, setDragging] = useState(false);
   let [items, setItems] = useState<ItemType[]>([]);
   let [tasks, setTasks] = useState<TaskType[]>([]);
-  let [user, setUser] = useState<User | null>(null);
   let [board, setBoard] = useState<BoardType>(null);
   let [boards, setBoards] = useState<BoardType[]>([]);
   let [users, setUsers] = useState<User[] | null>([]);
   let [itemsLoading, setItemsLoading] = useState(true);
   let [usersLoading, setUsersLoading] = useState(true);
   let [tasksLoading, setTasksLoading] = useState(true);
+  let [user, setUser] = useState<User | null | any>(null);
   let [colorPickerOpen, setColorPickerOpen] = useState(false);
   let [sliderModeParallax, setSliderModeParallax] = useState(true);
   let [selectedColor, setSelectedColor] = useState(colors.listsBG);
@@ -110,7 +114,8 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
   }
 
   useEffect(() => {    
-    if (useDatabase) {
+    if (useDatabase && user != null) {
+      router.replace(`/(tabs)`);
       const itemsCollection = collection(db, itemsDatabaseCollection);
       const unsubscribeFromItemsDatabase = onSnapshot(itemsCollection, snapshot => {
           setItemsLoading(true);
@@ -152,7 +157,7 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         unsubscribeFromTasksDatabase();
       }
     }
-  }, [])
+  }, [user])
 
   return (
     <SharedContext.Provider 

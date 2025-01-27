@@ -40,12 +40,16 @@ export const roles = {
 }
 
 export class User {
+  A?: any;
+  B?: any;
+  C?: any;
+  uid!: string;
+  title?: string;
   id: string = ``;
-  uid?: string = ``;
+  userID?: string;
   index?: number = 1;
   uuid?: string = ``;
   email?: string = ``;
-  userID?: string = ``;
   name: string = Roles.Subscriber;
 
   created?: string | Date = ``;

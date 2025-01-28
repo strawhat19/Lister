@@ -239,7 +239,7 @@ export default function Column({
                         <Text style={[titleRowStyles.subtitle, titleRowStyles.fontColor]}>
                             {column?.category}
                         </Text>
-                        <FontAwesome6 style={{ position: `absolute`, top: 12, left: 95, paddingBottom: 5 }} size={12} name={`bars-progress`} color={colors.disabledFont} />
+                        <FontAwesome style={{ position: `absolute`, top: 12, left: 95, paddingBottom: 5 }} size={12} name={`columns`} color={colors.disabledFont} />
                     </> : (
                         <TouchableOpacity onPress={() => deleteItemWithConfirmation()} style={[titleRowStyles.topButton, { backgroundColor: colorPickerOpen ? selectedColor : selected?.backgroundColor }]}>
                             <FontAwesome name={`trash`} size={14} color={colorPickerOpen ? getFontColorForBackground(selectedColor) : fontColor} />

@@ -1,9 +1,9 @@
 import { colors } from '../theme/Themed';
 import React, { useRef, useEffect } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { View, Animated, StyleSheet, Easing } from 'react-native';
+import { View, Animated, StyleSheet, Easing, ActivityIndicator } from 'react-native';
 
-export default function LoadingSpinner({ spinning = true, color = colors.active, size = 16 }) {
+export default function LoadingSpinner({ spinning = true, color = colors.active, size = 16, activity = false, style = { opacity: 1 } }: any) {
   const spinValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -12,15 +12,15 @@ export default function LoadingSpinner({ spinning = true, color = colors.active,
       animation = Animated.loop(
         Animated.timing(spinValue, {
           toValue: 1,
-          duration: 1000, // Adjust duration for smoothness
+          duration: 1000,
           useNativeDriver: true,
-          easing: Easing.linear, // Ensure smooth, linear animation
+          easing: Easing.linear,
         })
       );
       animation.start();
     } else {
-      spinValue.stopAnimation(); // Stop animation if not loading
-      spinValue.setValue(0); // Reset animation
+      spinValue.stopAnimation();
+      spinValue.setValue(0);
     }
 
     return () => {
@@ -28,19 +28,20 @@ export default function LoadingSpinner({ spinning = true, color = colors.active,
     };
   }, [spinning]);
 
-  // Interpolate the spinValue to create a rotation
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
 
   return (
-    <View style={styles.container}>
-      {spinning ? (
-        <Animated.View style={{ transform: [{ rotate: spin }] }}>
-          <FontAwesome name={`circle-o-notch`} color={color} size={size} />
-        </Animated.View>
-      ) : null}
+    <View style={[styles.container, style]}>
+      {activity ? <ActivityIndicator color={colors.white} size={`large`} style={{ height: 55 }} /> : (
+        spinning ? (
+          <Animated.View style={{ transform: [{ rotate: spin }] }}>
+            <FontAwesome name={`circle-o-notch`} color={color} size={size} />
+          </Animated.View>
+        ) : null
+      )}
     </View>
   );
 };

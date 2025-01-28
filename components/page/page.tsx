@@ -1,13 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { appName } from '@/shared/variables';
 import Logo from '@/components/theme/logo/logo';
+import LoadingSpinner from '../loading/loading-spinner';
 import { colors, View } from '@/components/theme/Themed';
+import { Animated, Easing, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ActivityIndicator, Animated, Easing, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 
 export const defaultChildren = {
     space: <View style={{ flex: 1, backgroundColor: colors.transparent }} />,
-    loading: <ActivityIndicator color={colors.white} size={`large`} style={{ height: 55 }} />,
+    loading: <LoadingSpinner color={colors.navy} size={30} style={{ marginTop: 15 }} />,
 }
 
 export class PageProps {

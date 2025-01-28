@@ -30,9 +30,9 @@ export default function TabLayout({ backgroundColor = colors.transparent }) {
           paddingTop: 5,
           minHeight: 60,
           paddingBottom: 10,
-          backgroundColor: colors.mainBG,
           borderColor: colors.transparent,
           display: user == null ? `none` : `flex`,
+          backgroundColor: colors.tabBarBG ?? colors.mainBG,
           pointerEvents: selected == null ? `auto` : `none`,
         },
       }}>
@@ -67,22 +67,12 @@ export default function TabLayout({ backgroundColor = colors.transparent }) {
         }}
       />
       <Tabs.Screen
-        name={`notifications`}
+        name={`updates`}
         options={{ 
-          title: `Notifications`, 
+          title: `Updates`, 
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome name={`bell`} size={tabBarIconSize} color={color} />
-          ), 
-        }}
-      />
-      <Tabs.Screen
-        name={`profile`} 
-        options={{ 
-          title: `Profile`, 
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name={`user`} size={tabBarIconSize} color={color} />
           ), 
         }}
       />
@@ -92,7 +82,7 @@ export default function TabLayout({ backgroundColor = colors.transparent }) {
           title: `Settings`, 
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <FontAwesome name={`gears`} size={tabBarIconSize} color={color} />
+            <FontAwesome6 name={`user-gear`} size={tabBarIconSize} color={color} />
           ), 
         }}
       />

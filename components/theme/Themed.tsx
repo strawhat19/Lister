@@ -125,13 +125,42 @@ export const themeColors = {
   disabled: allColors.disabledFont,
 }
 
-export const themes = {
+export class Theme {
+  info?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  warn?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  error?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  mainBG?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  taskBG?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  active?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  listsBG?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  inputBG?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  warning?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  primary?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  success?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  tabBarBG?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  disabled?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  tertiary?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  darkFont?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  lightFont?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  taskColor?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  secondary?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  inputColor?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  activeColor?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  inactiveColor?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  taskBGComplete?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  taskColorComplete?: typeof allColors | typeof fontColors | typeof themeColors | string | any;
+  constructor(data: Partial<Theme>) {
+    Object.assign(this, data);
+  }
+}
+
+export const themes: { [key: string]: Theme } = {
   dark: {
     ...fontColors,
     ...themeColors,
     taskBG: allColors.black,
-    mainBG: allColors.black,
     listsBG: allColors.dark,
+    mainBG: allColors.black,
     inputBG: allColors.black,
     taskColor: allColors.white,
     inputColor: allColors.white,

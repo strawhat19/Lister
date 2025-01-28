@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert, Platform, Vibration } from 'react-native';
@@ -33,6 +34,8 @@ export const devEnv = (web() ? (urlHostIncludes(`local`) || urlHostIncludes(`:`)
 export const capWords = (str: string) => str.replace(/\b\w/g, (match) => match.toUpperCase());
 export const getNumberFromString = (string: string) => parseInt((string.match(/\d+/) as any)[0]);
 export const capitalizeAllWords = (string: string) => string.replace(/(?:^|\s)\w/g, (match) => match.toUpperCase());
+
+export const hapticFeedback = (impact = true) => impact == true ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) : Vibration.vibrate(1);
 
 export const log = (string: string, data?: any, alert = false) => {
   if (alert == true && Platform.OS != `web`) Alert.alert(string);

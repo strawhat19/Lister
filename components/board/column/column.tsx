@@ -1,22 +1,21 @@
 import Item from '../item/item';
 import { BlurView } from 'expo-blur';
 import { boardStyles } from '../styles';
-import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
+import { FontAwesome6 } from '@expo/vector-icons';
 import { doc, writeBatch } from 'firebase/firestore';
 import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Animated, { Layout } from 'react-native-reanimated';
 import LoadingSpinner from '@/components/loading/loading-spinner';
+import Animated, { Layout, runOnJS } from 'react-native-reanimated';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
-import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { ColumnType, Directions, ItemType, ItemViews } from '@/shared/types/types';
 import { Alert, ListRenderItemInfo, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { borderRadius, colors, getFontColor, getFontColorForBackground, globalStyles, Text, View } from '@/components/theme/Themed';
-import ReorderableList, { ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
 import { getItemsForColumn, deleteItemFromDatabase, createItem, db, itemsDatabaseCollection, updateItemFieldsInDatabase } from '@/shared/server/firebase';
-import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
-import { FontAwesome6 } from '@expo/vector-icons';
+import ReorderableList, { ReorderableListIndexChangeEvent, ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
+import { delayBeforeScrollingDown, findHighestNumberInArrayByKey, gridSpacing, hapticFeedback, itemHeight, maxItemNameLength, paginationHeightMargin, toFixedWithoutRounding } from '@/shared/variables';
 
 export const defaultColumnView = ItemViews.Items;
 
@@ -62,7 +61,7 @@ export default function Column({
         const swipeableRef = useRef<Swipeable>(null);
       
         const activateDrag = () => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+          hapticFeedback();
           drag();
         }
 
@@ -103,11 +102,11 @@ export default function Column({
                     ref={swipeableRef}
                     overshootLeft={false}
                     overshootRight={false}
+                    onActivated={() => hapticFeedback()}
                     renderLeftActions={renderLeftActions}
                     renderRightActions={renderRightActions}
                     onSwipeableRightOpen={() => handleSwipe(item, Directions.Left)}
                     onSwipeableLeftOpen={() => handleSwipe(item, Directions.Right)}
-                    onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 >
                     <Item
                         item={item}
@@ -123,7 +122,7 @@ export default function Column({
     });
     
     const closeItem = () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        hapticFeedback();
         closeBottomSheet();
     }
 
@@ -139,15 +138,13 @@ export default function Column({
     }, [items])
 
     const onCancel = async () => {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        // await Vibration.vibrate(1);
+        await hapticFeedback();
         await setItemName(``);
         await setAddingItem(false);
     }
 
     const onFocus = async () => {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        // await Vibration.vibrate(1);
+        await hapticFeedback();
         await setAddingItem(true);
         await scrollToEnd();
     }
@@ -171,7 +168,7 @@ export default function Column({
     }
 
     const deleteItemWithConfirmation = (itemID: string = selected?.id) => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        hapticFeedback();
         Alert.alert(
             `Delete Item`,
             `Are you sure you want to delete this item?`,
@@ -190,6 +187,13 @@ export default function Column({
         )
     };
 
+    const handleIndexChange = useCallback(
+        (e: ReorderableListIndexChangeEvent) => {
+          'worklet';
+          runOnJS(hapticFeedback)();
+        },
+    []);
+
     const onReorder = ({from, to}: ReorderableListReorderEvent) => {
         setColumnItems(value => {
             let updatedItems = reorderItems(value, from, to);
@@ -202,7 +206,7 @@ export default function Column({
             batch.commit();
             return updatedItems;
         });
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        hapticFeedback();
     };
 
     return (
@@ -223,7 +227,6 @@ export default function Column({
             <View style={{ 
                 padding: 0,
                 width: `95%`, 
-                // maxHeight: 525,
                 borderWidth: 0,
                 borderRadius: 12, 
                 marginHorizontal: `auto`, 
@@ -279,7 +282,7 @@ export default function Column({
                         onReorder={onReorder}
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id}
-                        // onIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                        onIndexChange={handleIndexChange}
                         style={{ 
                             height: `auto`, 
                             maxHeight: addingItem ? ((height - paginationHeightMargin) - 175) : height - paginationHeightMargin, 

@@ -1,19 +1,18 @@
-import * as Haptics from 'expo-haptics';
 import { boardStyles } from '../styles';
 import { SharedContext } from '@/shared/shared';
 import { titleRowStyles } from '../column/column';
 import { doc, writeBatch } from 'firebase/firestore';
 import { Swipeable } from 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Animated, { Layout } from 'react-native-reanimated';
+import { ItemType, TaskType, Views } from '@/shared/types/types';
+import Animated, { Layout, runOnJS } from 'react-native-reanimated';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
-import { Directions, ItemType, TaskType, Views } from '@/shared/types/types';
+import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Alert, ListRenderItemInfo, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { colors, globalStyles, draggableViewItemBorderRadius, Text, View, getFontColor } from '@/components/theme/Themed';
-import { delayBeforeScrollingDown, isValid, itemHeight, log, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
-import ReorderableList, { ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
+import { delayBeforeScrollingDown, hapticFeedback, isValid, itemHeight, log, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
+import ReorderableList, { ReorderableListIndexChangeEvent, ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
 import { addTaskToDatabase, createItem, db, deleteItemFromDatabase, deleteTaskFromDatabase, getItemsForColumn, getTasksForItem, itemsDatabaseCollection, prepareTaskForDatabase, tasksDatabaseCollection, updateItemFieldsInDatabase, updateTaskFieldsInDatabase } from '@/shared/server/firebase';
 
 export default function Items({ simple = false, component }: any) {
@@ -26,8 +25,7 @@ export default function Items({ simple = false, component }: any) {
     let { user, selected, items, tasks, editing, setEditing, closeBottomSheet } = useContext<any>(SharedContext);
 
     const onPressItm = (itm: TaskType | ItemType) => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        // Vibration.vibrate(1);
+        hapticFeedback();
         onEditItem(itm);
     }
 
@@ -42,26 +40,8 @@ export default function Items({ simple = false, component }: any) {
         }
     }, [items, tasks])
 
-    // const onDragEnd = async (onDragEndData: any) => {
-    //     let { data } = await onDragEndData;
-    //     const updatedData = data.map((itm, itmIndex) => ({ ...itm, index: itmIndex + 1 })).sort((a, b) => a?.index - b?.index);
-    //     setDraggableItems(updatedData);
-    //     if (data?.length > 0) {
-    //         const batch = writeBatch(db);
-    //         await data.forEach((itm, itmIndex) => {
-    //             const now = new Date().toLocaleString(`en-US`);
-    //             const databaseToUse = selected?.type == Views.Item ? tasksDatabaseCollection : itemsDatabaseCollection;
-    //             const reference = doc(db, databaseToUse, itm?.id);
-    //             batch.update(reference, { index: itmIndex + 1, updated: now });
-    //         })
-    //         await Vibration.vibrate(1);
-    //         await batch.commit();
-    //     }
-    // }
-
     const deleteItemWithConfirmation = (itemID: string) => {
-        // Vibration.vibrate(1);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        hapticFeedback();
         Alert.alert(
             `Delete Item`,
             `Are you sure you want to delete this item?`,
@@ -82,8 +62,7 @@ export default function Items({ simple = false, component }: any) {
     }
 
     const onEditItem = async (itm) => {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        // await Vibration.vibrate(1);
+        await hapticFeedback();
         await setEditing(true);
         await setItmToEdit(itm);
         await setItmName(itm?.name);
@@ -92,7 +71,6 @@ export default function Items({ simple = false, component }: any) {
 
     const addItm = async () => {
         await setItmName(``);
-        // setDraggableItems(prevItems => .filter(itm => itm.id != itmID));
         if (selected?.type == Views.Column) {
             await createItem(draggableItems, selected?.id, itmName, items, closeBottomSheet, false, user);
         }
@@ -114,7 +92,6 @@ export default function Items({ simple = false, component }: any) {
     const renderDraggableItem = useCallback(
         ({ item: itm, drag, isActive, getIndex, draggableItems }: any | RenderItemParams<TaskType | ItemType>) => {
 
-        // let index = itm?.index;
         let index = getIndex() + 1;
         const swipeableRef = useRef<Swipeable>(null);
         let isFirst: boolean = index == 1 ? true : false;
@@ -141,8 +118,7 @@ export default function Items({ simple = false, component }: any) {
         const handleLeftSwipe = (item) => {
             log(`left swipe on`, item.id);
             swipeableRef.current?.close();
-            // Vibration.vibrate(1);
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            hapticFeedback();
 
             if (item?.type == Views.Task) {
                 updateTaskFieldsInDatabase(item?.id, { complete: !item.complete } as Partial<TaskType | ItemType>);
@@ -187,11 +163,11 @@ export default function Items({ simple = false, component }: any) {
                     ref={swipeableRef}
                     overshootLeft={false}
                     overshootRight={false}
+                    onActivated={() => hapticFeedback()}
                     renderLeftActions={renderLeftActions}
                     renderRightActions={renderRightActions}
                     onSwipeableLeftOpen={() => handleLeftSwipe(itm)}
                     onSwipeableRightOpen={() => handleRightSwipe(itm?.id)}
-                    onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 >    
                     {simple ? component : (
                         <TouchableOpacity
@@ -236,7 +212,7 @@ export default function Items({ simple = false, component }: any) {
         const swipeableBorderRadius = draggableViewItemBorderRadius - 3;
       
         const activateDrag = () => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+          hapticFeedback();
           drag();
         }
 
@@ -264,8 +240,7 @@ export default function Items({ simple = false, component }: any) {
 
         const handleLeftSwipe = (itmSwiped = item) => {
             swipeableRef.current?.close();
-            // Vibration.vibrate(1);
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            hapticFeedback();
             if (item?.type == Views.Task) {
                 updateTaskFieldsInDatabase(itmSwiped?.id, { complete: !itmSwiped.complete } as Partial<TaskType | ItemType>);
             }
@@ -308,11 +283,11 @@ export default function Items({ simple = false, component }: any) {
                     ref={swipeableRef}
                     overshootLeft={false}
                     overshootRight={false}
+                    onActivated={() => hapticFeedback()}
                     renderLeftActions={renderLeftActions}
                     renderRightActions={renderRightActions}
                     onSwipeableLeftOpen={() => handleLeftSwipe(item)}
                     onSwipeableRightOpen={() => handleRightSwipe(item?.id)}
-                    onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
                 >
                     <TouchableOpacity
                         disabled={isActive}
@@ -353,6 +328,13 @@ export default function Items({ simple = false, component }: any) {
             <Card {...item} key={item.id} index={index + 1} item={item} draggableItems={draggableItems} />
         )
     };
+
+    const handleIndexChange = useCallback(
+        (e: ReorderableListIndexChangeEvent) => {
+            'worklet';
+            runOnJS(hapticFeedback)();
+        },
+    []);
     
     const onReorder = ({from, to}: ReorderableListReorderEvent) => {
         setDraggableItems(value => {
@@ -367,7 +349,7 @@ export default function Items({ simple = false, component }: any) {
             batch.commit();
             return updatedItems;
         });
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        hapticFeedback();
     };
 
     return (
@@ -393,6 +375,7 @@ export default function Items({ simple = false, component }: any) {
                             renderItem={renderItem}
                             style={{ height: `auto` }}
                             keyExtractor={(item) => item.id}
+                            onIndexChange={handleIndexChange}
                             showsVerticalScrollIndicator={false}
                             contentContainerStyle={{
                                 gap: 3,

@@ -2,7 +2,6 @@ import { Image, Platform } from 'react-native';
 import { defaultImages } from '@/shared/database';
 import { CustomImageType } from '@/shared/types/types';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { log } from '@/shared/variables';
 
 export default function CustomImage({
     style,

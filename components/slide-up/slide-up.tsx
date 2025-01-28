@@ -10,7 +10,6 @@ import React, { useContext, useRef, useState } from 'react';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
 export const defaultSlideUpHeight = `90%`;
-// export const defaultSlideUpHeight = `65%`;
 
 export default function SlideUp({ maxHeight = defaultSlideUpHeight, backgroundColor = colors.transparent }: any) {
     let { indx, selected, onSheetChange, closeBottomSheet, selectedColor, colorPickerOpen, blurBGContainerOpacity } = useContext<any>(SharedContext);

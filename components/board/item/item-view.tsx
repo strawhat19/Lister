@@ -212,7 +212,6 @@ export default function ItemView({ }: ItemViewType | any) {
                     alignItems: `center`,
                     backgroundColor: colors.transparent,
                     paddingTop: selected?.type == Views.Item && isValid(selected?.image) ? 0 : 5,
-                    // backgroundColor: backgroundColor ? backgroundColor : selected.backgroundColor, 
                     height: (selected?.type == Views.Column || (editing && selected?.type == Views.Item)) ? 0 : (web() ? 500 : isValid(selected?.image) ? 280 : 135), 
                 }}
             >
@@ -398,10 +397,10 @@ export default function ItemView({ }: ItemViewType | any) {
                 {(isValid(selected?.created) || isValid(selected?.updated)) && <>
                     <View style={[globalStyles.flexRow, styles.detailsFooter, { gap: 5, justifyContent: `space-between`, }]}>
                         {isValid(selected?.created) && <Text style={[styles.detailsFooterText, { color: fontColor(colorPickerOpen), fontSize: 10 }]}>
-                            Created By Rakib on
+                            Created By {selected?.creator} on
                         </Text>}
                         {isValid(selected?.updated) && <Text style={[styles.detailsFooterText, { color: fontColor(colorPickerOpen), fontSize: 10 }]}>
-                            Updated By Rakib on
+                            Updated By {selected?.creator} on
                         </Text>}
                     </View>
                 </>}

@@ -8,8 +8,8 @@ import { ItemType, TaskType, Views } from '@/shared/types/types';
 import Animated, { Layout, runOnJS } from 'react-native-reanimated';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
+import { Alert, ListRenderItemInfo, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Alert, ListRenderItemInfo, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { colors, globalStyles, draggableViewItemBorderRadius, Text, View, getFontColor } from '@/components/theme/Themed';
 import { delayBeforeScrollingDown, hapticFeedback, isValid, itemHeight, log, maxItemNameLength, maxTaskNameLength } from '@/shared/variables';
 import ReorderableList, { ReorderableListIndexChangeEvent, ReorderableListReorderEvent, reorderItems, useIsActive, useReorderableDrag } from 'react-native-reorderable-list';
@@ -46,10 +46,10 @@ export default function Items({ simple = false, component }: any) {
             `Delete Item`,
             `Are you sure you want to delete this item?`,
             [
-                { text: `Cancel`, style: `cancel`, onPress: async () => await Vibration.vibrate(1) }, 
+                { text: `Cancel`, style: `cancel`, onPress: async () => await hapticFeedback() }, 
                 { text: `Delete`, style: `destructive`, onPress: async () => await deleteItemFromDatabase(itemID) }
             ],
-            { cancelable: true, onDismiss: async () => await Vibration.vibrate(1) },
+            { cancelable: true, onDismiss: async () => await hapticFeedback() },
         )
     }
 
@@ -101,6 +101,7 @@ export default function Items({ simple = false, component }: any) {
         let fColor = itm?.complete ? colors.taskColorComplete : (itm?.type == Views.Task ? colors.taskColor : getFontColor(itm?.backgroundColor));
 
         const handleRightSwipe = async (itmID: string = itm?.id) => {
+            await setDraggableItems(prevItems => prevItems.filter(it => it.id != itmID));
             swipeableRef.current?.close();
             if (itm?.type == Views.Task) {
                 await deleteTaskFromDatabase(itmID);

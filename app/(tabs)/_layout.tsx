@@ -1,11 +1,11 @@
 import { Tabs } from 'expo-router';
 import React, { useContext } from 'react';
 import { SharedContext } from '@/shared/shared';
+import { FontAwesome6 } from '@expo/vector-icons';
 import { colors } from '@/components/theme/Themed';
 import { tabBarIconSize } from '@/shared/variables';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useClientOnlyValue } from '@/components/theme/useClientOnlyValue';
-import { FontAwesome6 } from '@expo/vector-icons';
 
 export default function TabLayout({ backgroundColor = colors.transparent }) {
   const { user, selected } = useContext<any>(SharedContext);
@@ -13,9 +13,10 @@ export default function TabLayout({ backgroundColor = colors.transparent }) {
   return (
     <Tabs
       screenOptions={{
+        tabBarShowLabel: true,
         tabBarActiveTintColor: colors.active,
-        headerShown: useClientOnlyValue(false, true),
         tabBarInactiveTintColor: colors.disabled,
+        headerShown: useClientOnlyValue(false, true),
         headerStyle: { 
           elevation: 0, 
           backgroundColor, 

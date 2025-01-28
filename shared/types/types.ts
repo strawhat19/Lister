@@ -1,5 +1,5 @@
-import { colors } from '@/components/theme/Themed';
 import { roles, Roles } from '../models/User';
+import { colors } from '@/components/theme/Themed';
 
 export type Type = {
     type: Types | Views; 

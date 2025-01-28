@@ -1,5 +1,4 @@
 import Items from './items';
-import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
 import { FontAwesome } from '@expo/vector-icons';
 import { titleRowStyles } from '../column/column';
@@ -12,8 +11,8 @@ import { updateItemFieldsInDatabase } from '@/shared/server/firebase';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import ForwardRefInput from '@/components/custom-input/forward-ref-input';
 import { ItemViewType, Views, ItemViews, ItemType } from '@/shared/types/types';
-import { Animated, Pressable, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
+import { Animated, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
+import { hapticFeedback, isValid, log, maxItemDescriptionLength, maxItemNameLength, maxItemSummaryLength, web } from '@/shared/variables';
 import { borderRadius, colors, draggableViewItemBorderRadius, findColorCodeToKey, getFontColor, getFontColorForBackground, globalStyles, Text, View } from '@/components/theme/Themed';
 
 export const maxItemDescriptionHeight = 251;
@@ -53,8 +52,7 @@ export default function ItemView({ }: ItemViewType | any) {
     }
 
     const onTopTogglePress = (viewType: ItemViews | Views) => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        // Vibration.vibrate(1);
+        hapticFeedback();
         setView(viewType);
     }
 
@@ -99,8 +97,7 @@ export default function ItemView({ }: ItemViewType | any) {
 
         const handleSwipe = (itmSwiped = itm) => {
             swipeableRef.current?.close();
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-            // Vibration.vibrate(1);
+            hapticFeedback();
             updateItemFieldsInDatabase(itmSwiped?.id, { complete: !itmSwiped.complete } as Partial<ItemType>);
         };
 
@@ -109,13 +106,13 @@ export default function ItemView({ }: ItemViewType | any) {
                 friction={1}
                 ref={swipeableRef}
                 overshootRight={false}
+                onActivated={() => hapticFeedback()}
                 onSwipeableLeftOpen={() => handleSwipe(itm)}
                 onSwipeableRightOpen={() => handleSwipe(itm)}
                 renderLeftActions={() => renderActions(`left`)}
                 renderRightActions={() => renderActions(`right`)}
                 containerStyle={{ flex: 1, height: `auto`, minHeight: 25 }}
                 childrenContainerStyle={{ flex: 1, height: `auto`, minHeight: 25 }}
-                onActivated={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
             >
                 <TouchableOpacity style={[globalStyles.flexRow, { flex: 1, borderRadius: draggableViewItemBorderRadius - 5, backgroundColor: selected?.complete ? colors.success : colors.active, justifyContent: `center`, gap: 5 }]}>
                     <FontAwesome name={selected?.complete ? `check` : `circle-o`} size={12} color={getFontColor(selected?.complete ? colors.success : colors.active)} />

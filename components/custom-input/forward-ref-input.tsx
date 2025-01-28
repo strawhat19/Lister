@@ -1,8 +1,8 @@
-import * as Haptics from 'expo-haptics';
 import { SharedContext } from '@/shared/shared';
+import { hapticFeedback } from '@/shared/variables';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import React, { forwardRef, useContext, useId } from 'react';
 import { colors, getFontColor, globalStyles, Text, View } from '../theme/Themed';
-import React, { forwardRef, useContext, useEffect, useId, useState } from 'react';
 import { Keyboard, TextInput, StyleSheet, InputAccessoryView, TouchableOpacity } from 'react-native';
 
 declare global {
@@ -103,8 +103,7 @@ const ForwardRefInput = forwardRef<TextInput, ForwardRefInputProps>(({
 
     const onDoneVibration = () => {
         onDone();
-        // Vibration.vibrate(1);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        hapticFeedback();
     }
 
     const onDoneDismissKeyboard = (onDoneVibrate) => {

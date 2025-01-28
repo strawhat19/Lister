@@ -62,58 +62,58 @@ const colorsToUse = [colors.appleBlue, colors.appleRed, colors.appleGreen];
 const getBGPatternColor = (idx: number) => colorsToUse[idx % colorsToUse.length];
 
 export default function DraggableGrid() {
-    const positions = useSharedValue(
-        Object.assign({}, ...items.map((item, idx) => ({[idx]: idx}))),
-    );
+  const positions = useSharedValue(
+      Object.assign({}, ...items.map((item, idx) => ({[idx]: idx}))),
+  );
 
-    return (
-        <SafeAreaProvider style={styles.container}>
-            <GestureHandlerRootView>
-                <SafeAreaView>
-                    <View id={`dragAndDropGrid`}>
-                        {items.map((item, idx) => (
-                            <TouchableOpacity 
-                                key={idx}    
-                                activeOpacity={0.5}
-                                onPress={() =>  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                                onLongPress={() =>  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-                            >
-                                <DraggableItem index={idx} positions={positions}>
-                                    <View id={`draggableItem-${item.id}`} style={[styles.item, { backgroundColor: getBGPatternColor(idx) }]}>
-                                        <Text style={styles.text}>
-                                            {idx + 1}
-                                        </Text>
-                                        <Text style={styles.text}>
-                                            {item.label}
-                                        </Text>
-                                    </View>
-                                </DraggableItem>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </SafeAreaView>
-            </GestureHandlerRootView>
-        </SafeAreaProvider>
-    )
+  return (
+    <SafeAreaProvider style={styles.container}>
+      <GestureHandlerRootView>
+        <SafeAreaView>
+          <View id={`dragAndDropGrid`}>
+            {items.map((item, idx) => (
+              <TouchableOpacity 
+                key={idx}    
+                activeOpacity={0.5}
+                onPress={() =>  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+                onLongPress={() =>  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
+              >
+                <DraggableItem index={idx} positions={positions}>
+                  <View id={`draggableItem-${item.id}`} style={[styles.item, { backgroundColor: getBGPatternColor(idx) }]}>
+                    <Text style={styles.text}>
+                      {idx + 1}
+                    </Text>
+                    <Text style={styles.text}>
+                      {item.label}
+                    </Text>
+                  </View>
+                </DraggableItem>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </SafeAreaView>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
+  )
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      width: `100%`,
-      backgroundColor: colors.black,
-    },
-    item: {
-        width: SIZE,
-        height: SIZE,
-        margin: MARGIN,
-        borderRadius: 0,
-        alignItems: `center`,
-        justifyContent: `center`,
-    },
-    text: {
-        fontSize: 16,
-        color: `white`,
-        fontWeight: `bold`,
-    },
+  container: {
+    flex: 1,
+    width: `100%`,
+    backgroundColor: colors.black,
+  },
+  item: {
+    width: SIZE,
+    height: SIZE,
+    margin: MARGIN,
+    borderRadius: 0,
+    alignItems: `center`,
+    justifyContent: `center`,
+  },
+  text: {
+    fontSize: 16,
+    color: `white`,
+    fontWeight: `bold`,
+  },
 })

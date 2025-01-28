@@ -1,10 +1,9 @@
 import Column from '../column/column';
-import * as Haptics from 'expo-haptics';
-import { web } from '@/shared/variables';
 import { TouchableOpacity } from 'react-native';
 import { SharedContext } from '@/shared/shared';
 import { SliderModes } from '@/shared/types/types';
 import SliderPagination from './pagination/pagination';
+import { hapticFeedback, web } from '@/shared/variables';
 import React, { useContext, useMemo, useRef } from 'react';
 import { colors, Text, View } from '@/components/theme/Themed';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
@@ -42,21 +41,19 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
 
     const onBoardRowPress = () => {
         setSliderModeParallax(!sliderModeParallax);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        hapticFeedback();
     }
 
     const swipeCarousel = (translationX) => {
-        if (selected == null && !swiping.current) { // Ensure no swiping lock
-            swiping.current = true; // Lock swiping
+        if (selected == null && !swiping.current) {
+            swiping.current = true;
             carouselRef.current?.scrollTo({
                 count: translationX > 0 ? -1 : 1,
                 animated: true,
             });
-    
-            // Unlock swiping after animation completes (adjust based on animation duration)
             setTimeout(() => {
                 swiping.current = false;
-            }, 0); // Adjust the duration to match the carousel animation speed
+            }, 0);
         }
     }
 
@@ -64,7 +61,7 @@ export default function Slider({ backgroundColor = colors.transparent }: any) {
         web() ? (
             <div>Hello</div>
         ) : user == null ? <>
-        
+            {/* Empty */}
         </> : 
         <>
             {selected == null && (

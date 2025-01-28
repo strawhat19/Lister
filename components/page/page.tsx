@@ -12,9 +12,9 @@ export const defaultChildren = {
 
 export class PageProps {
     gap?: number = 5;
+    topMargin?: number = 0;
     logoSize?: number = 150;
     title?: string = appName;
-    topMargin?: number = -100;
     titleFontSize?: number = 55;
     titleColor?: string = colors.white;
     children?: any = defaultChildren.space;
@@ -23,9 +23,9 @@ export class PageProps {
 
 export default function Page({ 
     gap = 5, 
+    topMargin = 0,
     logoSize = 150,
     title = appName, 
-    topMargin = -100,
     titleFontSize = 55,
     titleColor = colors.white,
     backgroundColor = colors.active, 

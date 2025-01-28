@@ -1,7 +1,7 @@
-import ReanimatedItems from '@/components/reanimated-items/reanimated-items';
+import Page from '@/components/page/page';
 
 export default function Profile() {
   return (
-    <ReanimatedItems />
+    <Page title={`Profile`} />
   )
 }

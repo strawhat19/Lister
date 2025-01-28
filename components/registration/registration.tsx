@@ -1,4 +1,3 @@
-import * as Haptics from 'expo-haptics';
 import { Views } from '@/shared/types/types';
 import { useContext, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
@@ -9,7 +8,7 @@ import Page, { defaultChildren } from '../page/page';
 import { titleRowStyles } from '../board/column/column';
 import ForwardRefInput from '../custom-input/forward-ref-input';
 import { colors, globalStyles, Text, View } from '../theme/Themed';
-import { capWords, genID, itemHeight, log } from '@/shared/variables';
+import { capWords, genID, hapticFeedback, itemHeight, log } from '@/shared/variables';
 
 export enum AuthStates {
     SignIn = `Sign In`,
@@ -32,12 +31,12 @@ export default function Registration({ }) {
 
     const onFocus = () => {
         setTyping(true);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        hapticFeedback();
     }
 
     const onCancel = () => {
         setTyping(false);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        hapticFeedback();
     }
     
     const onSign = (authState: AuthStates) => {
@@ -62,11 +61,11 @@ export default function Registration({ }) {
         setUser(usr);
         setEmail(``);
         setPassword(``);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        hapticFeedback();
     }
 
     return (
-        <Page topMargin={typing ? -315 : undefined} gap={typing ? 0 : 55} logoSize={typing ? 115 : undefined} titleFontSize={typing ? 45 : undefined}>
+        <Page topMargin={typing ? -315 : -100} gap={typing ? 0 : 55} logoSize={typing ? 115 : undefined} titleFontSize={typing ? 45 : undefined}>
             {user == null ? (
                 <View style={{ backgroundColor: colors.transparent, justifyContent: `center`, alignItems: `center` }}>
                     <View style={[globalStyles.singleLineInput, titleRowStyles.addItemButton, { marginTop: 5, justifyContent: `center`, marginHorizontal: `auto` }]}>

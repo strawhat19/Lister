@@ -371,10 +371,9 @@ const rgbaToHsl = (rgba: string): [number, number, number] => {
   return [h, s * 100, l * 100];
 };
 
-// Helper function to calculate hue difference
 const hueDifference = (hue1: number, hue2: number) => {
   const diff = Math.abs(hue1 - hue2);
-  return Math.min(diff, 360 - diff); // Wraparound difference
+  return Math.min(diff, 360 - diff);
 };
 
 export const randomCardColor = (colorsObject = cardColors, previousColor?: string): string => {
@@ -390,24 +389,21 @@ export const randomCardColor = (colorsObject = cardColors, previousColor?: strin
   }
 
   if (previousHue !== null) {
-    // Filter colors to ensure contrasting hue
     const contrastingColors = colorValues.filter((color) => {
       try {
         const [hue] = rgbaToHsl(color);
-        return hueDifference(previousHue, hue) > 60; // Ensure at least 60° hue difference
+        return hueDifference(previousHue, hue) > 60;
       } catch {
-        return true; // Keep colors we cannot parse
+        return true;
       }
     });
 
-    // Pick a random contrasting color
     if (contrastingColors.length > 0) {
       const randomIndex = Math.floor(Math.random() * contrastingColors.length);
       return contrastingColors[randomIndex];
     }
   }
 
-  // Fallback: Pick any random color
   const randomIndex = Math.floor(Math.random() * colorValues.length);
   return colorValues[randomIndex];
 };

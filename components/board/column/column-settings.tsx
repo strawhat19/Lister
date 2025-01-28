@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import * as Haptics from 'expo-haptics';
 import { FontAwesome } from '@expo/vector-icons';
 import { StyleSheet, Switch } from 'react-native';
+import { hapticFeedback } from '@/shared/variables';
 import { borderRadius, colors, globalStyles, Text, View } from '@/components/theme/Themed';
 
 export default function ColumnSettings({ onText = `On`, offText = `Off` }) {
@@ -9,7 +9,7 @@ export default function ColumnSettings({ onText = `On`, offText = `Off` }) {
 
     const toggleSwitch = () => {
         setOn(currentlyEnabled => !currentlyEnabled);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        hapticFeedback();
     };
 
     return (

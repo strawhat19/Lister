@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import Shared from '@/shared/shared';
+import { web } from '@/shared/variables';
 export { ErrorBoundary } from 'expo-router';
 import { Themes } from '@/shared/types/types';
 import * as SplashScreen from 'expo-splash-screen';
@@ -39,14 +40,16 @@ export default function RootLayout() {
   }
   
   return (
-    <Shared>
-      <ThemeProvider value={colorScheme === Themes.Dark ? DarkTheme : DarkTheme}>
-        <Stack>
-          <Stack.Screen name={`index`} options={{ headerShown: false }} />
-          <Stack.Screen name={`(tabs)`} options={{ headerShown: false }} />
-          <Stack.Screen name={`modal`} options={{ presentation: `modal` }} />
-        </Stack>
-      </ThemeProvider>
-    </Shared>
+    web() ? `Home` : (
+      <Shared>
+        <ThemeProvider value={colorScheme === Themes.Dark ? DarkTheme : DarkTheme}>
+          <Stack>
+            <Stack.Screen name={`index`} options={{ headerShown: false }} />
+            <Stack.Screen name={`(tabs)`} options={{ headerShown: false }} />
+            <Stack.Screen name={`modal`} options={{ presentation: `modal` }} />
+          </Stack>
+        </ThemeProvider>
+      </Shared>
+    )
   )
 }

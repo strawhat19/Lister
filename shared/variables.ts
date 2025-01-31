@@ -28,14 +28,15 @@ export const defaultBoardID = `3_Column_${BoardTypes.Kanban}`;
 
 export const showDevFeatures = true;
 export const localDevelopment = process.env.EXPO_PUBLIC_NODE_ENV == `development`;
-export const urlHostIncludes = (string) => window.location.host.includes(string);
-export const devEnv = (web() ? (urlHostIncludes(`local`) || urlHostIncludes(`:`)) : localDevelopment) ? showDevFeatures : false;
+
+export const devEnv = localDevelopment ? showDevFeatures : false;
 
 export const capWords = (str: string) => str.replace(/\b\w/g, (match) => match.toUpperCase());
 export const getNumberFromString = (string: string) => parseInt((string.match(/\d+/) as any)[0]);
 export const capitalizeAllWords = (string: string) => string.replace(/(?:^|\s)\w/g, (match) => match.toUpperCase());
-
+export const urlHostIncludes = (string: string) => typeof window !== undefined ? window?.location?.host?.includes(string) : false;
 export const hapticFeedback = (impact = true) => impact == true ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) : Vibration.vibrate(1);
+// export const devEnv = (web() ? (typeof window !== undefined && (urlHostIncludes(`local`) || urlHostIncludes(`:`))) : localDevelopment) ? showDevFeatures : false;
 
 export const log = (string: string, data?: any, alert = false) => {
   if (alert == true && Platform.OS != `web`) Alert.alert(string);

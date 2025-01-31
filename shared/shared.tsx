@@ -10,7 +10,7 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Animated, Keyboard, useWindowDimensions } from 'react-native';
-import { animationOptions, devEnv, log, logMsgLine, useDatabase } from './variables';
+import { animationOptions, devEnv, log, logMsgLine, useDatabase, web } from './variables';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { itemsDatabaseCollection, db, tasksDatabaseCollection } from './server/firebase';
 import { BoardType, ColumnType, ItemType, ItemViews, TaskType, Views } from '@/shared/types/types';
@@ -202,12 +202,19 @@ export default function Shared({ children }: { children: React.ReactNode; }) {
         sliderModeParallax, setSliderModeParallax,
       }}
     >
-      <GestureHandlerRootView>
-        <View style={{ flex: 1, width: `100%` }}>
+      {web() ? (
+        <div style={{ flex: 1, width: `100%` }}>
           {children}
-          <SlideUp />
-        </View>
-      </GestureHandlerRootView>
+          {/* <SlideUp /> */}
+        </div>
+      ) : (
+        <GestureHandlerRootView>
+          <View style={{ flex: 1, width: `100%` }}>
+            {children}
+            <SlideUp />
+          </View>
+        </GestureHandlerRootView>
+      )}
     </SharedContext.Provider>
   )
 }
